@@ -5,6 +5,7 @@
 #include "GraphNodeHandler.h"
 
 #include "cinder/Vector.h"
+#include "cinder/gl/TextureFont.h"
 
 class GraphHandler
 {
@@ -26,13 +27,16 @@ public:
 private:
     ci::app::WindowRef window;
     ci::signals::scoped_connection	cbMouseDown;
+    ci::Font font;
+    ci::gl::TextureFontRef textureFont;
+
 
     Graph g;
     std::vector<std::unique_ptr<GraphNodeHandler>> nodeHandlers;
     
     float nodeRadius;
 
-    void drawEdge(int from, int to, bool highlight);
+    void drawEdge(int from, int to, double weight = 0.0, bool highlight = false);
     void drawEdges();
     void drawHighlightEdges();
     void drawNodes();

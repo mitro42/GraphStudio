@@ -53,10 +53,11 @@ int Graph::addNode(double weight)
 
 void Graph::addEdge(int from, int to, double weight)
 {
-    nodes[from].addNeighbor(to);
+    nodes[from].addNeighbor(to, weight);    
     if (!directed)
     {
-        nodes[to].addNeighbor(from);
+        nodes[to].addNeighbor(from, weight);
+
     }
 }
 

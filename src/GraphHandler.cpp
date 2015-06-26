@@ -2,6 +2,8 @@
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/Rand.h"
+#include "cinder/gl/TextureFont.h"
+#include "cinder/CinderMath.h"
 #include <fstream>
 
 GraphHandler::GraphHandler() : g(true), nodeRadius(10)
@@ -18,6 +20,8 @@ void GraphHandler::prepare(ci::app::WindowRef _window)
 {
     window = _window;
     cbMouseDown = window->getSignalMouseDown().connect(std::bind(&GraphHandler::mouseDown, this, std::placeholders::_1));
+    font = ci::Font("Arial", 22);
+    textureFont = ci::gl::TextureFont::create(font);
 }
 
 
@@ -146,15 +150,16 @@ void GraphHandler::drawEdges()
 {
     for (int nodeIdx = 0; nodeIdx < g.getNodeCount(); ++nodeIdx)
     {
-        for (const auto &e : g.getNode(nodeIdx))
+        const auto &node = g.getNode(nodeIdx);
+        for (int edgeIdx = 0; edgeIdx < node.getNeighborCount(); ++edgeIdx)
         {
-            drawEdge(nodeIdx, e, false);
+            drawEdge(nodeIdx, node.getNeighbor(edgeIdx), node.getEdgeWeight(edgeIdx), false);
         }
     }
 }
 
 
-void GraphHandler::drawEdge(int from, int to, bool highlight)
+void GraphHandler::drawEdge(int from, int to, double weight, bool highlight)
 {
     if (highlight)
     {
@@ -174,6 +179,24 @@ void GraphHandler::drawEdge(int from, int to, bool highlight)
     else
     {
         ci::gl::drawLine(fromVec, toVec);
+    }
+
+    if (g.hasWeightedEdges())
+    {
+        std::stringstream ss;
+        ss << std::setw(8) << std::setprecision(2) << weight;
+        ci::Vec2f textPos = (fromVec + toVec) / 2;
+        ci::Vec2f offset = (fromVec + toVec).normalized();
+        offset.rotate(M_PI);
+
+        ci::gl::pushModelView();
+        //ci::gl::translate(ci::Vec3f(window->getWidth() / 2, window->getHeight() / 2, 0));
+        //ci::gl::translate(ci::Vec3f(500, 100, 0));
+        ci::gl::translate(textPos);
+        ci::gl::rotate(0);
+        textureFont->drawString(ss.str(), offset * 20);
+
+        ci::gl::popModelView();
     }
 }
 
