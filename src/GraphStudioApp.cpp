@@ -12,6 +12,7 @@ public:
     void prepareSettings(Settings *settings);
     void setup();
     void mouseDown(MouseEvent event);
+    void keyDown(KeyEvent event);
     void update();
     void draw();
 private:
@@ -29,7 +30,30 @@ void GraphStudioApp::prepareSettings(Settings *settings)
 
 void GraphStudioApp::setup()
 {
-    gh.prepare(getWindow());
+    gh.prepare(getWindow());    
+}
+
+void GraphStudioApp::keyDown(KeyEvent event)
+{
+    if (event.getChar() == 's')
+    {
+        std::cout << "Saving graph..." << std::endl;
+        gh.saveGraph("graph.txt");
+        gh.saveGraphPositions("graph.pos");
+        std::cout << "Done" << std::endl;
+    }
+    if (event.getChar() == 'l')
+    {
+        std::cout << "Loading graph..." << std::endl;
+        gh.loadGraph("graph2.txt");
+        gh.loadGraphPositions("graph2.pos");
+        std::cout << "Done" << std::endl;
+    }
+    if (event.getChar() == 'q')
+    {
+        quit();
+    }
+    
 }
 
 

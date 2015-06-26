@@ -12,6 +12,11 @@ public:
     GraphHandler();
     ~GraphHandler();
     
+    void loadGraph(std::string fileName);
+    void saveGraph(std::string fileName);
+    void loadGraphPositions(std::string fileName);
+    void saveGraphPositions(std::string fileName);
+
     void prepare(ci::app::WindowRef window);
     void update();
     void setup();
@@ -24,7 +29,7 @@ private:
 
     Graph g;
     std::vector<std::unique_ptr<GraphNodeHandler>> nodeHandlers;
-    std::vector<std::pair<int, int>> edges;
+    
     float nodeRadius;
 
     void drawEdge(int from, int to, bool highlight);
@@ -32,5 +37,7 @@ private:
     void drawHighlightEdges();
     void drawNodes();
     void drawHighlightNodes();
+
+    void recreateNodeHandlers();
 };
 

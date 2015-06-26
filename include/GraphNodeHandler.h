@@ -20,6 +20,7 @@ public:
     void clearSelection() { selection = none; }
     Selection getSelection() const { return selection; }
     ci::Vec2f getPos() const { return rect.getCenter(); }
+    void setPos(ci::Vec2f pos) { rect.offsetCenterTo(pos); }
 
 private:
     static const ci::Color NodeColors[3];

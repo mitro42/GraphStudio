@@ -1,6 +1,8 @@
 #include "GraphHandler.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/Rand.h"
+#include <fstream>
 
 GraphHandler::GraphHandler() : g(true), nodeRadius(10)
 {
@@ -23,7 +25,7 @@ void GraphHandler::update()
 {
     int start = -1;
     int end = -1;
-    for (int i = 0; i < nodeHandlers.size(); ++i)
+    for (size_t i = 0; i < nodeHandlers.size(); ++i)
     {
         if (nodeHandlers[i]->getSelection() == GraphNodeHandler::addEdge)
         {
@@ -51,6 +53,65 @@ void GraphHandler::update()
 void GraphHandler::setup()
 {
 }
+
+void GraphHandler::recreateNodeHandlers()
+{
+    nodeHandlers.clear();
+    for (const auto &node : g)
+    {
+        auto pos = ci::Vec2f(ci::Rand::randFloat() * window->getWidth(), ci::Rand::randFloat() * window->getHeight());
+        nodeHandlers.emplace_back(new GraphNodeHandler(window, pos, nodeRadius));
+    }
+}
+
+
+void GraphHandler::loadGraph(std::string fileName)
+{
+    std::ifstream in(fileName);
+    if (!in.good())
+        throw("Cannot open file");
+    in >> g;
+    recreateNodeHandlers();
+}
+
+
+void GraphHandler::saveGraph(std::string fileName)
+{
+    std::ofstream out(fileName);
+    if (!out.good())
+        throw("Cannot open file");
+    out << g;
+}
+
+
+void GraphHandler::loadGraphPositions(std::string fileName)
+{
+    std::ifstream in(fileName);
+    if (!in.good())
+        throw("Cannot open file");
+    float x, y;
+    int idx = 0;
+    while (in >> x && idx < nodeHandlers.size())
+    {
+        in >> y;
+        nodeHandlers[idx++]->setPos(ci::Vec2f(x, y));
+    }
+}
+
+
+void GraphHandler::saveGraphPositions(std::string fileName)
+{
+    std::ofstream out(fileName);
+    if (!out.good())
+        throw("Cannot open file");
+    for (const auto& node : nodeHandlers)
+    {
+        const auto &pos = node->getPos();
+        out << pos.x << " " << pos.y << "\n";
+    }
+    out << std::flush;
+}
+
 
 void GraphHandler::mouseDown(ci::app::MouseEvent &event)
 {
@@ -97,11 +158,11 @@ void GraphHandler::drawEdge(int from, int to, bool highlight)
 {
     if (highlight)
     {
-        ci::gl::color(ci::Color(1, 0.3, 0.7));
+        ci::gl::color(ci::Color(1.0f, 0.3f, 0.7f));
     }
     else
     {
-        ci::gl::color(ci::Color(0.5, 0.5, 0.5));
+        ci::gl::color(ci::Color(0.5f, 0.5f, 0.5f));
     }
 
     ci::Vec2f fromVec = nodeHandlers[from]->getPos();
