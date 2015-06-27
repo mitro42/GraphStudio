@@ -1,12 +1,11 @@
 #include "GraphNodeHandler.h"
 
 #include "cinder/Rect.h"
+#include "Options.h"
 
-const ci::Color GraphNodeHandler::NodeColors[3] = { ci::Color("red"), ci::Color::white(), ci::Color("orange") };
-
-GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, ci::Vec2f pos, float size) : window(window), size(size), selection(none)
+GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, ci::Vec2f pos) : window(window), selection(none)
 {
-    float half = size / 2;
+    float half = Options::instance().nodeSize / 2;
     rect = ci::Rectf(pos + ci::Vec2f(-half, -half), pos + ci::Vec2f(half, half));
 
     cbMouseDown = window->getSignalMouseDown().connect(0, std::bind(&GraphNodeHandler::mouseDown, this, std::placeholders::_1));
@@ -63,6 +62,20 @@ void GraphNodeHandler::mouseUp(ci::app::MouseEvent &event)
 
 void GraphNodeHandler::draw()
 {
-    ci::gl::color(NodeColors[int(selection)]);
-    ci::gl::drawSolidCircle(rect.getCenter(), size);
+    switch (selection)
+    {
+    case GraphNodeHandler::none:
+        ci::gl::color(Options::instance().nodeColor);
+        break;
+    case GraphNodeHandler::move:
+        ci::gl::color(Options::instance().movingNodeColor);
+        break;
+    case GraphNodeHandler::addEdge:
+        ci::gl::color(Options::instance().addEdgeNodeColor);
+        break;
+    default:
+        ci::gl::color(Options::instance().nodeColor);
+        break;
+    }
+    ci::gl::drawSolidCircle(rect.getCenter(), Options::instance().nodeSize);
 }

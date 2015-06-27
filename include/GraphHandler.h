@@ -42,7 +42,6 @@ private:
     Graph g;
     std::vector<std::unique_ptr<GraphNodeHandler>> nodeHandlers;
     bool automaticEdgeWeightUpdate = false;
-    float nodeRadius;
 
     void drawEdge(int from, int to, double weight = 0.0, bool highlight = false);
     void drawEdges();

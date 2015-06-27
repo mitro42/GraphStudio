@@ -6,7 +6,9 @@
 #include "cinder/CinderMath.h"
 #include <fstream>
 
-GraphHandler::GraphHandler() : g(true), nodeRadius(5)
+#include "Options.h"
+
+GraphHandler::GraphHandler() : g(true)
 {
 
 }
@@ -92,7 +94,7 @@ void GraphHandler::recreateNodeHandlers()
     for (const auto &node : g)
     {
         auto pos = ci::Vec2f(ci::Rand::randFloat() * window->getWidth(), ci::Rand::randFloat() * window->getHeight());
-        nodeHandlers.emplace_back(new GraphNodeHandler(window, pos, nodeRadius));
+        nodeHandlers.emplace_back(new GraphNodeHandler(window, pos));
     }
 }
 
@@ -193,12 +195,9 @@ void GraphHandler::mouseDown(ci::app::MouseEvent &event)
     if (event.isControlDown())
     {
         std::unique_lock<std::recursive_mutex> guard(updateMutex);
-        nodeHandlers.emplace_back(new GraphNodeHandler(window, event.getPos(), nodeRadius));
+        nodeHandlers.emplace_back(new GraphNodeHandler(window, event.getPos()));
         g.addNode();
     }
-
-    //for (int i = 0; i < nodeHandlers.size() - 1; ++i)
-    //    edges.emplace_back(i, nodeHandlers.size() - 1);
 
     event.setHandled(true);
 }
@@ -214,9 +213,9 @@ void GraphHandler::draw()
     //ci::gl::Fbo fbo(window->getWidth(), window->getHeight(), true);
     //fbo.bindFramebuffer();
     //ci::gl::clear(ci::ColorA(0, 0, 0));
-    drawNodes();
     drawEdges();
     drawHighlightEdges();
+    drawNodes();
     drawHighlightNodes();
     //fbo.unbindFramebuffer();
     //ci::gl::draw(fbo.getTexture());
@@ -240,29 +239,37 @@ void GraphHandler::drawEdge(int from, int to, double weight, bool highlight)
 {
     if (from == to)
         return;
+
+    // Setting the parameters
     if (highlight)
     {
         ci::gl::lineWidth(2);
-        ci::gl::color(ci::Color("lightgreen"));
+        ci::gl::color(Options::instance().highlightedEdgeColor);
     }
     else
     {
         ci::gl::lineWidth(1);
-        ci::gl::color(ci::Color(0.3f, 0.3f, 0.3f));
+        ci::gl::color(Options::instance().edgeColor);
     }
 
+    // calculating the end points and drawing the lines/arrows
     ci::Vec2f fromVec = nodeHandlers[from]->getPos();
     ci::Vec2f toVec = nodeHandlers[to]->getPos();
-    
     if (g.isDirected())
     {
-        ci::gl::drawVector(ci::Vec3f(fromVec, 0), ci::Vec3f(toVec, 0), 7, -5);
+        ci::Vec2f dir = toVec - fromVec;
+        dir.normalize();
+        ci::gl::drawVector(ci::Vec3f(fromVec, 0), 
+            ci::Vec3f(toVec - (Options::instance().nodeSize + Options::instance().arrowSize) * dir, 0), 
+            Options::instance().arrowSize, -5);
     }
     else
     {
         ci::gl::drawLine(fromVec, toVec);
     }
 
+
+    // writing edge weight
     if (g.hasWeightedEdges())
     {
         std::stringstream ss;

@@ -116,6 +116,7 @@
     <ClInclude Include="..\include\Graph.h" />
     <ClInclude Include="..\include\GraphHandler.h" />
     <ClInclude Include="..\include\GraphNodeHandler.h" />
+    <ClInclude Include="..\include\Options.h" />
     <ClInclude Include="..\include\Resources.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
