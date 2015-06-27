@@ -91,7 +91,8 @@ private:
 };
 
 
-std::vector<std::pair<double, int>> findMinimalPathDijkstra(const Graph &g, int startNode, int endNode);
+std::vector<std::pair<double, int>> nodeWeightDijkstra(const Graph &g, int startNode, int endNode);
+std::vector<std::pair<double, int>> edgeWeightDijkstra(const Graph &g, int startNode, int endNode);
 
 std::istream &operator>>(std::istream &is, Graph &g);
 std::ostream &operator<<(std::ostream &os, const Graph &g);
