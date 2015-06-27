@@ -6,7 +6,7 @@
 #include "cinder/CinderMath.h"
 #include <fstream>
 
-GraphHandler::GraphHandler() : g(true), nodeRadius(10)
+GraphHandler::GraphHandler() : g(true), nodeRadius(5)
 {
 
 }
@@ -27,6 +27,7 @@ void GraphHandler::prepare(ci::app::WindowRef _window)
 
 void GraphHandler::addNewEdgeIfNodesSelected()
 {
+    std::unique_lock<std::recursive_mutex> guard(updateMutex);
     int start = -1;
     int end = -1;
     for (size_t i = 0; i < nodeHandlers.size(); ++i)
@@ -54,7 +55,8 @@ void GraphHandler::addNewEdgeIfNodesSelected()
 }
 
 void GraphHandler::updateEdgeWeights()
-{
+{    
+    std::unique_lock<std::recursive_mutex> guard(updateMutex);
     for (size_t i = 0; i < g.getNodeCount(); ++i)
     {
         auto &node = g.getNode(i);
@@ -63,13 +65,14 @@ void GraphHandler::updateEdgeWeights()
         {
             auto neighbor = node.getNeighbor(j);
             auto posEnd = nodeHandlers[neighbor]->getPos();
-            node.setEdgeWeight(neighbor, (posStart - posEnd).length());
+            node.setEdgeWeight(j, (posStart - posEnd).length());
         }
     }
 }
 
 void GraphHandler::update()
 {
+    std::unique_lock<std::recursive_mutex> guard(updateMutex);
     addNewEdgeIfNodesSelected();
     if (automaticEdgeWeightUpdate)
     {
@@ -84,6 +87,7 @@ void GraphHandler::setup()
 
 void GraphHandler::recreateNodeHandlers()
 {
+    std::unique_lock<std::recursive_mutex> guard(updateMutex);
     nodeHandlers.clear();
     for (const auto &node : g)
     {
@@ -95,11 +99,28 @@ void GraphHandler::recreateNodeHandlers()
 
 void GraphHandler::loadGraph(std::string fileName)
 {
+    std::unique_lock<std::recursive_mutex> guard(updateMutex);
     std::ifstream in(fileName);
     if (!in.good())
         throw("Cannot open file");
     in >> g;
     recreateNodeHandlers();
+
+    /*
+    auto N = int(sqrt(g.getNodeCount()));
+    for (int i = 0; i < N * N; ++i)
+    {
+        if ((i + 1 <  N * N) && (i % N != N - 1))
+        {
+            g.addEdge(i, i + 1);
+        }
+
+        if (i + N <  N * N)
+        {
+            g.addEdge(i, i + N);
+        }
+    }
+    */
 }
 
 
@@ -114,6 +135,7 @@ void GraphHandler::saveGraph(std::string fileName)
 
 void GraphHandler::loadGraphPositions(std::string fileName)
 {
+    std::unique_lock<std::recursive_mutex> guard(updateMutex);
     std::ifstream in(fileName);
     if (!in.good())
         throw("Cannot open file");
@@ -141,10 +163,36 @@ void GraphHandler::saveGraphPositions(std::string fileName)
 }
 
 
+void GraphHandler::reorderNodesSquare()
+{
+    std::unique_lock<std::recursive_mutex> guard(updateMutex);
+    auto N = int(ceil(sqrt(g.getNodeCount())));
+    int row = 0;
+    int col = 0;    
+    int margin = 100;
+    int width = window->getWidth() - (2 * margin);
+    int height = window->getHeight() - (2 * margin);
+    float xStep = float(width) / (N - 1);
+    float yStep = float(height) / (N - 1);
+    for (auto &nh: nodeHandlers)
+    {
+        nh->setPos(ci::Vec2f(margin + col * xStep, margin + row*yStep));
+        col++;
+        if (col == N)
+        {
+            col = 0;
+            row++;
+        }
+    }
+}
+
+
+
 void GraphHandler::mouseDown(ci::app::MouseEvent &event)
 {
     if (event.isControlDown())
     {
+        std::unique_lock<std::recursive_mutex> guard(updateMutex);
         nodeHandlers.emplace_back(new GraphNodeHandler(window, event.getPos(), nodeRadius));
         g.addNode();
     }
@@ -158,6 +206,11 @@ void GraphHandler::mouseDown(ci::app::MouseEvent &event)
 
 void GraphHandler::draw()
 {
+    std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
+
+    if (!guard.try_lock())
+        return;
+
     //ci::gl::Fbo fbo(window->getWidth(), window->getHeight(), true);
     //fbo.bindFramebuffer();
     //ci::gl::clear(ci::ColorA(0, 0, 0));
@@ -185,17 +238,22 @@ void GraphHandler::drawEdges()
 
 void GraphHandler::drawEdge(int from, int to, double weight, bool highlight)
 {
+    if (from == to)
+        return;
     if (highlight)
     {
-        ci::gl::color(ci::Color(1.0f, 0.3f, 0.7f));
+        ci::gl::lineWidth(2);
+        ci::gl::color(ci::Color("lightgreen"));
     }
     else
     {
-        ci::gl::color(ci::Color(0.5f, 0.5f, 0.5f));
+        ci::gl::lineWidth(1);
+        ci::gl::color(ci::Color(0.3f, 0.3f, 0.3f));
     }
 
     ci::Vec2f fromVec = nodeHandlers[from]->getPos();
     ci::Vec2f toVec = nodeHandlers[to]->getPos();
+    
     if (g.isDirected())
     {
         ci::gl::drawVector(ci::Vec3f(fromVec, 0), ci::Vec3f(toVec, 0), 7, -5);
@@ -227,6 +285,20 @@ void GraphHandler::drawEdge(int from, int to, double weight, bool highlight)
 
 void GraphHandler::drawHighlightEdges()
 {
+
+    auto tree = edgeWeightDijkstra(g, 0, -1);
+
+    for (int i = 0; i < int(tree.size()); ++i)
+    {
+        auto from = tree[i].second;
+        if (from == -1)
+            continue;
+        if (from == i)
+            continue;
+        drawEdge(from, i, tree[i].first - tree[from].first, true);
+    }
+
+
     /*
     for (const auto &e : edges)
     {

@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <mutex>
 #include <vector>
 #include "Graph.h"
 #include "GraphNodeHandler.h"
@@ -18,6 +19,8 @@ public:
     void loadGraphPositions(std::string fileName);
     void saveGraphPositions(std::string fileName);
 
+    void reorderNodesSquare();
+
     void prepare(ci::app::WindowRef window);
     void update();
     void setup();
@@ -34,6 +37,7 @@ private:
     ci::Font font;
     ci::gl::TextureFontRef textureFont;
 
+    std::recursive_mutex updateMutex;
 
     Graph g;
     std::vector<std::unique_ptr<GraphNodeHandler>> nodeHandlers;

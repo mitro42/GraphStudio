@@ -45,14 +45,18 @@ void GraphStudioApp::keyDown(KeyEvent event)
     if (event.getChar() == 'l')
     {
         std::cout << "Loading graph..." << std::endl;
-        gh.loadGraph("graph2.txt");
-        gh.loadGraphPositions("graph2.pos");
+        gh.loadGraph("graphPE81.txt");
+        gh.loadGraphPositions("graphPE81.pos");
         std::cout << "Done" << std::endl;
     }
     if (event.getChar() == 'u')
     {
         gh.toggleAutomaticEdgeWeightUpdate();
         std::cout << "automaticEdgeWeightUpdate = " << gh.getAutomaticEdgeWeightUpdate() << std::endl;
+    }
+    if (event.getChar() == 'r')
+    {
+        gh.reorderNodesSquare();
     }
     if (event.getChar() == 'q')
     {
