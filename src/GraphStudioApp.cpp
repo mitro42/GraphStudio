@@ -49,6 +49,11 @@ void GraphStudioApp::keyDown(KeyEvent event)
         gh.loadGraphPositions("graph2.pos");
         std::cout << "Done" << std::endl;
     }
+    if (event.getChar() == 'u')
+    {
+        gh.toggleAutomaticEdgeWeightUpdate();
+        std::cout << "automaticEdgeWeightUpdate = " << gh.getAutomaticEdgeWeightUpdate() << std::endl;
+    }
     if (event.getChar() == 'q')
     {
         quit();

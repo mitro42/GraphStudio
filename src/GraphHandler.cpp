@@ -25,7 +25,7 @@ void GraphHandler::prepare(ci::app::WindowRef _window)
 }
 
 
-void GraphHandler::update()
+void GraphHandler::addNewEdgeIfNodesSelected()
 {
     int start = -1;
     int end = -1;
@@ -50,6 +50,30 @@ void GraphHandler::update()
         g.addEdge(start, end);
         nodeHandlers[start]->clearSelection();
         nodeHandlers[end]->clearSelection();
+    }
+}
+
+void GraphHandler::updateEdgeWeights()
+{
+    for (size_t i = 0; i < g.getNodeCount(); ++i)
+    {
+        auto &node = g.getNode(i);
+        auto posStart = nodeHandlers[i]->getPos();
+        for (size_t j = 0; j < node.getNeighborCount(); ++j)
+        {
+            auto neighbor = node.getNeighbor(j);
+            auto posEnd = nodeHandlers[neighbor]->getPos();
+            node.setEdgeWeight(neighbor, (posStart - posEnd).length());
+        }
+    }
+}
+
+void GraphHandler::update()
+{
+    addNewEdgeIfNodesSelected();
+    if (automaticEdgeWeightUpdate)
+    {
+        updateEdgeWeights();
     }
 }
 
@@ -184,10 +208,10 @@ void GraphHandler::drawEdge(int from, int to, double weight, bool highlight)
     if (g.hasWeightedEdges())
     {
         std::stringstream ss;
-        ss << std::setw(8) << std::setprecision(2) << weight;
+        ss << std::fixed << std::setw(8) << std::setprecision(2) << weight;
         ci::Vec2f textPos = (fromVec + toVec) / 2;
         ci::Vec2f offset = (fromVec + toVec).normalized();
-        offset.rotate(M_PI);
+        offset.rotate(float(M_PI));
 
         ci::gl::pushModelView();
         //ci::gl::translate(ci::Vec3f(window->getWidth() / 2, window->getHeight() / 2, 0));

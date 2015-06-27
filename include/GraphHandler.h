@@ -23,7 +23,11 @@ public:
     void setup();
     void draw();
     void mouseDown(ci::app::MouseEvent &event);
-    
+
+    void toggleAutomaticEdgeWeightUpdate() { automaticEdgeWeightUpdate = !automaticEdgeWeightUpdate; }
+    bool getAutomaticEdgeWeightUpdate() const { return automaticEdgeWeightUpdate; }
+    void setAutomaticEdgeWeightUpdate(bool update) { automaticEdgeWeightUpdate = update; }
+
 private:
     ci::app::WindowRef window;
     ci::signals::scoped_connection	cbMouseDown;
@@ -33,7 +37,7 @@ private:
 
     Graph g;
     std::vector<std::unique_ptr<GraphNodeHandler>> nodeHandlers;
-    
+    bool automaticEdgeWeightUpdate = false;
     float nodeRadius;
 
     void drawEdge(int from, int to, double weight = 0.0, bool highlight = false);
@@ -43,5 +47,7 @@ private:
     void drawHighlightNodes();
 
     void recreateNodeHandlers();
+    void addNewEdgeIfNodesSelected();
+    void updateEdgeWeights();
 };
 
