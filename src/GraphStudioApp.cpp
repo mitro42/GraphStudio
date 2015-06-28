@@ -11,12 +11,13 @@ using namespace std;
 
 class GraphStudioApp : public AppNative {
 public:
-    void prepareSettings(Settings *settings);
-    void setup();
-    void mouseDown(MouseEvent event);
-    void keyDown(KeyEvent event);
-    void update();
-    void draw();
+    void prepareSettings(Settings *settings) override;
+    void setup() override;
+    void mouseDown(MouseEvent event) override;
+    void keyDown(KeyEvent event) override;
+    void update() override;
+    void draw() override;
+    void resize() override;
 private:
     ci::params::InterfaceGlRef	params;
 
@@ -28,7 +29,7 @@ void GraphStudioApp::prepareSettings(Settings *settings)
 {
     settings->enableConsoleWindow();
     settings->setWindowSize(800, 600);
-    settings->setFrameRate(120.0f);
+    settings->setFrameRate(60.0f);
 }
 
 
@@ -100,6 +101,11 @@ void GraphStudioApp::draw()
 	gl::clear( Color( 0, 0, 0 ) ); 
     gh.draw();
     params->draw();
+}
+
+void GraphStudioApp::resize()
+{
+    gh.resize(getWindowBounds());
 }
 
 CINDER_APP_NATIVE( GraphStudioApp, RendererGl )

@@ -7,6 +7,7 @@
 
 #include "cinder/Vector.h"
 #include "cinder/gl/TextureFont.h"
+#include "cinder/gl/Fbo.h"
 
 class GraphHandler
 {
@@ -26,6 +27,7 @@ public:
     void setup();
     void draw();
     void mouseDown(ci::app::MouseEvent &event);
+    void resize(ci::Area newWindowSize);
 
     void toggleAutomaticEdgeWeightUpdate() { automaticEdgeWeightUpdate = !automaticEdgeWeightUpdate; }
     bool getAutomaticEdgeWeightUpdate() const { return automaticEdgeWeightUpdate; }
@@ -36,15 +38,16 @@ private:
     ci::signals::scoped_connection	cbMouseDown;
     ci::Font font;
     ci::gl::TextureFontRef textureFont;
-
+    ci::gl::Fbo fbo;
+    ci::Area windowSize;
     std::recursive_mutex updateMutex;
 
     Graph g;
     std::vector<std::unique_ptr<GraphNodeHandler>> nodeHandlers;
     bool automaticEdgeWeightUpdate = false;
+    bool changed = true;
 
     void drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle);
-
     void drawEdge(int from, int to, double weight = 0.0, bool highlight = false);
     void drawEdges();
     void drawHighlightEdges();

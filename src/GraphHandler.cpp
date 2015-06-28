@@ -24,6 +24,8 @@ void GraphHandler::prepare(ci::app::WindowRef _window)
     cbMouseDown = window->getSignalMouseDown().connect(std::bind(&GraphHandler::mouseDown, this, std::placeholders::_1));
     font = ci::Font("Arial", 22);
     textureFont = ci::gl::TextureFont::create(font);
+    fbo = ci::gl::Fbo(window->getWidth(), window->getHeight(), false);
+    windowSize = window->getBounds();
 }
 
 
@@ -53,6 +55,7 @@ void GraphHandler::addNewEdgeIfNodesSelected()
         g.addEdge(start, end);
         nodeHandlers[start]->clearSelection();
         nodeHandlers[end]->clearSelection();
+        changed = true;
     }
 }
 
@@ -67,7 +70,9 @@ void GraphHandler::updateEdgeWeights()
         {
             auto neighbor = node.getNeighbor(j);
             auto posEnd = nodeHandlers[neighbor]->getPos();
-            node.setEdgeWeight(j, (posStart - posEnd).length());
+            auto newWeight = (posStart - posEnd).length();
+            changed |= (node.getEdgeWeight(j) != newWeight);
+            node.setEdgeWeight(j, newWeight);
         }
     }
 }
@@ -96,6 +101,7 @@ void GraphHandler::recreateNodeHandlers()
         auto pos = ci::Vec2f(ci::Rand::randFloat() * window->getWidth(), ci::Rand::randFloat() * window->getHeight());
         nodeHandlers.emplace_back(new GraphNodeHandler(window, pos));
     }
+    changed = true;
 }
 
 
@@ -107,7 +113,7 @@ void GraphHandler::loadGraph(std::string fileName)
         throw("Cannot open file");
     in >> g;
     recreateNodeHandlers();
-
+    changed = true;
     /*
     auto N = int(sqrt(g.getNodeCount()));
     for (int i = 0; i < N * N; ++i)
@@ -148,6 +154,7 @@ void GraphHandler::loadGraphPositions(std::string fileName)
         in >> y;
         nodeHandlers[idx++]->setPos(ci::Vec2f(x, y));
     }
+    changed = true;
 }
 
 
@@ -186,6 +193,7 @@ void GraphHandler::reorderNodesSquare()
             row++;
         }
     }
+    changed = true;
 }
 
 
@@ -197,26 +205,44 @@ void GraphHandler::mouseDown(ci::app::MouseEvent &event)
         std::unique_lock<std::recursive_mutex> guard(updateMutex);
         nodeHandlers.emplace_back(new GraphNodeHandler(window, event.getPos()));
         g.addNode();
+        changed = true;
     }
 
     event.setHandled(true);
 }
 
+void GraphHandler::resize(ci::Area newWindowSize)
+{
+    float xScale = float(newWindowSize.getWidth()) / windowSize.getWidth();
+    float yScale = float(newWindowSize.getHeight()) / windowSize.getHeight();
+    
+    for (auto &nh : nodeHandlers)
+    {
+        auto pos = nh->getPos();
+        nh->setPos(ci::Vec2f(pos.x * xScale, pos.y * yScale));
+    }
+
+    windowSize = newWindowSize;
+}
+
 
 void GraphHandler::draw()
 {
+    //if (!changed)
+    //    return;
+    
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
-
     if (!guard.try_lock())
         return;
 
-    //ci::gl::Fbo fbo(window->getWidth(), window->getHeight(), true);
     //fbo.bindFramebuffer();
-    //ci::gl::clear(ci::ColorA(0, 0, 0));
+    ci::gl::clear(ci::Color(0, 0, 0));
     drawEdges();
     drawHighlightEdges();
     drawNodes();
     drawHighlightNodes();
+    changed = false;
+    
     //fbo.unbindFramebuffer();
     //ci::gl::draw(fbo.getTexture());
 }
