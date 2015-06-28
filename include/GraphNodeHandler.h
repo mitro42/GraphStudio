@@ -15,7 +15,7 @@ public:
     void mouseDrag(ci::app::MouseEvent &event);
     void mouseDown(ci::app::MouseEvent &event);
     void mouseUp(ci::app::MouseEvent &event);
-    void draw();
+    void draw(bool highlighted = false);
 
     void clearSelection() { selection = none; }
     Selection getSelection() const { return selection; }
