@@ -21,6 +21,7 @@ public:
     void saveGraphPositions(std::string fileName);
 
     void reorderNodesSquare();
+    void reorderNodesGrid(int columns, int rows);
 
     void prepare(ci::app::WindowRef window);
     void update();
@@ -34,7 +35,7 @@ public:
     void setAutomaticEdgeWeightUpdate(bool update) { automaticEdgeWeightUpdate = update; }
 
     void prepareAnimation();
-
+    void generateGrid();
 private:
     ci::app::WindowRef window;
     ci::signals::scoped_connection	cbMouseDown;

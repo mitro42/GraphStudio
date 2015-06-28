@@ -22,11 +22,11 @@ public:
 
     ci::Color edgeColor;
     ci::Color highlightedEdgeColor;    
-
+private:
     Options()
     {
-        nodeSize = 5.0f;
-        arrowLength = 10.0f;
+        nodeSize = 10.0f;
+        arrowLength = 15.0f;
         arrowAngle = 16.0f;
         speed = 60;
         edgeWidth = 1.5f;
@@ -41,7 +41,7 @@ public:
         addEdgeNodeColor = ci::Color("yellow");
     }
 
-
+public:
     ~Options() = default;
 
     static Options &instance() 
@@ -51,4 +51,37 @@ public:
     }
 
 };
+
+
+class GridGraphParams
+{
+public:
+    int columns;
+    int rows;
+    bool directed;
+    bool horizontal;
+    bool vertical;
+    bool upDiagonal;
+    bool downDiagonal;
+private:
+    GridGraphParams()
+    {
+        columns = 3;
+        rows = 3;
+        directed = false;
+        horizontal = true;
+        vertical = true;
+        upDiagonal = true;
+        downDiagonal = true;
+    }
+public:
+    ~GridGraphParams() = default;
+
+    static GridGraphParams &instance()
+    {
+        static GridGraphParams instance;
+        return instance;
+    }
+};
+
 #endif // GRAPHSTUDIO_OPTIONS_H

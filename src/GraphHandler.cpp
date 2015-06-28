@@ -118,21 +118,6 @@ void GraphHandler::loadGraph(std::string fileName)
     in >> g;
     recreateNodeHandlers();
     changed = true;
-    /*
-    auto N = int(sqrt(g.getNodeCount()));
-    for (int i = 0; i < N * N; ++i)
-    {
-        if ((i + 1 <  N * N) && (i % N != N - 1))
-        {
-            g.addEdge(i, i + 1);
-        }
-
-        if (i + N <  N * N)
-        {
-            g.addEdge(i, i + N);
-        }
-    }
-    */
 }
 
 
@@ -175,23 +160,27 @@ void GraphHandler::saveGraphPositions(std::string fileName)
     out << std::flush;
 }
 
-
 void GraphHandler::reorderNodesSquare()
 {
-    std::unique_lock<std::recursive_mutex> guard(updateMutex);
     auto N = int(ceil(sqrt(g.getNodeCount())));
+    reorderNodesGrid(N, N);
+}
+
+void GraphHandler::reorderNodesGrid(int columns, int rows)
+{
+    std::unique_lock<std::recursive_mutex> guard(updateMutex);    
     int row = 0;
     int col = 0;    
     int margin = 100;
     int width = window->getWidth() - (2 * margin);
     int height = window->getHeight() - (2 * margin);
-    float xStep = float(width) / (N - 1);
-    float yStep = float(height) / (N - 1);
+    float xStep = float(width) / (columns - 1);
+    float yStep = float(height) / (rows - 1);
     for (auto &nh: nodeHandlers)
     {
         nh->setPos(ci::Vec2f(margin + col * xStep, margin + row*yStep));
         col++;
-        if (col == N)
+        if (col == columns)
         {
             col = 0;
             row++;
@@ -410,4 +399,74 @@ void GraphHandler::drawAlgorithmState()
     {
         nodeHandlers[i]->draw(nodeHighlight[i]);
     }
+}
+
+void GraphHandler::generateGrid()
+{
+    std::cout << "GraphHandler::generateGrid\n";
+    std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
+    std::cout << "Start...\n";
+    g.clear();
+    const auto &params = GridGraphParams::instance();
+    g.setDirected(params.directed);
+    g.setWeightedEdges(false);
+    g.setWeightedNodes(false);
+    for (int i = 0; i < params.rows; i++)
+    {
+        for (int j = 0; j < params.columns; j++)
+        {
+            g.addNode();
+        }
+    }
+
+    if (params.horizontal)
+    {
+        for (int i = 0; i < params.rows; i++)
+        {
+            for (int j = 0; j < params.columns - 1; j++)
+            {
+                int start = i*params.columns + j;
+                g.addEdge(start, start + 1);
+            }
+        }
+    }
+
+    if (params.vertical)
+    {
+        for (int i = 0; i < params.rows - 1; i++)
+        {
+            for (int j = 0; j < params.columns; j++)
+            {
+                int start = i*params.columns + j;
+                g.addEdge(start, start + params.columns);
+            }
+        }
+    }
+
+    if (params.upDiagonal)
+    {
+        for (int i = 1; i < params.rows; i++)
+        {
+            for (int j = 0; j < params.columns - 1; j++)
+            {
+                int start = i*params.columns + j;
+                g.addEdge(start, start + 1 - params.columns);
+            }
+        }
+    }
+
+    if (params.downDiagonal)
+    {
+        for (int i = 0; i < params.rows - 1; i++)
+        {
+            for (int j = 0; j < params.columns - 1; j++)
+            {
+                int start = i*params.columns + j;
+                g.addEdge(start, start + 1 + params.columns);
+            }
+        }
+    }
+    recreateNodeHandlers();
+    reorderNodesGrid(params.columns, params.rows);
+    std::cout << "End\n";
 }

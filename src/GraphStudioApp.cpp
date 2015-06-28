@@ -44,12 +44,23 @@ void GraphStudioApp::setup()
 
     params->addSeparator();
     params->addParam("Speed", &Options::instance().speed, "min=1.0 max=300.0 step=1.0");
-    params->addSeparator();    
+    params->addSeparator();
     params->addParam("Background", &Options::instance().backgroundColor);
     params->addParam("Node ", &Options::instance().nodeColor);
     params->addParam("Highlighted Node ", &Options::instance().highlightedNodeColor);
     params->addParam("Edge ", &Options::instance().edgeColor);
     params->addParam("Highlighted Edge ", &Options::instance().highlightedEdgeColor);
+    params->addSeparator();
+    params->addText("Generate Grid");
+    params->addParam("Columns", &GridGraphParams::instance().columns, "min=1 step=1");
+    params->addParam("Rows", &GridGraphParams::instance().rows, "min=1 step=1");
+    params->addParam("Directed", &GridGraphParams::instance().directed);
+    params->addParam("Horizontal Edges", &GridGraphParams::instance().horizontal);
+    params->addParam("Vertical Edges", &GridGraphParams::instance().vertical);
+    params->addParam("Diagonal /", &GridGraphParams::instance().upDiagonal);
+    params->addParam("Diagonal \\", &GridGraphParams::instance().downDiagonal);
+    params->addButton("Generate", std::bind(&GraphHandler::generateGrid, &gh));
+
     gh.prepare(getWindow());
 
 }
