@@ -3,10 +3,9 @@
 #include "cinder/Rect.h"
 #include "Options.h"
 
-GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, ci::Vec2f pos) : window(window), selection(none)
+GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, ci::Vec2f pos) : window(window), position(pos), selection(none)
 {
     float half = Options::instance().nodeSize / 2;
-    rect = ci::Rectf(pos + ci::Vec2f(-half, -half), pos + ci::Vec2f(half, half));
 
     cbMouseDown = window->getSignalMouseDown().connect(0, std::bind(&GraphNodeHandler::mouseDown, this, std::placeholders::_1));
     cbMouseUp = window->getSignalMouseUp().connect(0, std::bind(&GraphNodeHandler::mouseUp, this, std::placeholders::_1));
@@ -19,7 +18,7 @@ void GraphNodeHandler::mouseDrag(ci::app::MouseEvent &event)
 {
     if (selection == move)
     {
-        rect.offsetCenterTo(event.getPos());
+        position = event.getPos();
     }
     event.setHandled(selection == move);
 }
@@ -27,7 +26,7 @@ void GraphNodeHandler::mouseDrag(ci::app::MouseEvent &event)
 
 void GraphNodeHandler::mouseDown(ci::app::MouseEvent &event)
 {
-    if (rect.contains(event.getPos()))
+    if ((position - event.getPos()).length() < Options::instance().nodeSize)
     {
         if (event.isAltDown())
         {
@@ -77,5 +76,5 @@ void GraphNodeHandler::draw()
         ci::gl::color(Options::instance().nodeColor);
         break;
     }
-    ci::gl::drawSolidCircle(rect.getCenter(), Options::instance().nodeSize);
+    ci::gl::drawSolidCircle(position, Options::instance().nodeSize);
 }

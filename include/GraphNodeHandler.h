@@ -19,8 +19,8 @@ public:
 
     void clearSelection() { selection = none; }
     Selection getSelection() const { return selection; }
-    ci::Vec2f getPos() const { return rect.getCenter(); }
-    void setPos(ci::Vec2f pos) { rect.offsetCenterTo(pos); }
+    ci::Vec2f getPos() const { return position; }
+    void setPos(ci::Vec2f pos) { position = pos; }
 
 private:
     ci::signals::scoped_connection cbMouseDrag;
@@ -28,7 +28,7 @@ private:
     ci::signals::scoped_connection cbMouseUp;
     ci::app::WindowRef window;
 
-    ci::Rectf rect;
+    ci::Vec2f position;
     Selection selection;
 };
 

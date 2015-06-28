@@ -313,17 +313,6 @@ void GraphHandler::drawHighlightEdges()
             continue;
         drawEdge(from, i, tree[i].first - tree[from].first, true);
     }
-
-
-    /*
-    for (const auto &e : edges)
-    {
-    if (e.first % 3 == 0)
-    {
-
-    }
-    }
-    */
 }
 
 

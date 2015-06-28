@@ -22,7 +22,7 @@ public:
     {
         nodeSize = 5.0f;
         arrowLength = 10.0f;
-        arrowAngle = 30.0f;
+        arrowAngle = 16.0f;
         speed = 1.0f;
         nodeColor = ci::Color("red");
         edgeColor = ci::Color("green");
