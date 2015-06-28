@@ -7,7 +7,8 @@ class Options
 {
 public:
     float nodeSize;
-    float arrowSize;
+    float arrowLength;
+    float arrowAngle;
     float speed;
     ci::Color nodeColor;
     ci::Color highlightedNodeColor;
@@ -20,7 +21,8 @@ public:
     Options()
     {
         nodeSize = 5.0f;
-        arrowSize = 5.0f;
+        arrowLength = 10.0f;
+        arrowAngle = 30.0f;
         speed = 1.0f;
         nodeColor = ci::Color("red");
         edgeColor = ci::Color("green");

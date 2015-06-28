@@ -43,6 +43,8 @@ private:
     std::vector<std::unique_ptr<GraphNodeHandler>> nodeHandlers;
     bool automaticEdgeWeightUpdate = false;
 
+    void drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle);
+
     void drawEdge(int from, int to, double weight = 0.0, bool highlight = false);
     void drawEdges();
     void drawHighlightEdges();

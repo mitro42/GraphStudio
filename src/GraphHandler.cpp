@@ -234,6 +234,16 @@ void GraphHandler::drawEdges()
     }
 }
 
+void GraphHandler::drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle)
+{
+    ci::gl::drawLine(from, to);
+    ci::Vec2f dir = (to - from).normalized();
+    dir.rotate(ci::toRadians(headAngle));
+    ci::gl::drawLine(to, to - dir*headLength);
+    dir.rotate(ci::toRadians(-2*headAngle));
+    ci::gl::drawLine(to, to - dir*headLength);
+}
+
 
 void GraphHandler::drawEdge(int from, int to, double weight, bool highlight)
 {
@@ -259,9 +269,8 @@ void GraphHandler::drawEdge(int from, int to, double weight, bool highlight)
     {
         ci::Vec2f dir = toVec - fromVec;
         dir.normalize();
-        ci::gl::drawVector(ci::Vec3f(fromVec, 0), 
-            ci::Vec3f(toVec - (Options::instance().nodeSize + Options::instance().arrowSize) * dir, 0), 
-            Options::instance().arrowSize, -5);
+        drawArrow(fromVec, toVec - Options::instance().nodeSize * dir, 
+            Options::instance().arrowLength, Options::instance().arrowAngle);
     }
     else
     {
