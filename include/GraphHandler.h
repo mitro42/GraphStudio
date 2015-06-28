@@ -33,6 +33,8 @@ public:
     bool getAutomaticEdgeWeightUpdate() const { return automaticEdgeWeightUpdate; }
     void setAutomaticEdgeWeightUpdate(bool update) { automaticEdgeWeightUpdate = update; }
 
+    void prepareAnimation();
+
 private:
     ci::app::WindowRef window;
     ci::signals::scoped_connection	cbMouseDown;
@@ -47,12 +49,18 @@ private:
     bool automaticEdgeWeightUpdate = false;
     bool changed = true;
 
+    int animationState;
+    int framesSpentInState;
+    std::vector<std::pair<std::vector<std::pair<double, int>>, std::set<std::pair<double, int>>>> edgeWeightDijkstraStates;
+
     void drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle);
     void drawEdge(int from, int to, double weight = 0.0, bool highlight = false);
     void drawEdges();
     void drawHighlightEdges();
     void drawNodes();
     void drawHighlightNodes();
+
+    void drawAlgorithmState();
 
     void recreateNodeHandlers();
     void addNewEdgeIfNodesSelected();

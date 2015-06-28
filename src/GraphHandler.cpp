@@ -24,7 +24,11 @@ void GraphHandler::prepare(ci::app::WindowRef _window)
     cbMouseDown = window->getSignalMouseDown().connect(std::bind(&GraphHandler::mouseDown, this, std::placeholders::_1));
     font = ci::Font("Arial", 22);
     textureFont = ci::gl::TextureFont::create(font);
-    fbo = ci::gl::Fbo(window->getWidth(), window->getHeight(), false);
+    ci::gl::Fbo::Format format;
+    format.enableColorBuffer();
+    format.setSamples( 4 );
+    format.enableMipmapping();
+    fbo = ci::gl::Fbo(window->getWidth(), window->getHeight(), format);
     windowSize = window->getBounds();
 }
 
@@ -236,11 +240,28 @@ void GraphHandler::draw()
         return;
 
     //fbo.bindFramebuffer();
-    ci::gl::clear(ci::Color(0, 0, 0));
-    drawEdges();
-    drawHighlightEdges();
-    drawNodes();
-    drawHighlightNodes();
+    ci::gl::clear(Options::instance().backgroundColor);
+    if (Options::instance().animationPlaying)
+    {
+        drawEdges();        
+        drawNodes();
+        drawAlgorithmState();
+        if (animationState < edgeWeightDijkstraStates.size()-1)
+        {
+            framesSpentInState++;
+            if (framesSpentInState % Options::instance().speed == 0)
+                animationState++;
+        }
+    }
+    else
+    {
+        drawEdges();
+        drawHighlightEdges();
+        drawNodes();
+        drawHighlightNodes();
+    }
+
+    
     changed = false;
     
     //fbo.unbindFramebuffer();
@@ -279,12 +300,12 @@ void GraphHandler::drawEdge(int from, int to, double weight, bool highlight)
     // Setting the parameters
     if (highlight)
     {
-        ci::gl::lineWidth(2);
+        ci::gl::lineWidth(Options::instance().highlighedEdgeWidth);
         ci::gl::color(Options::instance().highlightedEdgeColor);
     }
     else
     {
-        ci::gl::lineWidth(1);
+        ci::gl::lineWidth(Options::instance().edgeWidth);
         ci::gl::color(Options::instance().edgeColor);
     }
 
@@ -353,4 +374,40 @@ void GraphHandler::drawNodes()
 
 void GraphHandler::drawHighlightNodes()
 {
+}
+
+
+void GraphHandler::prepareAnimation()
+{
+    edgeWeightDijkstraStates = edgeWeightDijkstraCaptureStates(g, 0, -1);
+    animationState = 0;
+    framesSpentInState = 0;
+}
+
+void GraphHandler::drawAlgorithmState()
+{
+    auto state = edgeWeightDijkstraStates[animationState];
+    auto tree = state.first;
+    auto q = state.second;
+
+    for (int i = 0; i < int(tree.size()); ++i)
+    {
+        auto from = tree[i].second;
+        if (from == -1)
+            continue;
+        if (from == i)
+            continue;
+        drawEdge(from, i, tree[i].first - tree[from].first, true);
+    }
+
+    std::vector<bool> nodeHighlight(g.getNodeCount(), false);
+    for (auto &p : q)
+    {
+        nodeHighlight[p.second] = true;
+    }
+
+    for (int i = 0; i < g.getNodeCount(); ++i)
+    {
+        nodeHandlers[i]->draw(nodeHighlight[i]);
+    }
 }

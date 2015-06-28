@@ -2,6 +2,7 @@
 #define _PROJECT_EULER_GRAPH_H
 #include <cstdint>
 #include <vector>
+#include <set>
 
 class Graph;
 
@@ -93,6 +94,14 @@ private:
 
 std::vector<std::pair<double, int>> nodeWeightDijkstra(const Graph &g, int startNode, int endNode);
 std::vector<std::pair<double, int>> edgeWeightDijkstra(const Graph &g, int startNode, int endNode);
+
+
+// Returns a vector of states of the search. First of the pair is the 
+// states = edgeWeightDijkstraCaptureStates(...)
+// states[i].first == the current best paths as in the original result of edgeWeightDijkstra
+// states[i].second == the open node set (q) during the run after the i-th step
+std::vector<std::pair<std::vector<std::pair<double, int>>, std::set<std::pair<double, int>>>>
+    edgeWeightDijkstraCaptureStates(const Graph &g, int startNode, int endNode);
 
 std::istream &operator>>(std::istream &is, Graph &g);
 std::ostream &operator<<(std::ostream &os, const Graph &g);
