@@ -20,7 +20,7 @@ public:
     void resize() override;
 private:
     ci::params::InterfaceGlRef	params;
-
+    
     GraphHandler gh;
 };
 
@@ -36,12 +36,16 @@ void GraphStudioApp::prepareSettings(Settings *settings)
 void GraphStudioApp::setup()
 {
     params = params::InterfaceGl::create("Graph Studio", Vec2i(200, 310));
-    params->addParam("Node Size", &Options::instance().nodeSize, "min=1.0 max=50.0 step=1.0 keyIncr=n keyDecr=N");
-    params->addParam("Arrow Length", &Options::instance().arrowLength, "min=1.0 max=50.0 step=1.0 keyIncr=n keyDecr=N");
-    params->addParam("Arrow Angle", &Options::instance().arrowAngle, "min=0.0 max=90.0 step=1.0 keyIncr=n keyDecr=N");
+    params->addParam("Node Size", &Options::instance().nodeSize, "min=1.0 max=50.0 step=1.0");
+    params->addParam("Edge Width", &Options::instance().edgeWidth, "min=0.0 max=10.0 step=0.1");
+    params->addParam("Highlighted Edge Width", &Options::instance().highlighedEdgeWidth, "min=0.0 max=10.0 step=0.1");
+    params->addParam("Arrow Length", &Options::instance().arrowLength, "min=1.0 max=50.0 step=1.0");
+    params->addParam("Arrow Angle", &Options::instance().arrowAngle, "min=0.0 max=90.0 step=1.0");
+
     params->addSeparator();
-    params->addParam("Speed", &Options::instance().speed, "min=100.0 max=2000.0 step=50.0 keyIncr=s keyDecr=w");
-    params->addSeparator();
+    params->addParam("Speed", &Options::instance().speed, "min=1.0 max=300.0 step=1.0");
+    params->addSeparator();    
+    params->addParam("Background", &Options::instance().backgroundColor);
     params->addParam("Node ", &Options::instance().nodeColor);
     params->addParam("Highlighted Node ", &Options::instance().highlightedNodeColor);
     params->addParam("Edge ", &Options::instance().edgeColor);
@@ -52,6 +56,12 @@ void GraphStudioApp::setup()
 
 void GraphStudioApp::keyDown(KeyEvent event)
 {
+    if (event.getCode() == KeyEvent::KEY_SPACE)
+    {
+        Options::instance().animationPlaying = !Options::instance().animationPlaying;
+        gh.prepareAnimation();
+        return;
+    }
     if (event.getChar() == 's')
     {
         std::cout << "Saving graph..." << std::endl;
@@ -62,8 +72,8 @@ void GraphStudioApp::keyDown(KeyEvent event)
     if (event.getChar() == 'l')
     {
         std::cout << "Loading graph..." << std::endl;
-        gh.loadGraph("graphPE81.txt");
-        gh.loadGraphPositions("graphPE81.pos");
+        gh.loadGraph("graph.txt");
+        gh.loadGraphPositions("graph.pos");
         std::cout << "Done" << std::endl;
     }
     if (event.getChar() == 'u')
