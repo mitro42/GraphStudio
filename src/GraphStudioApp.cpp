@@ -21,6 +21,7 @@ public:
     void resize() override;
 private:
     ci::params::InterfaceGlRef	params;
+    qtime::MovieWriterRef	mMovieWriter;
     
     GraphHandler gh;
 };
@@ -65,6 +66,15 @@ void GraphStudioApp::setup()
     params->addButton("Generate", std::bind(&GraphHandler::generateGrid, &gh));
 
     gh.prepare(getWindow());
+    /*
+    fs::path path = getSaveFilePath();
+    if (path.empty())
+        return; // user cancelled save
+    qtime::MovieWriter::Format format;
+    if (qtime::MovieWriter::getUserCompressionSettings(&format)) {
+        mMovieWriter = qtime::MovieWriter::create(path, getWindowWidth(), getWindowHeight(), format);
+    }
+    */
 }
 
 void GraphStudioApp::keyDown(KeyEvent event)
@@ -124,6 +134,10 @@ void GraphStudioApp::draw()
 	gl::clear( Color( 0, 0, 0 ) ); 
     gh.draw();
     params->draw();
+    /*
+    if (mMovieWriter)
+        mMovieWriter->addFrame(copyWindowSurface());
+    */
 }
 
 void GraphStudioApp::resize()
