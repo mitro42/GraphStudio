@@ -2,6 +2,7 @@
 #include "cinder/Color.h"
 #include "cinder/gl/gl.h"
 #include "cinder/params/Params.h"
+#include "cinder/qtime/MovieWriter.h"
 #include "GraphHandler.h"
 #include "Options.h"
 
@@ -42,7 +43,9 @@ void GraphStudioApp::setup()
     params->addParam("Arrow Length", &Options::instance().arrowLength, "min=1.0 max=50.0 step=1.0");
     params->addParam("Arrow Angle", &Options::instance().arrowAngle, "min=0.0 max=90.0 step=1.0");
 
+    
     params->addSeparator();
+    params->addParam("Force", &Options::instance().force, "min=1.0 max=300.0 step=1.0");
     params->addParam("Speed", &Options::instance().speed, "min=1.0 max=300.0 step=1.0");
     params->addSeparator();
     params->addParam("Background", &Options::instance().backgroundColor);
@@ -62,7 +65,6 @@ void GraphStudioApp::setup()
     params->addButton("Generate", std::bind(&GraphHandler::generateGrid, &gh));
 
     gh.prepare(getWindow());
-
 }
 
 void GraphStudioApp::keyDown(KeyEvent event)

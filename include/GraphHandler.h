@@ -22,12 +22,17 @@ public:
 
     void reorderNodesSquare();
     void reorderNodesGrid(int columns, int rows);
+    void pushNodes(ci::Vec2f position, float force);
+    void pushNodes(ci::Vec2f position);
+    void pullNodes(ci::Vec2f position);
 
     void prepare(ci::app::WindowRef window);
     void update();
     void setup();
     void draw();
     void mouseDown(ci::app::MouseEvent &event);
+    void mouseDrag(ci::app::MouseEvent &event);
+    void mouseUp(ci::app::MouseEvent &event);
     void resize(ci::Area newWindowSize);
 
     void toggleAutomaticEdgeWeightUpdate() { automaticEdgeWeightUpdate = !automaticEdgeWeightUpdate; }
@@ -37,8 +42,15 @@ public:
     void prepareAnimation();
     void generateGrid();
 private:
+    enum Force{
+        none = 0,
+        push = 1,
+        pull = 2
+    };
     ci::app::WindowRef window;
     ci::signals::scoped_connection	cbMouseDown;
+    ci::signals::scoped_connection	cbMouseDrag;
+    ci::signals::scoped_connection	cbMouseUp;
     ci::Font font;
     ci::gl::TextureFontRef textureFont;
     ci::gl::Fbo fbo;
@@ -49,6 +61,7 @@ private:
     std::vector<std::unique_ptr<GraphNodeHandler>> nodeHandlers;
     bool automaticEdgeWeightUpdate = false;
     bool changed = true;
+    Force forceType;
 
     int animationState;
     int framesSpentInState;

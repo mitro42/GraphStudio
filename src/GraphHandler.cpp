@@ -8,7 +8,7 @@
 
 #include "Options.h"
 
-GraphHandler::GraphHandler() : g(true)
+GraphHandler::GraphHandler() : g(true), forceType(none)
 {
 
 }
@@ -22,6 +22,8 @@ void GraphHandler::prepare(ci::app::WindowRef _window)
 {
     window = _window;
     cbMouseDown = window->getSignalMouseDown().connect(std::bind(&GraphHandler::mouseDown, this, std::placeholders::_1));
+    cbMouseDrag = window->getSignalMouseDrag().connect(std::bind(&GraphHandler::mouseDrag, this, std::placeholders::_1));
+    cbMouseUp = window->getSignalMouseUp().connect(std::bind(&GraphHandler::mouseUp, this, std::placeholders::_1));
     font = ci::Font("Arial", 22);
     textureFont = ci::gl::TextureFont::create(font);
     ci::gl::Fbo::Format format;
@@ -29,7 +31,7 @@ void GraphHandler::prepare(ci::app::WindowRef _window)
     format.setSamples( 4 );
     format.enableMipmapping();
     fbo = ci::gl::Fbo(window->getWidth(), window->getHeight(), format);
-    windowSize = window->getBounds();
+    windowSize = window->getBounds();    
 }
 
 
@@ -190,6 +192,51 @@ void GraphHandler::reorderNodesGrid(int columns, int rows)
 }
 
 
+void GraphHandler::pushNodes(ci::Vec2f position, float force)
+{
+    for (auto &nh : nodeHandlers)
+    {
+        auto nodePosition = nh->getPos();
+        auto forceVect = (position - nodePosition);
+        nodePosition += forceVect.normalized() * (force / forceVect.lengthSquared()) * 10;
+        nh->setPos(nodePosition);
+    }
+}
+
+
+void GraphHandler::pushNodes(ci::Vec2f position)
+{
+    pushNodes(position, Options::instance().force);
+}
+
+
+void GraphHandler::pullNodes(ci::Vec2f position)
+{
+    pushNodes(position, -Options::instance().force);
+}
+
+void GraphHandler::mouseDrag(ci::app::MouseEvent &event)
+{
+    if (forceType != none)
+    {
+        std::unique_lock<std::recursive_mutex> guard(updateMutex);
+        if (forceType == push)
+        {
+            pushNodes(event.getPos());
+        }
+        else if (forceType == pull)
+        {
+            pullNodes(event.getPos());
+        }
+    }
+}
+
+
+void GraphHandler::mouseUp(ci::app::MouseEvent &event)
+{
+    forceType = none;
+    //event.setHandled(true);
+}
 
 void GraphHandler::mouseDown(ci::app::MouseEvent &event)
 {
@@ -199,6 +246,18 @@ void GraphHandler::mouseDown(ci::app::MouseEvent &event)
         nodeHandlers.emplace_back(new GraphNodeHandler(window, event.getPos()));
         g.addNode();
         changed = true;
+    }
+
+    if (event.isAltDown())
+    {
+        if (event.isLeftDown())
+        {
+            forceType = push;
+        }
+        else if (event.isRightDown())
+        {
+            forceType = pull;
+        }
     }
 
     event.setHandled(true);
