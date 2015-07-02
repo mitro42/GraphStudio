@@ -55,7 +55,7 @@ public:
 };
 
 
-class GridGraphParams
+class GraphParamsGrid
 {
 public:
     int columns;
@@ -66,7 +66,7 @@ public:
     bool upDiagonal;
     bool downDiagonal;
 private:
-    GridGraphParams()
+    GraphParamsGrid()
     {
         columns = 3;
         rows = 3;
@@ -77,11 +77,33 @@ private:
         downDiagonal = true;
     }
 public:
-    ~GridGraphParams() = default;
+    ~GraphParamsGrid() = default;
 
-    static GridGraphParams &instance()
+    static GraphParamsGrid &instance()
     {
-        static GridGraphParams instance;
+        static GraphParamsGrid instance;
+        return instance;
+    }
+};
+
+
+class GraphParamsTriangleMesh
+{
+public:
+    int triangles;
+    float randomness;
+private:
+    GraphParamsTriangleMesh()
+    {
+        triangles = 50;
+        randomness = 0.0f;
+    }
+public:
+    ~GraphParamsTriangleMesh() = default;
+
+    static GraphParamsTriangleMesh &instance()
+    {
+        static GraphParamsTriangleMesh instance;
         return instance;
     }
 };

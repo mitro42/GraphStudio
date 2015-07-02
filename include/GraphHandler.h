@@ -41,6 +41,7 @@ public:
 
     void prepareAnimation();
     void generateGrid();
+    void generateTriangleMesh();
 private:
     enum Force{
         none = 0,
@@ -77,6 +78,7 @@ private:
     void drawAlgorithmState();
 
     void recreateNodeHandlers();
+    void recreateNodeHandlers(const std::vector<ci::Vec2f> &nodePositions);
     void addNewEdgeIfNodesSelected();
     void updateEdgeWeights();
 };

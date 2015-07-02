@@ -56,15 +56,18 @@ void GraphStudioApp::setup()
     params->addParam("Highlighted Edge ", &Options::instance().highlightedEdgeColor);
     params->addSeparator();
     params->addText("Generate Grid");
-    params->addParam("Columns", &GridGraphParams::instance().columns, "min=1 step=1");
-    params->addParam("Rows", &GridGraphParams::instance().rows, "min=1 step=1");
-    params->addParam("Directed", &GridGraphParams::instance().directed);
-    params->addParam("Horizontal Edges", &GridGraphParams::instance().horizontal);
-    params->addParam("Vertical Edges", &GridGraphParams::instance().vertical);
-    params->addParam("Diagonal /", &GridGraphParams::instance().upDiagonal);
-    params->addParam("Diagonal \\", &GridGraphParams::instance().downDiagonal);
+    params->addParam("Columns", &GraphParamsGrid::instance().columns, "min=1 step=1");
+    params->addParam("Rows", &GraphParamsGrid::instance().rows, "min=1 step=1");
+    params->addParam("Directed", &GraphParamsGrid::instance().directed);
+    params->addParam("Horizontal Edges", &GraphParamsGrid::instance().horizontal);
+    params->addParam("Vertical Edges", &GraphParamsGrid::instance().vertical);
+    params->addParam("Diagonal /", &GraphParamsGrid::instance().upDiagonal);
+    params->addParam("Diagonal \\", &GraphParamsGrid::instance().downDiagonal);
     params->addButton("Generate", std::bind(&GraphHandler::generateGrid, &gh));
-
+    params->addText("Generate Triangle Mesh");
+    params->addParam("Triangles", &GraphParamsTriangleMesh::instance().triangles, "min=1 step=1");
+    params->addParam("Randomness", &GraphParamsTriangleMesh::instance().randomness, "min=0.0 step=0.1");
+    params->addButton("Generate tri", std::bind(&GraphHandler::generateTriangleMesh, &gh));
     gh.prepare(getWindow());
     /*
     fs::path path = getSaveFilePath();
