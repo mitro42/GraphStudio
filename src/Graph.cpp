@@ -4,6 +4,8 @@
 #include <numeric>
 #include <set>
 #include <vector>
+#include <map>
+#include <functional>
 
 /////////////////////////////////////////////////////
 //  Node of Graph
@@ -13,7 +15,7 @@
 void GraphNode::removeNeighbor(int to)
 {
     auto neighborIt = std::find(neighbors.begin(), neighbors.end(), to);
-    auto edgeWeightIt = edgeWeights.begin() + (neighborIt - neighbors.end());
+    auto edgeWeightIt = edgeWeights.begin() + (neighborIt - neighbors.begin());
     std::swap(*neighborIt, *neighbors.rbegin());
     std::swap(*edgeWeightIt, *edgeWeights.rbegin());
     neighbors.erase(neighbors.end() - 1, neighbors.end());
@@ -77,10 +79,13 @@ void Graph::clear()
 }
 
 
-/////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Graph algorithms
-/////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////
+//  DIJKSTRA
+/////////////////////////////////////////////////////
 
 std::vector<std::pair<double, int>> nodeWeightDijkstra(const Graph &g, int startNode, int endNode)
 {
@@ -160,8 +165,6 @@ std::vector<std::pair<double, int>> edgeWeightDijkstra(const Graph &g, int start
 }
 
 
-
-
 std::vector<std::pair<std::vector<std::pair<double, int>>, std::set<std::pair<double, int>>>> 
 edgeWeightDijkstraCaptureStates(const Graph &g, int startNode, int endNode)
 {
@@ -203,6 +206,150 @@ edgeWeightDijkstraCaptureStates(const Graph &g, int startNode, int endNode)
     }
     return states;
 }
+
+
+
+/////////////////////////////////////////////////////
+//  PRIM
+/////////////////////////////////////////////////////
+
+
+
+std::vector<GraphEdge> mstPrim(const Graph &g, int startNode)
+{
+    std::vector<GraphEdge> mst;
+    if (g.getNodeCount() == 0)
+        return mst;
+
+    std::vector<bool> visited(g.getNodeCount(), false);
+    std::set<GraphEdge> edges;
+
+    visited[startNode] = true;
+    const auto &node = g.getNode(startNode);
+    for (int neighborIdx = 0; neighborIdx < node.getNeighborCount(); ++neighborIdx)
+    {
+        edges.emplace(node.getEdgeWeight(neighborIdx), startNode, node.getNeighbor(neighborIdx));
+    }
+    int nodeCount = 1;
+
+    while (nodeCount != g.getNodeCount() && !edges.empty())
+    {
+        GraphEdge nextEdge = *edges.begin();
+        edges.erase(edges.begin());
+        if (visited[nextEdge.from] && visited[nextEdge.to])
+            continue;
+        if (!visited[nextEdge.from] && !visited[nextEdge.to])
+            throw("Edge is not connected to MST");
+
+        int newNode = nextEdge.from;
+        if (visited[newNode])
+            newNode = nextEdge.to;
+        mst.push_back(nextEdge);
+        visited[newNode] = true;
+        const auto &node = g.getNode(newNode);
+        for (int neighborIdx = 0; neighborIdx < node.getNeighborCount(); ++neighborIdx)
+        {
+            int otherEnd = node.getNeighbor(neighborIdx);
+            if (visited[otherEnd])
+                continue;
+            edges.emplace(node.getEdgeWeight(neighborIdx), newNode, otherEnd);
+        }
+        nodeCount++;
+    }
+
+    return mst;
+}
+
+/////////////////////////////////////////////////////
+//  PRIM
+/////////////////////////////////////////////////////
+
+class UnionFind
+{
+public:
+    UnionFind(int n) : id(n), weight(n, 1)
+    {
+        for (int i = 0; i < n; ++i)
+            id[i] = i;
+    }
+
+    int root(int idx)
+    {
+        while (idx != id[idx])
+        {
+            id[idx] = id[id[idx]];
+            idx = id[idx];
+        }
+        return idx;
+    }
+
+    void join(int a, int b)
+    {
+        int p = root(a);
+        int q = root(b);
+
+        if (p != q)
+        {
+            if (weight[p] > weight[q]) std::swap(p, q);
+
+            id[p] = id[q];
+            weight[q] += weight[p];
+        }
+    }
+
+    bool same(int a, int b)
+    {
+        return root(a) == root(b);
+    }
+
+    void print()
+    {
+        for (const auto& a : id)
+            std::cout << a << " ";
+        std::cout << std::endl;
+        for (const auto& a : weight)
+            std::cout << a << " ";
+        std::cout << std::endl << std::endl;
+    }
+
+private:
+    std::vector<int> id;
+    std::vector<int> weight;
+};
+
+std::vector<GraphEdge> mstKruskal(const Graph &g)
+{
+    std::vector<GraphEdge> mst;
+    if (g.getNodeCount() == 0)
+        return mst;
+
+    UnionFind uf(g.getNodeCount());
+    std::set<GraphEdge> edges;
+
+    for (int idx = 0; idx < g.getNodeCount(); ++idx)
+    {
+        auto &node = g.getNode(idx);
+        for (int neighborIdx = 0; neighborIdx < node.getNeighborCount(); ++neighborIdx)
+        {
+            edges.emplace(node.getEdgeWeight(neighborIdx), idx, node.getNeighbor(neighborIdx));
+        }
+    }
+
+    while (!edges.empty())
+    {
+        GraphEdge nextEdge = *edges.begin();
+        edges.erase(edges.begin());
+        if (uf.same(nextEdge.from, nextEdge.to))
+            continue;
+
+        uf.join(nextEdge.from, nextEdge.to);
+        mst.push_back(nextEdge);
+    }
+
+    return mst;
+}
+
+
 /////////////////////////////////////////////////////
 //  Input / Output
 /////////////////////////////////////////////////////
@@ -324,3 +471,6 @@ std::ostream &operator<<(std::ostream &os, const Graph &g)
 
     return os;
 }
+
+
+

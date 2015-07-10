@@ -75,7 +75,7 @@ private:
     void drawNodes();
     void drawHighlightNodes();
 
-    void drawAlgorithmState();
+    void drawAlgorithmStateDijkstra();
 
     void recreateNodeHandlers();
     void recreateNodeHandlers(const std::vector<ci::Vec2f> &nodePositions);

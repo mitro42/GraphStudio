@@ -5,8 +5,11 @@
 #include "cinder/gl/TextureFont.h"
 #include "cinder/CinderMath.h"
 #include <fstream>
-
+#include <string>
 #include "Options.h"
+
+
+const int startNode = 16;
 
 GraphHandler::GraphHandler() : g(true), forceType(none)
 {
@@ -24,7 +27,7 @@ void GraphHandler::prepare(ci::app::WindowRef _window)
     cbMouseDown = window->getSignalMouseDown().connect(std::bind(&GraphHandler::mouseDown, this, std::placeholders::_1));
     cbMouseDrag = window->getSignalMouseDrag().connect(std::bind(&GraphHandler::mouseDrag, this, std::placeholders::_1));
     cbMouseUp = window->getSignalMouseUp().connect(std::bind(&GraphHandler::mouseUp, this, std::placeholders::_1));
-    font = ci::Font("Arial", 22);
+    font = ci::Font("Arial", 32);
     textureFont = ci::gl::TextureFont::create(font);
     ci::gl::Fbo::Format format;
     format.enableColorBuffer();
@@ -129,7 +132,49 @@ void GraphHandler::loadGraph(std::string fileName)
     std::ifstream in(fileName);
     if (!in.good())
         throw("Cannot open file");
+    /*
     in >> g;
+    */
+    int N, M;
+    in >> N >> M;
+    g.clear();
+    g.setDirected(false);
+    g.resize(N);
+    g.setWeightedEdges(true);
+    for (int i = 0; i < M; i++)
+    {
+        int a, b, w;
+        in >> a >> b >> w;
+        g.addEdge(a - 1, b - 1, w);
+    }
+    /*
+    int N;
+    g.clear();
+    in >> N;
+    g.resize(N + 1);
+    g.setWeightedNodes(true);
+    g.setWeightedEdges(false);
+    for (int i = 0; i < N + 1; i++)
+    {
+        int deg;
+        in >> deg;
+        for (int d = 0; d < deg; d++)
+        {
+            int to;
+            in >> to;
+            g.addEdge(to - 1, i); // reverse the edges
+        }
+        g.getNode(i).setWeight(i+1);
+    }
+
+    for (int i = 0; i < N; i++)
+    {
+        float weight;
+        in >> weight;
+        g.getNode(i).setWeight(weight);
+    }   
+    */
+
     recreateNodeHandlers();
     changed = true;
 }
@@ -305,7 +350,7 @@ void GraphHandler::draw()
     {
         drawEdges();        
         drawNodes();
-        drawAlgorithmState();
+        drawAlgorithmStateDijkstra();
         if (animationState < edgeWeightDijkstraStates.size()-1)
         {
             framesSpentInState++;
@@ -408,8 +453,13 @@ void GraphHandler::drawEdge(int from, int to, double weight, bool highlight)
 
 void GraphHandler::drawHighlightEdges()
 {
-
-    auto tree = edgeWeightDijkstra(g, 0, -1);
+    auto edges = mstKruskal(g);
+    for (const auto &e : edges)
+    {
+        drawEdge(e.from, e.to, e.weight, true);
+    }
+    /*
+    auto tree = edgeWeightDijkstra(g, startNode, -1);
 
     for (int i = 0; i < int(tree.size()); ++i)
     {
@@ -420,6 +470,7 @@ void GraphHandler::drawHighlightEdges()
             continue;
         drawEdge(from, i, tree[i].first - tree[from].first, true);
     }
+    */
 }
 
 
@@ -428,6 +479,11 @@ void GraphHandler::drawNodes()
     for (auto &nh : nodeHandlers)
     {
         nh->draw();
+    }
+    for (int i = 0; i < g.getNodeCount(); ++i)
+    {
+        ci::gl::color(ci::Color::white());
+        textureFont->drawString(std::to_string(i+1), nodeHandlers[i]->getPos());
     }
 }
 
@@ -439,12 +495,12 @@ void GraphHandler::drawHighlightNodes()
 
 void GraphHandler::prepareAnimation()
 {
-    edgeWeightDijkstraStates = edgeWeightDijkstraCaptureStates(g, 0, -1);
+    edgeWeightDijkstraStates = edgeWeightDijkstraCaptureStates(g, startNode, -1);
     animationState = 0;
     framesSpentInState = 0;
 }
 
-void GraphHandler::drawAlgorithmState()
+void GraphHandler::drawAlgorithmStateDijkstra()
 {
     auto state = edgeWeightDijkstraStates[animationState];
     auto tree = state.first;
@@ -545,8 +601,17 @@ void GraphHandler::generateGrid()
 
 void GraphHandler::generateTriangleMesh()
 {
-    std::vector<std::pair<int, int>> outerEdges;
-    std::vector<ci::Vec2f> nodePositions;
+    /*
+    struct Edge{
+        int from = 0;
+        int to = 0;
+        bool right = true;
+        Edge() = default;
+        Edge(int from, int to, bool right) : from(from), to(to), right(right) {}
+    };
+
+    //std::vector<Edge> outerEdges;
+    //std::vector<ci::Vec2f> nodePositions;
     ci::randSeed(42);
     g.setDirected(false);
     g.setWeightedEdges(false);
@@ -555,7 +620,7 @@ void GraphHandler::generateTriangleMesh()
     g.addNode();
     g.addNode();
     g.addEdge(0, 1);
-    outerEdges.emplace_back(0, 1);
+    outerEdges.emplace_back(0, 1, true);
     ci::Vec2f center(window->getWidth() / 2, window->getHeight() / 2);
     ci::Vec2f centerOffset = ci::randVec2f() * 25;
     nodePositions.push_back(center + centerOffset);
@@ -565,18 +630,19 @@ void GraphHandler::generateTriangleMesh()
         int edgeIdx = ci::randInt(outerEdges.size());
         auto edge = outerEdges[edgeIdx];
         int newIdx = g.addNode();
-        g.addEdge(newIdx, edge.first);
-        g.addEdge(newIdx, edge.second);
-        outerEdges.emplace_back(newIdx, edge.first);
-        outerEdges.emplace_back(newIdx, edge.second);
+        g.addEdge(newIdx, edge.from);
+        g.addEdge(newIdx, edge.to);
+        outerEdges.emplace_back(newIdx, edge.from, false);
+        outerEdges.emplace_back(newIdx, edge.to, false);
         size_t size = outerEdges.size();
         std::swap(outerEdges[edgeIdx], outerEdges[size-1]);
         outerEdges.resize(size - 1);
-        ci::Vec2f offset = (nodePositions[edge.first] - nodePositions[edge.second]).normalized();
+        ci::Vec2f offset = (nodePositions[edge.from] - nodePositions[edge.to]).normalized();
         offset.rotate(M_PI / 2);
-        ci::Vec2f newPos = (nodePositions[edge.first] + nodePositions[edge.second]) / 2;
+        ci::Vec2f newPos = (nodePositions[edge.from] + nodePositions[edge.to]) / 2;
         newPos += offset * sqrt(3) * 50;
         nodePositions.push_back(newPos);
     }
     recreateNodeHandlers(nodePositions);
+    */
 }

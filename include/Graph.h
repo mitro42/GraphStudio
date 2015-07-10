@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 #include <set>
+#include <functional>
 
 class Graph;
 
@@ -45,7 +46,14 @@ private:
 	double weight;
 };
 
-
+struct GraphEdge
+{
+    double weight;
+    int from;
+    int to;
+    GraphEdge(double weight, int from, int to) : weight(weight), from(from), to(to) {}
+    bool operator<(const GraphEdge& other) const { return std::make_tuple(weight, from, to) < std::make_tuple(other.weight, other.from, other.to); }
+};
 
 class Graph
 {
@@ -95,6 +103,8 @@ private:
 std::vector<std::pair<double, int>> nodeWeightDijkstra(const Graph &g, int startNode, int endNode);
 std::vector<std::pair<double, int>> edgeWeightDijkstra(const Graph &g, int startNode, int endNode);
 
+std::vector<GraphEdge> mstPrim(const Graph &g, int startNode);
+std::vector<GraphEdge> mstKruskal(const Graph &g);
 
 // Returns a vector of states of the search. First of the pair is the 
 // states = edgeWeightDijkstraCaptureStates(...)

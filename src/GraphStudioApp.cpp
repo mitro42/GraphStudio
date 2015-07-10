@@ -98,7 +98,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
     if (event.getChar() == 'l')
     {
         std::cout << "Loading graph..." << std::endl;
-        gh.loadGraph("graph.txt");
+        gh.loadGraph("input.txt");
         gh.loadGraphPositions("graph.pos");
         std::cout << "Done" << std::endl;
     }
@@ -111,6 +111,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
     {
         gh.reorderNodesSquare();
     }
+
     if (event.getChar() == 'q')
     {
         quit();
