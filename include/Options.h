@@ -2,6 +2,18 @@
 #define GRAPHSTUDIO_OPTIONS_H
 
 #include "cinder\Color.h"
+#include <string>
+#include <vector>
+
+extern std::vector<std::string> AlgorithmNames;
+
+enum Algorithm {
+    none = 0,
+    dfs,
+    dijkstra,
+    prim,
+    kruskal
+};
 
 class Options
 {
@@ -18,6 +30,9 @@ public:
     bool showNodeWeights;
     int weightPrecision;
 
+    int algorithm;
+    int startNode;
+
     ci::Color backgroundColor;
     ci::Color nodeColor;
     ci::Color highlightedNodeColor;
@@ -25,7 +40,7 @@ public:
     ci::Color addEdgeNodeColor;
 
     ci::Color edgeColor;
-    ci::Color highlightedEdgeColor;    
+    ci::Color highlightedEdgeColor;
 private:
     Options()
     {
@@ -40,7 +55,9 @@ private:
         showEdgeWeights = true;
         showNodeWeights = true;
         animationPlaying = false;
-        backgroundColor = ci::Color(0.694f ,0.761f ,0.557f);
+        algorithm = none;
+        startNode = 1;
+        backgroundColor = ci::Color(0.694f, 0.761f, 0.557f);
         nodeColor = ci::Color(0.176f, 0.133f, 0.310f);
         edgeColor = ci::Color(0.459f, 0.427f, 0.561f);
         highlightedNodeColor = ci::Color(0.984f, 0.961f, 0.831f);
@@ -52,13 +69,14 @@ private:
 public:
     ~Options() = default;
 
-    static Options &instance() 
-    { 
+    static Options &instance()
+    {
         static Options instance;
         return instance;
     }
 
 };
+
 
 
 class GraphParamsGrid

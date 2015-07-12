@@ -45,7 +45,9 @@ void GraphStudioApp::setup()
     params->addParam("Arrow Angle", &Options::instance().arrowAngle, "min=0.0 max=90.0 step=1.0");
     params->addParam("Show Edge Weights", &Options::instance().showEdgeWeights);
     params->addParam("Show Node Weights", &Options::instance().showNodeWeights);
-
+    params->addSeparator();
+    params->addParam("Algorithm", AlgorithmNames, &Options::instance().algorithm);
+    params->addParam("Starting Node",  &Options::instance().startNode, "min=1 step=1");
     params->addSeparator();
     params->addParam("Force", &Options::instance().force, "min=1.0 max=300.0 step=1.0");
     params->addParam("Speed", &Options::instance().speed, "min=1.0 max=300.0 step=1.0");

@@ -119,6 +119,7 @@
     <ClCompile Include="..\src\GraphHandler.cpp" />
     <ClCompile Include="..\src\GraphNodeHandler.cpp" />
     <ClCompile Include="..\src\GraphStudioApp.cpp" />
+    <ClCompile Include="..\src\Options.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\generators.h" />
