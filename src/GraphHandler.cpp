@@ -7,6 +7,7 @@
 #include <fstream>
 #include <string>
 #include "Options.h"
+#include "generators.h"
 
 
 const int startNode = 16;
@@ -219,31 +220,18 @@ void GraphHandler::saveGraphPositions(std::string fileName)
 
 void GraphHandler::reorderNodesSquare()
 {
-    auto N = int(ceil(sqrt(g.getNodeCount())));
-    reorderNodesGrid(N, N);
+    auto gridSize = int(ceil(sqrt(g.getNodeCount())));
+    auto nodePositions = generateGridPositions(g.getNodeCount(), gridSize, gridSize);
+    repositionNodes(nodePositions);
 }
 
-void GraphHandler::reorderNodesGrid(int columns, int rows)
+
+void GraphHandler::repositionNodes(const std::vector<ci::Vec2f>& nodePositions)
 {
-    std::unique_lock<std::recursive_mutex> guard(updateMutex);    
-    int row = 0;
-    int col = 0;    
-    int margin = 100;
-    int width = window->getWidth() - (2 * margin);
-    int height = window->getHeight() - (2 * margin);
-    float xStep = float(width) / (columns - 1);
-    float yStep = float(height) / (rows - 1);
-    for (auto &nh: nodeHandlers)
+    for (int i = 0; i < g.getNodeCount(); ++i)
     {
-        nh->setPos(ci::Vec2f(margin + col * xStep, margin + row*yStep));
-        col++;
-        if (col == columns)
-        {
-            col = 0;
-            row++;
-        }
+        nodeHandlers[i]->setPos(nodePositions[i]);
     }
-    changed = true;
 }
 
 
@@ -466,7 +454,7 @@ void GraphHandler::drawLabels()
 {
     if (oldNodeSize != Options::instance().nodeSize)
     {
-        font = ci::Font("InputMono Black", Options::instance().nodeSize * 1.6);
+        font = ci::Font("InputMono Black", Options::instance().nodeSize * 1.6f);
         textureFont = ci::gl::TextureFont::create(font);
         oldNodeSize = Options::instance().nodeSize;
     }
@@ -498,10 +486,10 @@ void GraphHandler::drawLabels()
             std::string labelText = ss.str();
             ci::Vec2f textMid = (fromVec + toVec) / 2;
             ci::Vec2f edgeDir = fromVec - toVec;
-            double deg = ci::toDegrees(std::atan(edgeDir.y / edgeDir.x));
+            float deg = ci::toDegrees(std::atan(edgeDir.y / edgeDir.x));
             auto textRect = textureFont->measureString(labelText);
-            double textWidth = textRect.x;
-            ci::Vec2f textAlignmentOffset = edgeDir.normalized() * textWidth / 2;
+            float textWidth = textRect.x;
+            ci::Vec2f textAlignmentOffset = edgeDir.normalized() * textWidth / 2.0f;
             if (fromVec.x < toVec.x)
             {
                 textAlignmentOffset *= -1;
@@ -511,7 +499,6 @@ void GraphHandler::drawLabels()
             ci::gl::translate(textMid - textAlignmentOffset);
             if (edgeDir.x != 0)
             {
-                
                 ci::gl::rotate(deg);
             }
             else
@@ -566,121 +553,31 @@ void GraphHandler::drawAlgorithmStateDijkstra()
     }
 }
 
-void GraphHandler::generateGrid()
+
+
+void GraphHandler::generateSpecialGraph(GraphType type)
 {
-    std::cout << "GraphHandler::generateGrid\n";
+    std::cout << "GraphHandler::generateSpecialGraph(" << type << ")\n";
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
     std::cout << "Start...\n";
+
     g.clear();
-    const auto &params = GraphParamsGrid::instance();
-    g.setDirected(params.directed);
-    g.setWeightedEdges(false);
-    g.setWeightedNodes(false);
-    for (int i = 0; i < params.rows; i++)
+    std::vector<ci::Vec2f> nodePositions;
+    switch (type)
     {
-        for (int j = 0; j < params.columns; j++)
-        {
-            g.addNode();
-        }
+    case grid:
+        generateGrid(GraphParamsGrid::instance(), g, nodePositions);
+        break;
+    case triangleMesh:
+        generateTriangleMesh(GraphParamsTriangleMesh::instance(), g, nodePositions);
+        break;
+    case general:
+    default:
+        std::cout << "GraphHandler::generateSpecialGraph - SKIP\n";
     }
 
-    if (params.horizontal)
-    {
-        for (int i = 0; i < params.rows; i++)
-        {
-            for (int j = 0; j < params.columns - 1; j++)
-            {
-                int start = i*params.columns + j;
-                g.addEdge(start, start + 1);
-            }
-        }
-    }
-
-    if (params.vertical)
-    {
-        for (int i = 0; i < params.rows - 1; i++)
-        {
-            for (int j = 0; j < params.columns; j++)
-            {
-                int start = i*params.columns + j;
-                g.addEdge(start, start + params.columns);
-            }
-        }
-    }
-
-    if (params.upDiagonal)
-    {
-        for (int i = 1; i < params.rows; i++)
-        {
-            for (int j = 0; j < params.columns - 1; j++)
-            {
-                int start = i*params.columns + j;
-                g.addEdge(start, start + 1 - params.columns);
-            }
-        }
-    }
-
-    if (params.downDiagonal)
-    {
-        for (int i = 0; i < params.rows - 1; i++)
-        {
-            for (int j = 0; j < params.columns - 1; j++)
-            {
-                int start = i*params.columns + j;
-                g.addEdge(start, start + 1 + params.columns);
-            }
-        }
-    }
-    recreateNodeHandlers();
-    reorderNodesGrid(params.columns, params.rows);
+    recreateNodeHandlers(nodePositions);    
     std::cout << "End\n";
-}
 
 
-void GraphHandler::generateTriangleMesh()
-{
-    /*
-    struct Edge{
-        int from = 0;
-        int to = 0;
-        bool right = true;
-        Edge() = default;
-        Edge(int from, int to, bool right) : from(from), to(to), right(right) {}
-    };
-
-    //std::vector<Edge> outerEdges;
-    //std::vector<ci::Vec2f> nodePositions;
-    ci::randSeed(42);
-    g.setDirected(false);
-    g.setWeightedEdges(false);
-    g.setWeightedNodes(false);
-    g.clear(); 
-    g.addNode();
-    g.addNode();
-    g.addEdge(0, 1);
-    outerEdges.emplace_back(0, 1, true);
-    ci::Vec2f center(window->getWidth() / 2, window->getHeight() / 2);
-    ci::Vec2f centerOffset = ci::randVec2f() * 25;
-    nodePositions.push_back(center + centerOffset);
-    nodePositions.push_back(center - centerOffset);
-    while (nodePositions.size() < GraphParamsTriangleMesh::instance().triangles)
-    {
-        int edgeIdx = ci::randInt(outerEdges.size());
-        auto edge = outerEdges[edgeIdx];
-        int newIdx = g.addNode();
-        g.addEdge(newIdx, edge.from);
-        g.addEdge(newIdx, edge.to);
-        outerEdges.emplace_back(newIdx, edge.from, false);
-        outerEdges.emplace_back(newIdx, edge.to, false);
-        size_t size = outerEdges.size();
-        std::swap(outerEdges[edgeIdx], outerEdges[size-1]);
-        outerEdges.resize(size - 1);
-        ci::Vec2f offset = (nodePositions[edge.from] - nodePositions[edge.to]).normalized();
-        offset.rotate(M_PI / 2);
-        ci::Vec2f newPos = (nodePositions[edge.from] + nodePositions[edge.to]) / 2;
-        newPos += offset * sqrt(3) * 50;
-        nodePositions.push_back(newPos);
-    }
-    recreateNodeHandlers(nodePositions);
-    */
 }

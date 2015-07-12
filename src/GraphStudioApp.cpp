@@ -63,11 +63,11 @@ void GraphStudioApp::setup()
     params->addParam("Vertical Edges", &GraphParamsGrid::instance().vertical);
     params->addParam("Diagonal /", &GraphParamsGrid::instance().upDiagonal);
     params->addParam("Diagonal \\", &GraphParamsGrid::instance().downDiagonal);
-    params->addButton("Generate", std::bind(&GraphHandler::generateGrid, &gh));
+    params->addButton("Generate", std::bind(&GraphHandler::generateSpecialGraph, &gh, GraphHandler::GraphType::grid));
     params->addText("Generate Triangle Mesh");
     params->addParam("Triangles", &GraphParamsTriangleMesh::instance().triangles, "min=1 step=1");
     params->addParam("Randomness", &GraphParamsTriangleMesh::instance().randomness, "min=0.0 step=0.1");
-    params->addButton("Generate tri", std::bind(&GraphHandler::generateTriangleMesh, &gh));
+    params->addButton("Generate tri", std::bind(&GraphHandler::generateSpecialGraph, &gh, GraphHandler::GraphType::triangleMesh));
     gh.prepare(getWindow());
     /*
     fs::path path = getSaveFilePath();

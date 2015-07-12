@@ -115,11 +115,13 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\generators.cpp" />
     <ClCompile Include="..\src\GraphHandler.cpp" />
     <ClCompile Include="..\src\GraphNodeHandler.cpp" />
     <ClCompile Include="..\src\GraphStudioApp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\generators.h" />
     <ClInclude Include="..\include\GraphHandler.h" />
     <ClInclude Include="..\include\GraphNodeHandler.h" />
     <ClInclude Include="..\include\Options.h" />

@@ -12,6 +12,14 @@
 class GraphHandler
 {
 public:
+    enum GraphType
+    {
+        general = 0,
+        grid,
+        triangleMesh
+    };
+
+public:
     GraphHandler();
     ~GraphHandler();
     
@@ -40,14 +48,14 @@ public:
     void setAutomaticEdgeWeightUpdate(bool update) { automaticEdgeWeightUpdate = update; }
 
     void prepareAnimation();
-    void generateGrid();
-    void generateTriangleMesh();
+    void generateSpecialGraph(GraphType type);
 private:
     enum Force{
         none = 0,
         push = 1,
         pull = 2
     };
+
     ci::app::WindowRef window;
     ci::signals::scoped_connection	cbMouseDown;
     ci::signals::scoped_connection	cbMouseDrag;
@@ -79,6 +87,7 @@ private:
 
     void drawAlgorithmStateDijkstra();
 
+    void repositionNodes(const std::vector<ci::Vec2f>& nodePositions);
     void recreateNodeHandlers();
     void recreateNodeHandlers(const std::vector<ci::Vec2f> &nodePositions);
     void addNewEdgeIfNodesSelected();
