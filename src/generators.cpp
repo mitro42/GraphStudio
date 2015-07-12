@@ -3,6 +3,7 @@
 #include "Options.h"
 
 #include <cinder/Vector.h>
+#include <cinder/Rand.h>
 
 std::vector<ci::Vec2f> generateGridPositions(int N, int columns, int rows)
 {
@@ -100,7 +101,6 @@ void generateGrid(const GraphParamsGrid& params, Graph &g, std::vector<ci::Vec2f
 
 void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::vector<ci::Vec2f> &nodePositions)
 {
-    /*
     struct Edge{
         int from = 0;
         int to = 0;
@@ -109,7 +109,7 @@ void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::
         Edge(int from, int to, bool right) : from(from), to(to), right(right) {}
     };
 
-    //std::vector<Edge> outerEdges;
+    std::vector<Edge> outerEdges;
     ci::randSeed(42);
     g.setDirected(false);
     g.setWeightedEdges(false);
@@ -119,27 +119,32 @@ void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::
     g.addNode();
     g.addEdge(0, 1);
     outerEdges.emplace_back(0, 1, true);
-    ci::Vec2f center(window->getWidth() / 2, window->getHeight() / 2);
+    ci::Vec2f center(400, 300); // TODO: replace with window size independent coordinates
     ci::Vec2f centerOffset = ci::randVec2f() * 25;
     nodePositions.push_back(center + centerOffset);
     nodePositions.push_back(center - centerOffset);
-    while (nodePositions.size() < GraphParamsTriangleMesh::instance().triangles)
+    while (nodePositions.size() < GraphParamsTriangleMesh::instance().triangles+2)
     {
+        // select a random edge on perimeter of the mesh
         int edgeIdx = ci::randInt(outerEdges.size());
         auto edge = outerEdges[edgeIdx];
+
+        // remove from the outerEdges vector
+        size_t size = outerEdges.size();
+        std::swap(outerEdges[edgeIdx], outerEdges[size - 1]);
+        outerEdges.resize(size - 1);
+
         int newIdx = g.addNode();
         g.addEdge(newIdx, edge.from);
         g.addEdge(newIdx, edge.to);
         outerEdges.emplace_back(newIdx, edge.from, false);
         outerEdges.emplace_back(newIdx, edge.to, false);
-        size_t size = outerEdges.size();
-        std::swap(outerEdges[edgeIdx], outerEdges[size - 1]);
-        outerEdges.resize(size - 1);
+
+
         ci::Vec2f offset = (nodePositions[edge.from] - nodePositions[edge.to]).normalized();
-        offset.rotate(M_PI / 2);
+        offset.rotate(M_PI / 2.0f);
         ci::Vec2f newPos = (nodePositions[edge.from] + nodePositions[edge.to]) / 2;
         newPos += offset * sqrt(3) * 50;
         nodePositions.push_back(newPos);
     }
-    */
 }
