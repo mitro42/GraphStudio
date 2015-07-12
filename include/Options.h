@@ -15,6 +15,8 @@ public:
     float force;
     bool animationPlaying;
 
+    int weightPrecision;
+
     ci::Color backgroundColor;
     ci::Color nodeColor;
     ci::Color highlightedNodeColor;
@@ -33,6 +35,7 @@ private:
         edgeWidth = 1.5f;
         highlighedEdgeWidth = 3.0f;
         force = 10.0;
+        int weightPrecision = 0;
         animationPlaying = false;
         backgroundColor = ci::Color(0.694f ,0.761f ,0.557f);
         nodeColor = ci::Color(0.176f, 0.133f, 0.310f);

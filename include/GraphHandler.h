@@ -35,7 +35,7 @@ public:
     void mouseUp(ci::app::MouseEvent &event);
     void resize(ci::Area newWindowSize);
 
-    void toggleAutomaticEdgeWeightUpdate() { automaticEdgeWeightUpdate = !automaticEdgeWeightUpdate; }
+    void toggleAutomaticEdgeWeightUpdate() { automaticEdgeWeightUpdate = !automaticEdgeWeightUpdate; if (automaticEdgeWeightUpdate) g.setWeightedEdges(true); }
     bool getAutomaticEdgeWeightUpdate() const { return automaticEdgeWeightUpdate; }
     void setAutomaticEdgeWeightUpdate(bool update) { automaticEdgeWeightUpdate = update; }
 
@@ -57,6 +57,7 @@ private:
     ci::gl::Fbo fbo;
     ci::Area windowSize;
     std::recursive_mutex updateMutex;
+    float oldNodeSize;
 
     Graph g;
     std::vector<std::unique_ptr<GraphNodeHandler>> nodeHandlers;
@@ -69,10 +70,11 @@ private:
     std::vector<std::pair<std::vector<std::pair<double, int>>, std::set<std::pair<double, int>>>> edgeWeightDijkstraStates;
 
     void drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle);
-    void drawEdge(int from, int to, double weight = 0.0, bool highlight = false);
+    void drawEdge(int from, int to, bool highlight = false);
     void drawEdges();
     void drawHighlightEdges();
     void drawNodes();
+    void drawLabels();
     void drawHighlightNodes();
 
     void drawAlgorithmStateDijkstra();
