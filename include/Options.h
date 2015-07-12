@@ -14,7 +14,8 @@ public:
     float highlighedEdgeWidth;
     float force;
     bool animationPlaying;
-
+    bool showEdgeWeights;
+    bool showNodeWeights;
     int weightPrecision;
 
     ci::Color backgroundColor;
@@ -36,6 +37,8 @@ private:
         highlighedEdgeWidth = 3.0f;
         force = 10.0;
         int weightPrecision = 0;
+        showEdgeWeights = true;
+        showNodeWeights = true;
         animationPlaying = false;
         backgroundColor = ci::Color(0.694f ,0.761f ,0.557f);
         nodeColor = ci::Color(0.176f, 0.133f, 0.310f);
@@ -98,7 +101,7 @@ public:
 private:
     GraphParamsTriangleMesh()
     {
-        triangles = 50;
+        triangles = 10;
         randomness = 0.0f;
     }
 public:

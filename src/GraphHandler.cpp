@@ -274,7 +274,6 @@ void GraphHandler::mouseDrag(ci::app::MouseEvent &event)
     }
 }
 
-
 void GraphHandler::mouseUp(ci::app::MouseEvent &event)
 {
     forceType = none;
@@ -458,20 +457,23 @@ void GraphHandler::drawLabels()
         textureFont = ci::gl::TextureFont::create(font);
         oldNodeSize = Options::instance().nodeSize;
     }
+
     // Nodes
-    for (int i = 0; i < g.getNodeCount(); ++i)
+    if (Options::instance().showNodeWeights)
     {
-        ci::gl::color(ci::ColorA(1, 1, 1, 1));
-        auto label = std::to_string(i + 1);
-        auto labelOffset = textureFont->measureString(label) / 2;
-        labelOffset.y *= 0.65f;
-        labelOffset.x *= -1;
-        textureFont->drawString(label, nodeHandlers[i]->getPos() + labelOffset);
+        for (int i = 0; i < g.getNodeCount(); ++i)
+        {
+            ci::gl::color(ci::ColorA(1, 1, 1, 1));
+            auto label = std::to_string(i + 1);
+            auto labelOffset = textureFont->measureString(label) / 2;
+            labelOffset.y *= 0.65f;
+            labelOffset.x *= -1;
+            textureFont->drawString(label, nodeHandlers[i]->getPos() + labelOffset);
+        }
     }
 
     // Edges
-        
-    if (g.hasWeightedEdges())
+    if (Options::instance().showEdgeWeights && g.hasWeightedEdges())
     {
         auto edges = g.getEdges();
 
