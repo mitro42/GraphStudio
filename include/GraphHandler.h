@@ -74,10 +74,13 @@ private:
     Force forceType;
 
     int animationState;
+    int animationLastState;
     int framesSpentInState;
     std::vector<std::pair<std::vector<std::pair<double, int>>, std::set<std::pair<double, int>>>> edgeWeightDijkstraStates;
+    std::vector<graph_algorithm_capture::MstPrimState> mstPrimStates;
 
     void drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle);
+    void drawEdge(int from, int to, ci::Color color, float width = 1.0f);
     void drawEdge(int from, int to, bool highlight = false);
     void drawEdges();
     void drawHighlightEdges();
@@ -86,6 +89,7 @@ private:
     void drawHighlightNodes();
 
     void drawAlgorithmStateDijkstra();
+    void drawAlgorithmStateMstPrim();
 
     void repositionNodes(const std::vector<ci::Vec2f>& nodePositions);
     void recreateNodeHandlers();

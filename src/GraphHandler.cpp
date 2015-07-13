@@ -330,11 +330,19 @@ void GraphHandler::draw()
     //fbo.bindFramebuffer();
     ci::gl::clear(Options::instance().backgroundColor);
     if (Options::instance().animationPlaying)
-    {
-        drawEdges();        
-        drawNodes();
-        drawAlgorithmStateDijkstra();
-        if (animationState < edgeWeightDijkstraStates.size()-1)
+    {        
+        switch (Algorithm(Options::instance().algorithm))
+        {
+        case dijkstra:
+            drawEdges();
+            drawNodes();
+            drawAlgorithmStateDijkstra();
+            break;
+        case prim:
+            drawAlgorithmStateMstPrim();
+            break;
+        }
+        if (animationState < animationLastState - 1)
         {
             framesSpentInState++;
             if (framesSpentInState % Options::instance().speed == 0)
@@ -379,24 +387,13 @@ void GraphHandler::drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, flo
     ci::gl::drawLine(to, to - dir*headLength);
 }
 
-
-void GraphHandler::drawEdge(int from, int to, bool highlight)
+void GraphHandler::drawEdge(int from, int to, ci::Color color, float width)
 {
     if (from == to)
         return;
 
-
-    // Setting the parameters
-    if (highlight)
-    {
-        ci::gl::lineWidth(Options::instance().highlighedEdgeWidth);
-        ci::gl::color(Options::instance().highlightedEdgeColor);
-    }
-    else
-    {
-        ci::gl::lineWidth(Options::instance().edgeWidth);
-        ci::gl::color(Options::instance().edgeColor);
-    }
+    ci::gl::lineWidth(width);
+    ci::gl::color(color);
 
     // calculating the end points and drawing the lines/arrows
     ci::Vec2f fromVec = nodeHandlers[from]->getPos();
@@ -405,14 +402,26 @@ void GraphHandler::drawEdge(int from, int to, bool highlight)
     {
         ci::Vec2f dir = toVec - fromVec;
         dir.normalize();
-        drawArrow(fromVec, toVec - Options::instance().nodeSize * dir, 
+        drawArrow(fromVec, toVec - Options::instance().nodeSize * dir,
             Options::instance().arrowLength, Options::instance().arrowAngle);
     }
     else
     {
         ci::gl::drawLine(fromVec, toVec);
     }
+}
 
+void GraphHandler::drawEdge(int from, int to, bool highlight)
+{    
+    float width = Options::instance().edgeWidth;
+    ci::Color color = Options::instance().edgeColor;
+    if (highlight)
+    {
+        ci::gl::lineWidth(Options::instance().highlighedEdgeWidth);
+        ci::gl::color(Options::instance().highlightedEdgeColor);
+    }
+
+    drawEdge(from, to, color, width);
 }
 
 
@@ -554,8 +563,21 @@ void GraphHandler::generateSpecialGraph(GraphType type)
 
 void GraphHandler::prepareAnimation()
 {
-    edgeWeightDijkstraStates = edgeWeightDijkstraCaptureStates(g, Options::instance().startNode - 1, -1);
+    edgeWeightDijkstraStates.clear();
+    mstPrimStates.clear();
+    switch (Algorithm(Options::instance().algorithm))
+    {
+    case dijkstra:
+        edgeWeightDijkstraStates = graph_algorithm_capture::edgeWeightDijkstraCaptureStates(g, Options::instance().startNode - 1, -1);
+        animationLastState = edgeWeightDijkstraStates.size();
+        break;
+    case prim:
+        mstPrimStates = graph_algorithm_capture::mstPrimCaptureStates(g, Options::instance().startNode - 1);
+        animationLastState = mstPrimStates.size();
+        break;
+    }
     animationState = 0;
+    
     framesSpentInState = 0;
 }
 
@@ -588,3 +610,27 @@ void GraphHandler::drawAlgorithmStateDijkstra()
 }
 
 
+void GraphHandler::drawAlgorithmStateMstPrim()
+{
+    auto state = mstPrimStates[animationState];
+    drawEdges();
+    const float highlightedWidth = Options::instance().highlighedEdgeWidth;
+    for (const auto& e : state.mst)
+    {        
+        drawEdge(e.from, e.to, ci::Color("orange"), highlightedWidth);
+    }
+
+    for (const auto& e : state.edges)
+    {
+        drawEdge(e.from, e.to, ci::Color::white(), highlightedWidth);
+    }
+
+
+    drawEdge(state.inspectedEdge.from, state.inspectedEdge.to, ci::Color("red"), highlightedWidth);
+
+    for (int nodeIdx = 0; nodeIdx < g.getNodeCount(); ++nodeIdx)
+    {
+        nodeHandlers[nodeIdx]->draw(state.visited[nodeIdx]);
+    }
+    drawLabels();
+}
