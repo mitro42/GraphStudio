@@ -78,6 +78,8 @@ private:
     int framesSpentInState;
     std::vector<graph_algorithm_capture::ShortestPathEdgeWeightDijkstraState> edgeWeightDijkstraStates;
     std::vector<graph_algorithm_capture::MstPrimState> mstPrimStates;
+    std::vector<graph_algorithm_capture::MstKruskalState> mstKruskalStates;
+    std::vector<ci::Color> algorithmColorScale;
 
     void drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle);
     void drawEdge(int from, int to, ci::Color color, float width = 1.0f);
@@ -87,9 +89,11 @@ private:
     void drawNodes();
     void drawLabels();
     void drawHighlightNodes();
+    void drawColorScale();
 
     void drawAlgorithmStateDijkstra();
     void drawAlgorithmStateMstPrim();
+    void drawAlgorithmStateMstKruskal();
 
     std::vector<ci::Color> generateColors(int n);
 

@@ -58,31 +58,38 @@ void GraphNodeHandler::mouseUp(ci::app::MouseEvent &event)
 }
 
 
+void GraphNodeHandler::draw(const ci::Color &color)
+{
+    ci::gl::color(color);
+    ci::gl::drawSolidCircle(position, Options::instance().nodeSize);
+}
+
 
 void GraphNodeHandler::draw(bool highlighted)
 {
+    ci::Color color;
     if (highlighted)
     {
-        ci::gl::color(Options::instance().highlightedNodeColor);
+        color = Options::instance().highlightedNodeColor;
     }
     else
     {
         switch (selection)
         {
         case GraphNodeHandler::none:
-            ci::gl::color(Options::instance().nodeColor);
+            color = Options::instance().nodeColor;
             break;
         case GraphNodeHandler::move:
-            ci::gl::color(Options::instance().movingNodeColor);
+            color = Options::instance().movingNodeColor;
             break;
         case GraphNodeHandler::addEdge:
-            ci::gl::color(Options::instance().addEdgeNodeColor);
+            color = Options::instance().addEdgeNodeColor;
             break;
         default:
-            ci::gl::color(Options::instance().nodeColor);
+            color = Options::instance().nodeColor;
             break;
         }
     }
-    ci::gl::drawSolidCircle(position, Options::instance().nodeSize);
+    draw(color);
 }
 

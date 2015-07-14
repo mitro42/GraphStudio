@@ -317,6 +317,19 @@ void GraphHandler::resize(ci::Area newWindowSize)
     windowSize = newWindowSize;
 }
 
+void GraphHandler::drawColorScale()
+{
+    if (g.getNodeCount() != 0 && !algorithmColorScale.empty())
+    {
+        const float wHeight = window->getHeight();
+        const float size = float(window->getWidth()) / g.getNodeCount();
+        for (int i = 0; i < g.getNodeCount(); ++i)
+        {
+            ci::gl::color(algorithmColorScale[i]);
+            ci::gl::drawSolidRect(ci::Rectf(i*size, wHeight - size, (i + 1)*size, wHeight));
+        }
+    }
+}
 
 void GraphHandler::draw()
 {
@@ -327,36 +340,8 @@ void GraphHandler::draw()
     if (!guard.try_lock())
         return;
     ci::gl::clear(Options::instance().backgroundColor);
-
-    /////////// 
-    static int nodeCount = 0;
-    static auto colors = generateColors(10);
-    if (g.getNodeCount() != nodeCount)
-    {
-        nodeCount = g.getNodeCount();
-        colors = generateColors(nodeCount);
-    }
-    if (nodeCount != 0)
-    {
-        const float wHeight = window->getHeight();
-        const float size = float(window->getWidth()) / nodeCount;
-        for (int i = 0; i < nodeCount; ++i)
-        {
-            ci::gl::color(colors[i]);
-
-            ci::Rectf r(i*size, wHeight - size, (i + 1)*size, wHeight);
-
-            //ci::gl::drawSolidRect(ci::Rectf(i*size, wHeight - size, (i + 1)*size, wHeight));
-            ci::gl::drawSolidRect(r);
-        }
-    }
-
-    ////////////
-
-
-
-    //fbo.bindFramebuffer();
     
+    //fbo.bindFramebuffer();
     if (Options::instance().animationPlaying)
     {        
         switch (Algorithm(Options::instance().algorithm))
@@ -366,6 +351,9 @@ void GraphHandler::draw()
             break;
         case prim:
             drawAlgorithmStateMstPrim();
+            break;
+        case kruskal:
+            drawAlgorithmStateMstKruskal();
             break;
         }
         if (animationState < animationLastState - 1)
@@ -601,9 +589,14 @@ void GraphHandler::prepareAnimation()
         mstPrimStates = graph_algorithm_capture::mstPrimCaptureStates(g, Options::instance().startNode - 1);
         animationLastState = mstPrimStates.size();
         break;
+    case kruskal:
+        mstKruskalStates = graph_algorithm_capture::mstKruskalCaptureStates(g);
+        animationLastState = mstKruskalStates.size();
+        algorithmColorScale = generateColors(g.getNodeCount());
+        std::random_shuffle(begin(algorithmColorScale), end(algorithmColorScale));
+        break;
     }
-    animationState = 0;
-    
+    animationState = 0;    
     framesSpentInState = 0;
 }
 
@@ -671,4 +664,30 @@ std::vector<ci::Color> GraphHandler::generateColors(int n)
         ret.push_back(c);
     }
     return ret;
+}
+
+
+void GraphHandler::drawAlgorithmStateMstKruskal()
+{
+    auto state = mstKruskalStates[animationState];
+    drawEdges();
+    const float highlightedWidth = Options::instance().highlighedEdgeWidth;
+    for (const auto& e : state.mst)
+    {
+        drawEdge(e.from, e.to, ci::Color("orange"), highlightedWidth);
+    }
+    
+    for (const auto& e : state.edges)
+    {
+        drawEdge(e.from, e.to, ci::Color::white(), highlightedWidth);
+    }
+
+    drawEdge(state.inspectedEdge.from, state.inspectedEdge.to, ci::Color("red"), highlightedWidth);
+
+    for (int nodeIdx = 0; nodeIdx < g.getNodeCount(); ++nodeIdx)
+    {
+        nodeHandlers[nodeIdx]->draw(algorithmColorScale[state.uf.root(nodeIdx)]);
+    }
+
+    drawLabels();
 }

@@ -15,6 +15,7 @@ public:
     void mouseDrag(ci::app::MouseEvent &event);
     void mouseDown(ci::app::MouseEvent &event);
     void mouseUp(ci::app::MouseEvent &event);
+    void draw(const ci::Color &color);
     void draw(bool highlighted = false);
 
     void clearSelection() { selection = none; }
