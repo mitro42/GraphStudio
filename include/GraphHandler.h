@@ -76,7 +76,7 @@ private:
     int animationState;
     int animationLastState;
     int framesSpentInState;
-    std::vector<std::pair<std::vector<std::pair<double, int>>, std::set<std::pair<double, int>>>> edgeWeightDijkstraStates;
+    std::vector<graph_algorithm_capture::ShortestPathEdgeWeightDijkstraState> edgeWeightDijkstraStates;
     std::vector<graph_algorithm_capture::MstPrimState> mstPrimStates;
 
     void drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle);
@@ -90,6 +90,8 @@ private:
 
     void drawAlgorithmStateDijkstra();
     void drawAlgorithmStateMstPrim();
+
+    std::vector<ci::Color> generateColors(int n);
 
     void repositionNodes(const std::vector<ci::Vec2f>& nodePositions);
     void recreateNodeHandlers();

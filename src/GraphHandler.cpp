@@ -326,16 +326,42 @@ void GraphHandler::draw()
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
     if (!guard.try_lock())
         return;
+    ci::gl::clear(Options::instance().backgroundColor);
+
+    /////////// 
+    static int nodeCount = 0;
+    static auto colors = generateColors(10);
+    if (g.getNodeCount() != nodeCount)
+    {
+        nodeCount = g.getNodeCount();
+        colors = generateColors(nodeCount);
+    }
+    if (nodeCount != 0)
+    {
+        const float wHeight = window->getHeight();
+        const float size = float(window->getWidth()) / nodeCount;
+        for (int i = 0; i < nodeCount; ++i)
+        {
+            ci::gl::color(colors[i]);
+
+            ci::Rectf r(i*size, wHeight - size, (i + 1)*size, wHeight);
+
+            //ci::gl::drawSolidRect(ci::Rectf(i*size, wHeight - size, (i + 1)*size, wHeight));
+            ci::gl::drawSolidRect(r);
+        }
+    }
+
+    ////////////
+
+
 
     //fbo.bindFramebuffer();
-    ci::gl::clear(Options::instance().backgroundColor);
+    
     if (Options::instance().animationPlaying)
     {        
         switch (Algorithm(Options::instance().algorithm))
         {
         case dijkstra:
-            drawEdges();
-            drawNodes();
             drawAlgorithmStateDijkstra();
             break;
         case prim:
@@ -417,8 +443,8 @@ void GraphHandler::drawEdge(int from, int to, bool highlight)
     ci::Color color = Options::instance().edgeColor;
     if (highlight)
     {
-        ci::gl::lineWidth(Options::instance().highlighedEdgeWidth);
-        ci::gl::color(Options::instance().highlightedEdgeColor);
+        width = Options::instance().highlighedEdgeWidth;
+        color = Options::instance().highlightedEdgeColor;
     }
 
     drawEdge(from, to, color, width);
@@ -583,13 +609,12 @@ void GraphHandler::prepareAnimation()
 
 void GraphHandler::drawAlgorithmStateDijkstra()
 {
-    auto state = edgeWeightDijkstraStates[animationState];
-    auto tree = state.first;
-    auto q = state.second;
+    auto state = edgeWeightDijkstraStates[animationState];    
 
-    for (int i = 0; i < int(tree.size()); ++i)
+    drawEdges();
+    for (int i = 0; i < int(state.path.size()); ++i)
     {
-        auto from = tree[i].second;
+        auto from = state.path[i].second;
         if (from == -1)
             continue;
         if (from == i)
@@ -598,7 +623,7 @@ void GraphHandler::drawAlgorithmStateDijkstra()
     }
 
     std::vector<bool> nodeHighlight(g.getNodeCount(), false);
-    for (auto &p : q)
+    for (auto &p : state.openNodes)
     {
         nodeHighlight[p.second] = true;
     }
@@ -633,4 +658,17 @@ void GraphHandler::drawAlgorithmStateMstPrim()
         nodeHandlers[nodeIdx]->draw(state.visited[nodeIdx]);
     }
     drawLabels();
+}
+
+std::vector<ci::Color> GraphHandler::generateColors(int n)
+{
+    std::vector<ci::Color> ret;
+    ret.reserve(n);
+
+    for (int i = 0; i < n; ++i)
+    {
+        ci::Color c(ci::ColorModel::CM_HSV, float(i) / (n + 1), 0.6f, 0.9);
+        ret.push_back(c);
+    }
+    return ret;
 }
