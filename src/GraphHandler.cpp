@@ -68,11 +68,11 @@ void GraphHandler::addNewEdgeIfNodesSelected()
 void GraphHandler::updateEdgeWeights()
 {    
     std::unique_lock<std::recursive_mutex> guard(updateMutex);
-    for (size_t i = 0; i < g.getNodeCount(); ++i)
+    for (int i = 0; i < g.getNodeCount(); ++i)
     {
         auto &node = g.getNode(i);
         auto posStart = nodeHandlers[i]->getPos();
-        for (size_t j = 0; j < node.getNeighborCount(); ++j)
+        for (int j = 0; j < node.getNeighborCount(); ++j)
         {
             auto neighbor = node.getNeighbor(j);
             auto posEnd = nodeHandlers[neighbor]->getPos();
@@ -194,7 +194,7 @@ void GraphHandler::loadGraphPositions(std::string fileName)
         throw("Cannot open file");
     float x, y;
     int idx = 0;
-    while (in >> x && idx < nodeHandlers.size())
+    while (in >> x && idx < int(nodeHandlers.size()))
     {
         in >> y;
         nodeHandlers[idx++]->setPos(ci::Vec2f(x, y));
@@ -321,8 +321,8 @@ void GraphHandler::drawColorScale()
 {
     if (g.getNodeCount() != 0 && !algorithmColorScale.empty())
     {
-        const float wHeight = window->getHeight();
-        const float size = float(window->getWidth()) / g.getNodeCount();
+        const auto wHeight = float(window->getHeight());
+        const auto size = float(window->getWidth()) / g.getNodeCount();
         for (int i = 0; i < g.getNodeCount(); ++i)
         {
             ci::gl::color(algorithmColorScale[i]);
@@ -660,7 +660,7 @@ std::vector<ci::Color> GraphHandler::generateColors(int n)
 
     for (int i = 0; i < n; ++i)
     {
-        ci::Color c(ci::ColorModel::CM_HSV, float(i) / (n + 1), 0.6f, 0.9);
+        ci::Color c(ci::ColorModel::CM_HSV, float(i) / (n + 1), 0.6f, 0.9f);
         ret.push_back(c);
     }
     return ret;

@@ -123,7 +123,7 @@ void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::
     ci::Vec2f centerOffset = ci::randVec2f() * 25;
     nodePositions.push_back(center + centerOffset);
     nodePositions.push_back(center - centerOffset);
-    while (nodePositions.size() < GraphParamsTriangleMesh::instance().triangles+2)
+    while (int(nodePositions.size()) < GraphParamsTriangleMesh::instance().triangles+2)
     {
         // select a random edge on perimeter of the mesh
         int edgeIdx = ci::randInt(outerEdges.size());
@@ -142,9 +142,9 @@ void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::
 
 
         ci::Vec2f offset = (nodePositions[edge.from] - nodePositions[edge.to]).normalized();
-        offset.rotate(M_PI / 2.0f);
+        offset.rotate(float(M_PI / 2.0f));
         ci::Vec2f newPos = (nodePositions[edge.from] + nodePositions[edge.to]) / 2;
-        newPos += offset * sqrt(3) * 50;
+        newPos += offset * sqrt(3.0f) * 50;
         nodePositions.push_back(newPos);
     }
 }
