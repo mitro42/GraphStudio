@@ -110,6 +110,10 @@ void GraphStudioApp::keyDown(KeyEvent event)
         gh.toggleAutomaticEdgeWeightUpdate();
         std::cout << "automaticEdgeWeightUpdate = " << gh.getAutomaticEdgeWeightUpdate() << std::endl;
     }
+    if (event.getChar() == 'f')
+    {
+        gh.fitToWindow();
+    }
     if (event.getChar() == 'r')
     {
         gh.reorderNodesSquare();

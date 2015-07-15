@@ -43,6 +43,8 @@ public:
     void mouseUp(ci::app::MouseEvent &event);
     void resize(ci::Area newWindowSize);
 
+    void fitToWindow();
+
     void toggleAutomaticEdgeWeightUpdate() { automaticEdgeWeightUpdate = !automaticEdgeWeightUpdate; if (automaticEdgeWeightUpdate) g.setWeightedEdges(true); }
     bool getAutomaticEdgeWeightUpdate() const { return automaticEdgeWeightUpdate; }
     void setAutomaticEdgeWeightUpdate(bool update) { automaticEdgeWeightUpdate = update; }

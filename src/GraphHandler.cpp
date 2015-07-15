@@ -340,7 +340,7 @@ void GraphHandler::draw()
     if (!guard.try_lock())
         return;
     ci::gl::clear(Options::instance().backgroundColor);
-    
+
     //fbo.bindFramebuffer();
     if (Options::instance().animationPlaying)
     {        
@@ -546,6 +546,43 @@ void GraphHandler::drawLabels()
 
 void GraphHandler::drawHighlightNodes()
 {
+}
+
+
+void GraphHandler::fitToWindow()
+{
+    float minX, maxX, minY, maxY;
+    minX = minY = std::numeric_limits<float>::max();
+    maxX = maxX = std::numeric_limits<float>::min();
+    
+    for (const auto& nh : nodeHandlers)
+    {
+        auto pos = nh->getPos();
+        minX = std::min(minX, pos.x);
+        minY = std::min(minY, pos.y);
+        maxX = std::max(maxX, pos.x);
+        maxY = std::max(maxY, pos.y);
+    }
+
+    const float boundingRectWidth = maxX - minX;
+    const float boundingRectHeight = maxY - minY;
+    const float midX = (maxX + minX) / 2;
+    const float midY = (maxY + minY) / 2;
+
+    const float marginX = 0.1f;
+    const float marginY = 0.05f;
+
+    float targetHeight = window->getHeight();
+    float targetWidth = window->getWidth(); //targetHeight * (float(window->getWidth()) / window->getHeight());
+
+    targetWidth *= (1 - 2 * marginX);
+    targetHeight *= (1 - 2 * marginY);
+    for (const auto& nh : nodeHandlers)
+    {
+        float newX = ((nh->getPos().x) - minX) / boundingRectWidth * window->getWidth() * (1 - 2 * marginX) + window->getWidth() * marginX;
+        float newY = ((nh->getPos().y) - minY) / boundingRectHeight * window->getHeight() * (1 - 2 * marginY) + window->getHeight() * marginY;
+        nh->setPos(ci::Vec2f(newX, newY));
+    }
 }
 
 
