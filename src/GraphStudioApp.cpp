@@ -103,6 +103,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
         std::cout << "Loading graph..." << std::endl;
         gh.loadGraph("input.txt");
         gh.loadGraphPositions("graph.pos");
+        gh.fitToWindow();
         std::cout << "Done" << std::endl;
     }
     if (event.getChar() == 'u')
