@@ -12,7 +12,7 @@
 class GraphHandler
 {
 public:
-    enum GraphType
+    enum class GraphType
     {
         general = 0,
         grid,
@@ -52,7 +52,7 @@ public:
     void prepareAnimation();
     void generateSpecialGraph(GraphType type);
 private:
-    enum Force{
+    enum class Force{
         none = 0,
         push = 1,
         pull = 2

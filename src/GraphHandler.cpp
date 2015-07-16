@@ -10,7 +10,7 @@
 #include "generators.h"
 
 
-GraphHandler::GraphHandler() : g(true), oldNodeSize(0), forceType(none)
+GraphHandler::GraphHandler() : g(true), oldNodeSize(0), forceType(Force::none)
 {
 
 }
@@ -42,7 +42,7 @@ void GraphHandler::addNewEdgeIfNodesSelected()
     int end = -1;
     for (size_t i = 0; i < nodeHandlers.size(); ++i)
     {
-        if (nodeHandlers[i]->getSelection() == GraphNodeHandler::addEdge)
+        if (nodeHandlers[i]->getSelection() == GraphNodeHandler::Selection::addEdge)
         {
             if (start == -1)
             {
@@ -258,14 +258,14 @@ void GraphHandler::pullNodes(ci::Vec2f position)
 
 void GraphHandler::mouseDrag(ci::app::MouseEvent &event)
 {
-    if (forceType != none)
+    if (forceType != Force::none)
     {
         std::unique_lock<std::recursive_mutex> guard(updateMutex);
-        if (forceType == push)
+        if (forceType == Force::push)
         {
             pushNodes(event.getPos());
         }
-        else if (forceType == pull)
+        else if (forceType == Force::pull)
         {
             pullNodes(event.getPos());
         }
@@ -274,7 +274,7 @@ void GraphHandler::mouseDrag(ci::app::MouseEvent &event)
 
 void GraphHandler::mouseUp(ci::app::MouseEvent &event)
 {
-    forceType = none;
+    forceType = Force::none;
     //event.setHandled(true);
 }
 
@@ -292,11 +292,11 @@ void GraphHandler::mouseDown(ci::app::MouseEvent &event)
     {
         if (event.isLeftDown())
         {
-            forceType = push;
+            forceType = Force::push;
         }
         else if (event.isRightDown())
         {
-            forceType = pull;
+            forceType = Force::pull;
         }
     }
 
@@ -346,13 +346,13 @@ void GraphHandler::draw()
     {        
         switch (Algorithm(Options::instance().algorithm))
         {
-        case dijkstra:
+        case Algorithm::dijkstra:
             drawAlgorithmStateDijkstra();
             break;
-        case prim:
+        case Algorithm::prim:
             drawAlgorithmStateMstPrim();
             break;
-        case kruskal:
+        case Algorithm::kruskal:
             drawAlgorithmStateMstKruskal();
             break;
         }
@@ -446,7 +446,7 @@ void GraphHandler::drawHighlightEdges()
         Options::instance().startNode = g.getNodeCount() - 1;
     }
     const auto algo = Algorithm(Options::instance().algorithm);
-    if (algo == dijkstra)
+    if (algo == Algorithm::dijkstra)
     {
         auto tree = edgeWeightDijkstra(g, Options::instance().startNode - 1, -1);
         for (int i = 0; i < int(tree.size()); ++i)
@@ -459,9 +459,9 @@ void GraphHandler::drawHighlightEdges()
             drawEdge(from, i, true);
         }
     }
-    else if (algo == kruskal || algo == prim)
+    else if (algo == Algorithm::kruskal || algo == Algorithm::prim)
     {
-        auto edges = (algo == kruskal ? mstKruskal(g) : mstPrim(g, Options::instance().startNode - 1));
+        auto edges = (algo == Algorithm::kruskal ? mstKruskal(g) : mstPrim(g, Options::instance().startNode - 1));
         for (const auto &e : edges)
         {
             drawEdge(e.from, e.to, true);
@@ -572,8 +572,8 @@ void GraphHandler::fitToWindow()
     const float marginX = 0.1f;
     const float marginY = 0.05f;
 
-    float targetHeight = window->getHeight();
-    float targetWidth = window->getWidth(); //targetHeight * (float(window->getWidth()) / window->getHeight());
+    float targetHeight = float(window->getHeight());
+    float targetWidth = float(window->getWidth());
 
     targetWidth *= (1 - 2 * marginX);
     targetHeight *= (1 - 2 * marginY);
@@ -588,7 +588,7 @@ void GraphHandler::fitToWindow()
 
 void GraphHandler::generateSpecialGraph(GraphType type)
 {
-    std::cout << "GraphHandler::generateSpecialGraph(" << type << ")\n";
+    std::cout << "GraphHandler::generateSpecialGraph(" << static_cast<int>(type) << ")\n";
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
     std::cout << "Start...\n";
 
@@ -596,13 +596,13 @@ void GraphHandler::generateSpecialGraph(GraphType type)
     std::vector<ci::Vec2f> nodePositions;
     switch (type)
     {
-    case grid:
+    case GraphType::grid:
         generateGrid(GraphParamsGrid::instance(), g, nodePositions);
         break;
-    case triangleMesh:
+    case GraphType::triangleMesh:
         generateTriangleMesh(GraphParamsTriangleMesh::instance(), g, nodePositions);
         break;
-    case general:
+    case GraphType::general:
     default:
         std::cout << "GraphHandler::generateSpecialGraph - SKIP\n";
     }
@@ -618,15 +618,15 @@ void GraphHandler::prepareAnimation()
     mstPrimStates.clear();
     switch (Algorithm(Options::instance().algorithm))
     {
-    case dijkstra:
+    case Algorithm::dijkstra:
         edgeWeightDijkstraStates = graph_algorithm_capture::edgeWeightDijkstraCaptureStates(g, Options::instance().startNode - 1, -1);
         animationLastState = edgeWeightDijkstraStates.size();
         break;
-    case prim:
+    case Algorithm::prim:
         mstPrimStates = graph_algorithm_capture::mstPrimCaptureStates(g, Options::instance().startNode - 1);
         animationLastState = mstPrimStates.size();
         break;
-    case kruskal:
+    case Algorithm::kruskal:
         mstKruskalStates = graph_algorithm_capture::mstKruskalCaptureStates(g);
         animationLastState = mstKruskalStates.size();
         algorithmColorScale = generateColors(g.getNodeCount());

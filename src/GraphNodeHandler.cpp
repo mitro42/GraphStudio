@@ -3,7 +3,7 @@
 #include "cinder/Rect.h"
 #include "Options.h"
 
-GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, ci::Vec2f pos) : window(window), position(pos), selection(none)
+GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, ci::Vec2f pos) : window(window), position(pos), selection(Selection::none)
 {
     float half = Options::instance().nodeSize / 2;
 
@@ -16,11 +16,11 @@ GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, ci::Vec2f pos) : w
 
 void GraphNodeHandler::mouseDrag(ci::app::MouseEvent &event)
 {
-    if (selection == move)
+    if (selection == Selection::move)
     {
         position = event.getPos();
     }
-    event.setHandled(selection == move);
+    event.setHandled(selection == Selection::move);
 }
 
 
@@ -30,27 +30,27 @@ void GraphNodeHandler::mouseDown(ci::app::MouseEvent &event)
     {
         if (event.isAltDown())
         {
-            selection = (selection == addEdge) ? none : addEdge;
+            selection = (selection == Selection::addEdge) ? Selection::none : Selection::addEdge;
         }
         else
         {
-            selection = move;
+            selection = Selection::move;
         }
         event.setHandled(true);
     }
     else
     {
-        if (selection == move)
-            selection = none;
+        if (selection == Selection::move)
+            selection = Selection::none;
     }
 }
 
 
 void GraphNodeHandler::mouseUp(ci::app::MouseEvent &event)
 {
-    if (selection == move)
+    if (selection == Selection::move)
     {
-        selection = none;
+        selection = Selection::none;
         event.setHandled(true);
         return;
     }
@@ -76,13 +76,13 @@ void GraphNodeHandler::draw(bool highlighted)
     {
         switch (selection)
         {
-        case GraphNodeHandler::none:
+        case Selection::none:
             color = Options::instance().nodeColor;
             break;
-        case GraphNodeHandler::move:
+        case Selection::move:
             color = Options::instance().movingNodeColor;
             break;
-        case GraphNodeHandler::addEdge:
+        case Selection::addEdge:
             color = Options::instance().addEdgeNodeColor;
             break;
         default:

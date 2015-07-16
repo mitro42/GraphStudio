@@ -4,7 +4,7 @@
 class GraphNodeHandler
 {
 public:
-    enum Selection {
+    enum class Selection {
         none = 0,
         move,
         addEdge
@@ -18,7 +18,7 @@ public:
     void draw(const ci::Color &color);
     void draw(bool highlighted = false);
 
-    void clearSelection() { selection = none; }
+    void clearSelection() { selection = Selection::none; }
     Selection getSelection() const { return selection; }
     ci::Vec2f getPos() const { return position; }
     void setPos(ci::Vec2f pos) { position = pos; }

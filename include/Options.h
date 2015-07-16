@@ -7,7 +7,7 @@
 
 extern std::vector<std::string> AlgorithmNames;
 
-enum Algorithm {
+enum class Algorithm {
     none = 0,
     dfs,
     dijkstra,
@@ -55,7 +55,7 @@ private:
         showEdgeWeights = true;
         showNodeWeights = true;
         animationPlaying = false;
-        algorithm = none;
+        algorithm = static_cast<int>(Algorithm::none);
         startNode = 1;
         backgroundColor = ci::Color(0.694f, 0.761f, 0.557f);
         nodeColor = ci::Color(0.176f, 0.133f, 0.310f);
