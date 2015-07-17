@@ -70,23 +70,23 @@ void GraphNodeHandler::draw(bool highlighted)
     ci::Color color;
     if (highlighted)
     {
-        color = Options::instance().highlightedNodeColor;
+        color = Options::instance().currentColorScheme.highlightedNodeColor;
     }
     else
     {
         switch (selection)
         {
         case Selection::none:
-            color = Options::instance().nodeColor;
+            color = Options::instance().currentColorScheme.nodeColor;
             break;
         case Selection::move:
-            color = Options::instance().movingNodeColor;
+            color = Options::instance().currentColorScheme.movingNodeColor;
             break;
         case Selection::addEdge:
-            color = Options::instance().addEdgeNodeColor;
+            color = Options::instance().currentColorScheme.addEdgeNodeColor;
             break;
         default:
-            color = Options::instance().nodeColor;
+            color = Options::instance().currentColorScheme.nodeColor;
             break;
         }
     }

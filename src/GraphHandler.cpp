@@ -339,7 +339,7 @@ void GraphHandler::draw()
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
     if (!guard.try_lock())
         return;
-    ci::gl::clear(Options::instance().backgroundColor);
+    ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);
 
     //fbo.bindFramebuffer();
     if (Options::instance().animationPlaying)
@@ -428,11 +428,11 @@ void GraphHandler::drawEdge(int from, int to, ci::Color color, float width)
 void GraphHandler::drawEdge(int from, int to, bool highlight)
 {    
     float width = Options::instance().edgeWidth;
-    ci::Color color = Options::instance().edgeColor;
+    ci::Color color = Options::instance().currentColorScheme.edgeColor;
     if (highlight)
     {
         width = Options::instance().highlighedEdgeWidth;
-        color = Options::instance().highlightedEdgeColor;
+        color = Options::instance().currentColorScheme.highlightedEdgeColor;
     }
 
     drawEdge(from, to, color, width);

@@ -3,6 +3,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/params/Params.h"
 #include "cinder/qtime/MovieWriter.h"
+#include "cinder/Xml.h"
 #include "GraphHandler.h"
 #include "Options.h"
 
@@ -19,11 +20,21 @@ public:
     void update() override;
     void draw() override;
     void resize() override;
+    void shutdown() override;
+
+    const ColorScheme &getCurrentColorScheme();
 private:
     ci::params::InterfaceGlRef	params;
     qtime::MovieWriterRef	mMovieWriter;
-    
+    std::map<std::string, ColorScheme> colorSchemes;
+    std::vector<std::string> colorSchemeNames;
     GraphHandler gh;
+    int prevColorSchemeIndex;
+    void addNewColorScheme();
+    void storeColorScheme();
+
+    void loadSettings();
+    void saveSettings();
 };
 
 
@@ -35,8 +46,72 @@ void GraphStudioApp::prepareSettings(Settings *settings)
 }
 
 
-void GraphStudioApp::setup()
+const ColorScheme &GraphStudioApp::getCurrentColorScheme()
 {
+    return colorSchemes[colorSchemeNames[Options::instance().currentColorSchemeIdx]];
+}
+
+
+void GraphStudioApp::addNewColorScheme()
+{
+    auto &cs = Options::instance().currentColorScheme;
+    cs = ColorScheme();
+    bool freeNameFound = false;
+    int freeNameIdx = 0;
+    std::string newName;
+    do
+    {
+        newName = "ColorScheme #" + std::to_string(++freeNameIdx);
+        if (find(begin(colorSchemeNames), end(colorSchemeNames), newName) == colorSchemeNames.end())
+            freeNameFound = true;
+    } while (!freeNameFound);
+    cs.name = newName;
+    colorSchemeNames.push_back(cs.name);
+    colorSchemes[cs.name] = cs;
+    Options::instance().currentColorSchemeIdx = colorSchemes.size() - 1;
+    params->addParam("ColorScheme", colorSchemeNames, &Options::instance().currentColorSchemeIdx);
+}
+
+
+void GraphStudioApp::storeColorScheme()
+{
+    auto &cs = Options::instance().currentColorScheme;
+    colorSchemes[cs.name] = cs;
+}
+
+
+void GraphStudioApp::saveSettings()
+{
+    ci::XmlTree configXml("graphStudioSettings", "");
+
+    ci::XmlTree csList("colorSchemes", "");
+    for (const auto &cs : colorSchemes)
+    {
+        csList.push_back(cs.second.toXml());
+    }
+    configXml.push_back(csList);
+
+    configXml.write(ci::writeFile("config.xml"));
+}
+
+
+void GraphStudioApp::loadSettings()
+{
+    ci::XmlTree configXml(ci::loadFile("config.xml"));
+    ci::XmlTree csList = configXml.getChild("graphStudioSettings").getChild("colorSchemes");
+    for (auto csIt = csList.begin(); csIt != csList.end(); ++csIt)
+    {
+        ColorScheme cs = ColorScheme::fromXml(*csIt);
+        colorSchemes[cs.name] = cs;
+        colorSchemeNames.push_back(cs.name);
+    }
+}
+
+
+void GraphStudioApp::setup()
+{    
+    loadSettings();
+
     params = params::InterfaceGl::create("Graph Studio", Vec2i(200, 310));
     params->addParam("Node Size", &Options::instance().nodeSize, "min=1.0 max=50.0 step=1.0");
     params->addParam("Edge Width", &Options::instance().edgeWidth, "min=0.0 max=10.0 step=0.1");
@@ -52,11 +127,15 @@ void GraphStudioApp::setup()
     params->addParam("Force", &Options::instance().force, "min=1.0 max=300.0 step=1.0");
     params->addParam("Speed", &Options::instance().speed, "min=1.0 max=300.0 step=1.0");
     params->addSeparator();
-    params->addParam("Background", &Options::instance().backgroundColor);
-    params->addParam("Node ", &Options::instance().nodeColor);
-    params->addParam("Highlighted Node ", &Options::instance().highlightedNodeColor);
-    params->addParam("Edge ", &Options::instance().edgeColor);
-    params->addParam("Highlighted Edge ", &Options::instance().highlightedEdgeColor);
+    params->addText("Colors");
+    params->addParam("ColorScheme", colorSchemeNames, &Options::instance().currentColorSchemeIdx);
+    params->addParam("Background", &Options::instance().currentColorScheme.backgroundColor);
+    params->addParam("Node ", &Options::instance().currentColorScheme.nodeColor);
+    params->addParam("Highlighted Node ", &Options::instance().currentColorScheme.highlightedNodeColor);
+    params->addParam("Edge ", &Options::instance().currentColorScheme.edgeColor);
+    params->addParam("Highlighted Edge ", &Options::instance().currentColorScheme.highlightedEdgeColor);
+    params->addButton("New", std::bind(&GraphStudioApp::addNewColorScheme, this));
+    params->addButton("Save", std::bind(&GraphStudioApp::storeColorScheme, this));
     params->addSeparator();
     params->addText("Generate Grid");
     params->addParam("Columns", &GraphParamsGrid::instance().columns, "min=1 step=1");
@@ -81,6 +160,11 @@ void GraphStudioApp::setup()
         mMovieWriter = qtime::MovieWriter::create(path, getWindowWidth(), getWindowHeight(), format);
     }
     */
+}
+
+void GraphStudioApp::shutdown()
+{
+    saveSettings();
 }
 
 void GraphStudioApp::keyDown(KeyEvent event)
@@ -122,6 +206,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
 
     if (event.getChar() == 'q')
     {
+        saveSettings();
         quit();
     }
     
@@ -142,8 +227,13 @@ void GraphStudioApp::update()
 
 void GraphStudioApp::draw()
 {
-	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) ); 
+    // clear out the window with black
+    if (prevColorSchemeIndex != Options::instance().currentColorSchemeIdx)
+    {
+        prevColorSchemeIndex = Options::instance().currentColorSchemeIdx;
+        Options::instance().currentColorScheme = colorSchemes[colorSchemeNames[Options::instance().currentColorSchemeIdx]];
+    }
+    gl::clear(Color(0, 0, 0));
     gh.draw();
     params->draw();
     /*

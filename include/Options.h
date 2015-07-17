@@ -2,6 +2,7 @@
 #define GRAPHSTUDIO_OPTIONS_H
 
 #include "cinder\Color.h"
+#include "cinder\Xml.h"
 #include <string>
 #include <vector>
 
@@ -13,6 +14,27 @@ enum class Algorithm {
     dijkstra,
     prim,
     kruskal
+};
+
+struct ColorScheme
+{
+    std::string name;
+    ci::Color backgroundColor;
+    ci::Color nodeColor;
+    ci::Color highlightedNodeColor;
+    ci::Color movingNodeColor;
+    ci::Color addEdgeNodeColor;
+
+    ci::Color edgeColor;
+    ci::Color highlightedEdgeColor;
+
+    ColorScheme();
+    static ColorScheme fromXml(ci::XmlTree &xml);
+    ci::XmlTree toXml() const;
+
+private:
+    static ci::Color colorFromXml(ci::XmlTree &xml);
+   static ci::XmlTree colorToXml(const char *name, const ci::Color &c);
 };
 
 class Options
@@ -32,15 +54,9 @@ public:
 
     int algorithm;
     int startNode;
+    ColorScheme currentColorScheme;
+    int currentColorSchemeIdx;
 
-    ci::Color backgroundColor;
-    ci::Color nodeColor;
-    ci::Color highlightedNodeColor;
-    ci::Color movingNodeColor;
-    ci::Color addEdgeNodeColor;
-
-    ci::Color edgeColor;
-    ci::Color highlightedEdgeColor;
 private:
     Options()
     {
@@ -57,13 +73,6 @@ private:
         animationPlaying = false;
         algorithm = static_cast<int>(Algorithm::none);
         startNode = 1;
-        backgroundColor = ci::Color(0.694f, 0.761f, 0.557f);
-        nodeColor = ci::Color(0.176f, 0.133f, 0.310f);
-        edgeColor = ci::Color(0.459f, 0.427f, 0.561f);
-        highlightedNodeColor = ci::Color(0.984f, 0.961f, 0.831f);
-        highlightedEdgeColor = ci::Color(0.361f, 0.129f, 0.259f);
-        movingNodeColor = ci::Color("white");
-        addEdgeNodeColor = ci::Color("yellow");
     }
 
 public:
@@ -74,7 +83,6 @@ public:
         static Options instance;
         return instance;
     }
-
 };
 
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<graphStudioSettings>
+	<colorSchemes>
+		<colorScheme name="default">
+			<backgroundColor red="176" green="194" blue="142"/>
+			<nodeColor red="44" green="33" blue="79"/>
+			<edgeColor red="117" green="108" blue="143"/>
+			<highlightedNodeColor red="250" green="245" blue="211"/>
+			<highlightedEdgeColor red="92" green="32" blue="66"/>
+			<movingNodeColor red="255" green="255" blue="255"/>
+			<addEdgeNodeColor red="255" green="255" blue="0"/>
+		</colorScheme>
+	</colorSchemes>
+</graphStudioSettings>
+
