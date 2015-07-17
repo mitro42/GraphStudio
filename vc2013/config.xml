@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <graphStudioSettings>
+	<nodeSize>13.000000</nodeSize>
+	<edgeWidth>1.100000</edgeWidth>
+	<highlightedEdgeWidth>3.300000</highlightedEdgeWidth>
+	<arrowLength>20.000000</arrowLength>
+	<arrowAngle>20.000000</arrowAngle>
+	<showEdgeWeights>0</showEdgeWeights>
+	<showNodeWeights>0</showNodeWeights>
 	<colorSchemes>
+		<colorScheme name="ColorScheme #1">
+			<backgroundColor red="245" green="245" blue="245"/>
+			<nodeColor red="255" green="87" blue="34"/>
+			<edgeColor red="121" green="85" blue="72"/>
+			<highlightedNodeColor red="139" green="195" blue="74"/>
+			<highlightedEdgeColor red="255" green="196" blue="0"/>
+			<movingNodeColor red="255" green="255" blue="255"/>
+			<addEdgeNodeColor red="255" green="255" blue="0"/>
+		</colorScheme>
 		<colorScheme name="default">
 			<backgroundColor red="176" green="194" blue="142"/>
 			<nodeColor red="44" green="33" blue="79"/>

@@ -83,7 +83,13 @@ void GraphStudioApp::storeColorScheme()
 void GraphStudioApp::saveSettings()
 {
     ci::XmlTree configXml("graphStudioSettings", "");
-
+    configXml.push_back(ci::XmlTree("nodeSize", std::to_string(Options::instance().nodeSize)));
+    configXml.push_back(ci::XmlTree("edgeWidth", std::to_string(Options::instance().edgeWidth)));
+    configXml.push_back(ci::XmlTree("highlightedEdgeWidth", std::to_string(Options::instance().highlighedEdgeWidth)));
+    configXml.push_back(ci::XmlTree("arrowLength", std::to_string(Options::instance().arrowLength)));
+    configXml.push_back(ci::XmlTree("arrowAngle", std::to_string(Options::instance().arrowAngle)));
+    configXml.push_back(ci::XmlTree("showEdgeWeights", std::to_string(Options::instance().showEdgeWeights)));
+    configXml.push_back(ci::XmlTree("showNodeWeights", std::to_string(Options::instance().showNodeWeights)));
     ci::XmlTree csList("colorSchemes", "");
     for (const auto &cs : colorSchemes)
     {
@@ -98,7 +104,16 @@ void GraphStudioApp::saveSettings()
 void GraphStudioApp::loadSettings()
 {
     ci::XmlTree configXml(ci::loadFile("config.xml"));
-    ci::XmlTree csList = configXml.getChild("graphStudioSettings").getChild("colorSchemes");
+    ci::XmlTree settings = configXml.getChild("graphStudioSettings");
+    Options::instance().nodeSize = settings.getChild("nodeSize").getValue<float>();
+    Options::instance().edgeWidth = settings.getChild("edgeWidth").getValue<float>();
+    Options::instance().highlighedEdgeWidth = settings.getChild("highlightedEdgeWidth").getValue<float>();
+    Options::instance().arrowLength = settings.getChild("arrowLength").getValue<float>();
+    Options::instance().arrowAngle = settings.getChild("arrowAngle").getValue<float>();
+    Options::instance().showEdgeWeights = settings.getChild("showEdgeWeights").getValue<bool>();
+    Options::instance().showNodeWeights = settings.getChild("showNodeWeights").getValue<bool>();
+    
+    ci::XmlTree csList = settings.getChild("colorSchemes");
     for (auto csIt = csList.begin(); csIt != csList.end(); ++csIt)
     {
         ColorScheme cs = ColorScheme::fromXml(*csIt);
@@ -187,6 +202,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
         std::cout << "Loading graph..." << std::endl;
         gh.loadGraph("input.txt");
         gh.loadGraphPositions("graph.pos");
+        Options::instance().startNode = 1;
         gh.fitToWindow();
         std::cout << "Done" << std::endl;
     }
