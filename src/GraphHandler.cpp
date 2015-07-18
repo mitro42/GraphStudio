@@ -480,6 +480,7 @@ void GraphHandler::drawNodes()
 
 void GraphHandler::drawLabels()
 {
+    const auto &cs = Options::instance().currentColorScheme;
     if (oldNodeSize != Options::instance().nodeSize)
     {
         font = ci::Font("InputMono Black", Options::instance().nodeSize * 1.6f);
@@ -492,7 +493,7 @@ void GraphHandler::drawLabels()
     {
         for (int i = 0; i < g.getNodeCount(); ++i)
         {
-            ci::gl::color(ci::ColorA(1, 1, 1, 1));
+            ci::gl::color(cs.nodeTextColor);
             auto label = std::to_string(i + 1);
             auto labelOffset = textureFont->measureString(label) / 2;
             labelOffset.y *= 0.65f;
@@ -537,7 +538,7 @@ void GraphHandler::drawLabels()
                 ci::gl::rotate(90);
             }
             ci::Vec2f offset = -(fromVec + toVec).normalized() * 10; // place edge weight over the edge
-            ci::gl::color(ci::ColorA(1, 1, 1, 1));
+            ci::gl::color(cs.edgeTextColor);
             textureFont->drawString(labelText, offset);
             ci::gl::popModelView();
         }

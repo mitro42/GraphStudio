@@ -145,14 +145,22 @@ void GraphStudioApp::setup()
     params->addText("Colors");
     params->addParam("ColorScheme", colorSchemeNames, &Options::instance().currentColorSchemeIdx);
     params->addParam("Background", &Options::instance().currentColorScheme.backgroundColor);
+
     params->addParam("Node ", &Options::instance().currentColorScheme.nodeColor);
     params->addParam("Highlighted Node 1", &Options::instance().currentColorScheme.highlightedNodeColor1);
     params->addParam("Highlighted Node 2", &Options::instance().currentColorScheme.highlightedNodeColor2);
     params->addParam("Highlighted Node 3", &Options::instance().currentColorScheme.highlightedNodeColor3);
+
     params->addParam("Edge ", &Options::instance().currentColorScheme.edgeColor);
     params->addParam("Highlighted Edge 1", &Options::instance().currentColorScheme.highlightedEdgeColor1);
     params->addParam("Highlighted Edge 2", &Options::instance().currentColorScheme.highlightedEdgeColor2);
     params->addParam("Highlighted Edge 3", &Options::instance().currentColorScheme.highlightedEdgeColor3);
+
+    params->addParam("Node Text", &Options::instance().currentColorScheme.nodeTextColor);
+    params->addParam("highlightednodeText", &Options::instance().currentColorScheme.highlightednodeTextColor);
+    params->addParam("Edge Text", &Options::instance().currentColorScheme.edgeTextColor);
+    params->addParam("Highlighted Edge Text", &Options::instance().currentColorScheme.highlightedEdgeTextColor);
+
     params->addButton("New", std::bind(&GraphStudioApp::addNewColorScheme, this));
     params->addSeparator();
     params->addText("Generate Grid");

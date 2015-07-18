@@ -21,6 +21,12 @@ ColorScheme::ColorScheme()
     highlightedEdgeColor1 = ci::Color("red");
     highlightedEdgeColor2 = ci::Color(0.361f, 0.129f, 0.259f);
     highlightedEdgeColor3 = ci::Color(0.361f, 0.129f, 0.259f);
+
+    nodeTextColor = ci::Color::white();
+    highlightednodeTextColor = ci::Color::black();
+    edgeTextColor = ci::Color::black();
+    highlightedEdgeTextColor = ci::Color::black();
+    
     movingNodeColor = ci::Color("white");
     addEdgeNodeColor = ci::Color("yellow");
 }
@@ -40,6 +46,12 @@ ColorScheme ColorScheme::fromXml(ci::XmlTree &xml)
     cs.highlightedEdgeColor1 = colorFromXml(xml.getChild("highlightedEdgeColor1"));
     cs.highlightedEdgeColor2 = colorFromXml(xml.getChild("highlightedEdgeColor2"));
     cs.highlightedEdgeColor3 = colorFromXml(xml.getChild("highlightedEdgeColor3"));
+
+    cs.nodeTextColor = colorFromXml(xml.getChild("nodeTextColor"));
+    cs.highlightednodeTextColor = colorFromXml(xml.getChild("highlightednodeTextColor"));
+    cs.edgeTextColor = colorFromXml(xml.getChild("edgeTextColor"));
+    cs.highlightedEdgeTextColor = colorFromXml(xml.getChild("highlightedEdgeTextColor"));
+
     cs.movingNodeColor = colorFromXml(xml.getChild("movingNodeColor"));
     cs.addEdgeNodeColor = colorFromXml(xml.getChild("addEdgeNodeColor"));
     return cs;
@@ -58,6 +70,12 @@ ci::XmlTree ColorScheme::toXml() const
     xml.push_back(colorToXml("highlightedEdgeColor1", highlightedEdgeColor1));
     xml.push_back(colorToXml("highlightedEdgeColor2", highlightedEdgeColor2));
     xml.push_back(colorToXml("highlightedEdgeColor3", highlightedEdgeColor3));
+
+    xml.push_back(colorToXml("nodeTextColor", nodeTextColor));
+    xml.push_back(colorToXml("highlightednodeTextColor", highlightednodeTextColor));
+    xml.push_back(colorToXml("edgeTextColor", edgeTextColor));
+    xml.push_back(colorToXml("highlightedEdgeTextColor", highlightedEdgeTextColor));
+
     xml.push_back(colorToXml("movingNodeColor", movingNodeColor));
     xml.push_back(colorToXml("addEdgeNodeColor", addEdgeNodeColor));
     return xml;
