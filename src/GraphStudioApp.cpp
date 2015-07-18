@@ -90,6 +90,9 @@ void GraphStudioApp::saveSettings()
     configXml.push_back(ci::XmlTree("arrowAngle", std::to_string(Options::instance().arrowAngle)));
     configXml.push_back(ci::XmlTree("showEdgeWeights", std::to_string(Options::instance().showEdgeWeights)));
     configXml.push_back(ci::XmlTree("showNodeWeights", std::to_string(Options::instance().showNodeWeights)));
+    configXml.push_back(ci::XmlTree("force", std::to_string(Options::instance().force)));
+    configXml.push_back(ci::XmlTree("speed", std::to_string(Options::instance().speed)));
+    configXml.push_back(ci::XmlTree("edgeWeightScale", std::to_string(Options::instance().edgeWeightScale)));
     ci::XmlTree csList("colorSchemes", "");
     for (const auto &cs : colorSchemes)
     {
@@ -112,7 +115,11 @@ void GraphStudioApp::loadSettings()
     Options::instance().arrowAngle = settings.getChild("arrowAngle").getValue<float>();
     Options::instance().showEdgeWeights = settings.getChild("showEdgeWeights").getValue<bool>();
     Options::instance().showNodeWeights = settings.getChild("showNodeWeights").getValue<bool>();
-    
+
+    Options::instance().force = settings.getChild("force").getValue<float>();
+    Options::instance().speed = settings.getChild("speed").getValue<int>();
+    Options::instance().edgeWeightScale = settings.getChild("edgeWeightScale").getValue<int>();
+
     ci::XmlTree csList = settings.getChild("colorSchemes");
     for (auto csIt = csList.begin(); csIt != csList.end(); ++csIt)
     {
@@ -141,6 +148,7 @@ void GraphStudioApp::setup()
     params->addSeparator();
     params->addParam("Force", &Options::instance().force, "min=1.0 max=300.0 step=1.0");
     params->addParam("Speed", &Options::instance().speed, "min=1.0 max=300.0 step=1.0");
+    params->addParam("Edge Weight Scale", &Options::instance().edgeWeightScale, "min=1.0 max=1000.0 step=1.0");
     params->addSeparator();
     params->addText("Colors");
     params->addParam("ColorScheme", colorSchemeNames, &Options::instance().currentColorSchemeIdx);

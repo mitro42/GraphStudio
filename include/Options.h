@@ -59,6 +59,7 @@ public:
     bool showEdgeWeights;
     bool showNodeWeights;
     int weightPrecision;
+    int edgeWeightScale;
 
     int algorithm;
     int startNode;
@@ -75,6 +76,7 @@ private:
         edgeWidth = 1.5f;
         highlighedEdgeWidth = 3.0f;
         force = 10.0;
+        edgeWeightScale = 100;
         int weightPrecision = 0;
         showEdgeWeights = true;
         showNodeWeights = true;

@@ -76,7 +76,7 @@ void GraphHandler::updateEdgeWeights()
         {
             auto neighbor = node.getNeighbor(j);
             auto posEnd = nodeHandlers[neighbor]->getPos();
-            auto newWeight = (posStart - posEnd).length();
+            auto newWeight = ((posStart - posEnd).length()) / 100 * Options::instance().edgeWeightScale;
             changed |= (node.getEdgeWeight(j) != newWeight);
             node.setEdgeWeight(j, newWeight);
         }

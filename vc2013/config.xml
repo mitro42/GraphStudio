@@ -7,6 +7,9 @@
 	<arrowAngle>20.000000</arrowAngle>
 	<showEdgeWeights>1</showEdgeWeights>
 	<showNodeWeights>1</showNodeWeights>
+	<force>100.000000</force>
+	<speed>60</speed>
+	<edgeWeightScale>5</edgeWeightScale>
 	<colorSchemes>
 		<colorScheme name="ColorScheme #1">
 			<backgroundColor red="245" green="245" blue="245"/>
