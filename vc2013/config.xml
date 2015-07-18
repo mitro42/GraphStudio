@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <graphStudioSettings>
 	<nodeSize>13.000000</nodeSize>
-	<edgeWidth>1.100000</edgeWidth>
+	<edgeWidth>1.500000</edgeWidth>
 	<highlightedEdgeWidth>3.300000</highlightedEdgeWidth>
 	<arrowLength>20.000000</arrowLength>
 	<arrowAngle>20.000000</arrowAngle>
@@ -12,8 +12,25 @@
 			<backgroundColor red="245" green="245" blue="245"/>
 			<nodeColor red="255" green="87" blue="34"/>
 			<edgeColor red="121" green="85" blue="72"/>
-			<highlightedNodeColor red="139" green="195" blue="74"/>
-			<highlightedEdgeColor red="255" green="196" blue="0"/>
+			<highlightedNodeColor1 red="139" green="125" blue="74"/>
+			<highlightedNodeColor2 red="139" green="195" blue="74"/>
+			<highlightedNodeColor3 red="139" green="195" blue="74"/>
+			<highlightedEdgeColor1 red="0" green="155" blue="0"/>
+			<highlightedEdgeColor2 red="255" green="196" blue="0"/>
+			<highlightedEdgeColor3 red="255" green="196" blue="0"/>
+			<movingNodeColor red="255" green="255" blue="255"/>
+			<addEdgeNodeColor red="255" green="255" blue="0"/>
+		</colorScheme>
+		<colorScheme name="ColorScheme #2">
+			<backgroundColor red="176" green="194" blue="142"/>
+			<nodeColor red="44" green="33" blue="79"/>
+			<edgeColor red="117" green="108" blue="143"/>
+			<highlightedNodeColor1 red="255" green="0" blue="0"/>
+			<highlightedNodeColor2 red="250" green="245" blue="211"/>
+			<highlightedNodeColor3 red="75" green="22" blue="51"/>
+			<highlightedEdgeColor1 red="255" green="0" blue="0"/>
+			<highlightedEdgeColor2 red="92" green="32" blue="66"/>
+			<highlightedEdgeColor3 red="92" green="32" blue="66"/>
 			<movingNodeColor red="255" green="255" blue="255"/>
 			<addEdgeNodeColor red="255" green="255" blue="0"/>
 		</colorScheme>
@@ -21,8 +38,12 @@
 			<backgroundColor red="176" green="194" blue="142"/>
 			<nodeColor red="44" green="33" blue="79"/>
 			<edgeColor red="117" green="108" blue="143"/>
-			<highlightedNodeColor red="250" green="245" blue="211"/>
-			<highlightedEdgeColor red="92" green="32" blue="66"/>
+			<highlightedNodeColor1 red="250" green="245" blue="211"/>
+			<highlightedNodeColor2 red="250" green="245" blue="211"/>
+			<highlightedNodeColor3 red="250" green="245" blue="211"/>
+			<highlightedEdgeColor1 red="92" green="32" blue="66"/>
+			<highlightedEdgeColor2 red="92" green="32" blue="66"/>
+			<highlightedEdgeColor3 red="92" green="32" blue="66"/>
 			<movingNodeColor red="255" green="255" blue="255"/>
 			<addEdgeNodeColor red="255" green="255" blue="0"/>
 		</colorScheme>

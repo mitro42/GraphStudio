@@ -432,7 +432,7 @@ void GraphHandler::drawEdge(int from, int to, bool highlight)
     if (highlight)
     {
         width = Options::instance().highlighedEdgeWidth;
-        color = Options::instance().currentColorScheme.highlightedEdgeColor;
+        color = Options::instance().currentColorScheme.highlightedEdgeColor2;
     }
 
     drawEdge(from, to, color, width);
@@ -670,18 +670,19 @@ void GraphHandler::drawAlgorithmStateMstPrim()
     auto state = mstPrimStates[animationState];
     drawEdges();
     const float highlightedWidth = Options::instance().highlighedEdgeWidth;
+    const ColorScheme &cs = Options::instance().currentColorScheme;
     for (const auto& e : state.mst)
     {        
-        drawEdge(e.from, e.to, ci::Color("orange"), highlightedWidth);
+        drawEdge(e.from, e.to, cs.highlightedEdgeColor2, highlightedWidth);
     }
 
     for (const auto& e : state.edges)
     {
-        drawEdge(e.from, e.to, ci::Color::white(), highlightedWidth);
+        drawEdge(e.from, e.to, cs.highlightedEdgeColor3, highlightedWidth);
     }
 
 
-    drawEdge(state.inspectedEdge.from, state.inspectedEdge.to, ci::Color("red"), highlightedWidth);
+    drawEdge(state.inspectedEdge.from, state.inspectedEdge.to, cs.highlightedEdgeColor1, highlightedWidth);
 
     for (int nodeIdx = 0; nodeIdx < g.getNodeCount(); ++nodeIdx)
     {
@@ -708,18 +709,19 @@ void GraphHandler::drawAlgorithmStateMstKruskal()
 {
     auto state = mstKruskalStates[animationState];
     drawEdges();
+    const ColorScheme &cs = Options::instance().currentColorScheme;
     const float highlightedWidth = Options::instance().highlighedEdgeWidth;
     for (const auto& e : state.mst)
     {
-        drawEdge(e.from, e.to, ci::Color("orange"), highlightedWidth);
+        drawEdge(e.from, e.to, cs.highlightedEdgeColor2, highlightedWidth);
     }
     
     for (const auto& e : state.edges)
     {
-        drawEdge(e.from, e.to, ci::Color::white(), highlightedWidth);
+        drawEdge(e.from, e.to, cs.highlightedEdgeColor3, highlightedWidth);
     }
 
-    drawEdge(state.inspectedEdge.from, state.inspectedEdge.to, ci::Color("red"), highlightedWidth);
+    drawEdge(state.inspectedEdge.from, state.inspectedEdge.to, cs.highlightedEdgeColor1, highlightedWidth);
 
     for (int nodeIdx = 0; nodeIdx < g.getNodeCount(); ++nodeIdx)
     {

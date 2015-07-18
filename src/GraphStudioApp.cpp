@@ -146,11 +146,14 @@ void GraphStudioApp::setup()
     params->addParam("ColorScheme", colorSchemeNames, &Options::instance().currentColorSchemeIdx);
     params->addParam("Background", &Options::instance().currentColorScheme.backgroundColor);
     params->addParam("Node ", &Options::instance().currentColorScheme.nodeColor);
-    params->addParam("Highlighted Node ", &Options::instance().currentColorScheme.highlightedNodeColor);
+    params->addParam("Highlighted Node 1", &Options::instance().currentColorScheme.highlightedNodeColor1);
+    params->addParam("Highlighted Node 2", &Options::instance().currentColorScheme.highlightedNodeColor2);
+    params->addParam("Highlighted Node 3", &Options::instance().currentColorScheme.highlightedNodeColor3);
     params->addParam("Edge ", &Options::instance().currentColorScheme.edgeColor);
-    params->addParam("Highlighted Edge ", &Options::instance().currentColorScheme.highlightedEdgeColor);
+    params->addParam("Highlighted Edge 1", &Options::instance().currentColorScheme.highlightedEdgeColor1);
+    params->addParam("Highlighted Edge 2", &Options::instance().currentColorScheme.highlightedEdgeColor2);
+    params->addParam("Highlighted Edge 3", &Options::instance().currentColorScheme.highlightedEdgeColor3);
     params->addButton("New", std::bind(&GraphStudioApp::addNewColorScheme, this));
-    params->addButton("Save", std::bind(&GraphStudioApp::storeColorScheme, this));
     params->addSeparator();
     params->addText("Generate Grid");
     params->addParam("Columns", &GraphParamsGrid::instance().columns, "min=1 step=1");
@@ -238,17 +241,22 @@ void GraphStudioApp::mouseDown( MouseEvent event )
 void GraphStudioApp::update()
 {
     gh.update();
+    if (prevColorSchemeIndex != Options::instance().currentColorSchemeIdx)
+    {
+        prevColorSchemeIndex = Options::instance().currentColorSchemeIdx;
+        Options::instance().currentColorScheme = colorSchemes[colorSchemeNames[Options::instance().currentColorSchemeIdx]];
+    }
+    else
+    {
+        storeColorScheme();
+    }
 }
 
 
 void GraphStudioApp::draw()
 {
     // clear out the window with black
-    if (prevColorSchemeIndex != Options::instance().currentColorSchemeIdx)
-    {
-        prevColorSchemeIndex = Options::instance().currentColorSchemeIdx;
-        Options::instance().currentColorScheme = colorSchemes[colorSchemeNames[Options::instance().currentColorSchemeIdx]];
-    }
+
     gl::clear(Color(0, 0, 0));
     gh.draw();
     params->draw();

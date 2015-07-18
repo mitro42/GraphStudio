@@ -21,12 +21,16 @@ struct ColorScheme
     std::string name;
     ci::Color backgroundColor;
     ci::Color nodeColor;
-    ci::Color highlightedNodeColor;
+    ci::Color highlightedNodeColor1;
+    ci::Color highlightedNodeColor2;
+    ci::Color highlightedNodeColor3;
     ci::Color movingNodeColor;
     ci::Color addEdgeNodeColor;
 
     ci::Color edgeColor;
-    ci::Color highlightedEdgeColor;
+    ci::Color highlightedEdgeColor1;
+    ci::Color highlightedEdgeColor2;
+    ci::Color highlightedEdgeColor3;
 
     ColorScheme();
     static ColorScheme fromXml(ci::XmlTree &xml);

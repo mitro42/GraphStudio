@@ -70,7 +70,7 @@ void GraphNodeHandler::draw(bool highlighted)
     ci::Color color;
     if (highlighted)
     {
-        color = Options::instance().currentColorScheme.highlightedNodeColor;
+        color = Options::instance().currentColorScheme.highlightedNodeColor1;
     }
     else
     {
