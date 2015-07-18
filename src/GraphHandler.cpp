@@ -445,6 +445,11 @@ void GraphHandler::drawHighlightEdges()
     {
         Options::instance().startNode = g.getNodeCount() - 1;
     }
+    if (Options::instance().startNode < 0 && g.getNodeCount() > 0)
+    {
+        Options::instance().startNode = 1;
+    }
+
     const auto algo = Algorithm(Options::instance().algorithm);
     if (algo == Algorithm::dijkstra)
     {
@@ -617,6 +622,7 @@ void GraphHandler::prepareAnimation()
 {
     edgeWeightDijkstraStates.clear();
     mstPrimStates.clear();
+    mstKruskalStates.clear();
     switch (Algorithm(Options::instance().algorithm))
     {
     case Algorithm::dijkstra:
@@ -640,6 +646,9 @@ void GraphHandler::prepareAnimation()
 
 void GraphHandler::drawAlgorithmStateDijkstra()
 {
+    if (animationState >= int(edgeWeightDijkstraStates.size()))
+        return;
+
     auto state = edgeWeightDijkstraStates[animationState];    
 
     drawEdges();
@@ -668,6 +677,9 @@ void GraphHandler::drawAlgorithmStateDijkstra()
 
 void GraphHandler::drawAlgorithmStateMstPrim()
 {
+    if (animationState >= int(mstPrimStates.size()))
+        return;
+
     auto state = mstPrimStates[animationState];
     drawEdges();
     const float highlightedWidth = Options::instance().highlighedEdgeWidth;
@@ -708,6 +720,9 @@ std::vector<ci::Color> GraphHandler::generateColors(int n)
 
 void GraphHandler::drawAlgorithmStateMstKruskal()
 {
+    if (animationState >= int(mstKruskalStates.size()))
+        return;
+
     auto state = mstKruskalStates[animationState];
     drawEdges();
     const ColorScheme &cs = Options::instance().currentColorScheme;
