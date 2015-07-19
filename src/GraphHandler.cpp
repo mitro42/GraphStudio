@@ -2,6 +2,7 @@
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/Rand.h"
+#include "cinder/Perlin.h"
 #include "cinder/gl/TextureFont.h"
 #include "cinder/CinderMath.h"
 #include <fstream>
@@ -85,8 +86,23 @@ void GraphHandler::updateEdgeWeights()
 
 void GraphHandler::update()
 {
+    static ci::Perlin perlin;
     std::unique_lock<std::recursive_mutex> guard(updateMutex);
     addNewEdgeIfNodesSelected();
+    if (Options::instance().randomMovement)
+    {
+        for (auto& nh : nodeHandlers)
+        {
+            ci::Vec3f v;
+            v.x = nh->getPos().x * 0.005f;
+            v.y = nh->getPos().y * 0.005f;
+            v.z = ci::app::getElapsedSeconds() * 0.1f;
+            float angle = perlin.fBm(v) * 15.0f;
+            ci::Vec2f newSpeed(sin(angle), cos(angle));
+            nh->setSpeed(newSpeed);
+            nh->update();
+        }
+    }
     if (automaticEdgeWeightUpdate)
     {
         updateEdgeWeights();

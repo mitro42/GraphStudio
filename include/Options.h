@@ -56,6 +56,7 @@ public:
     float highlighedEdgeWidth;
     float force;
     bool animationPlaying;
+    bool randomMovement;
     bool showEdgeWeights;
     bool showNodeWeights;
     int weightPrecision;
@@ -82,6 +83,7 @@ private:
         showNodeWeights = true;
         animationPlaying = false;
         algorithm = static_cast<int>(Algorithm::none);
+        randomMovement = false;
         startNode = 1;
     }
 

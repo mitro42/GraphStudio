@@ -209,6 +209,12 @@ void GraphStudioApp::keyDown(KeyEvent event)
         gh.prepareAnimation();
         return;
     }
+    if (event.getChar() == 'm')
+    {
+        Options::instance().randomMovement = !Options::instance().randomMovement;
+        if (Options::instance().randomMovement)
+            Options::instance().animationPlaying = false;
+    }
     if (event.getChar() == 's')
     {
         std::cout << "Saving graph..." << std::endl;
