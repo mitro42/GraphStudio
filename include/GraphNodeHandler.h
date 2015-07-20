@@ -18,21 +18,43 @@ public:
     void draw(const ci::Color &color);
     void draw(bool highlighted = false);
 
-    inline void update() { position += speed; }
+    inline void update() 
+    { 
+        auto vec = ci::Vec2f(1.0f, 0.0f); 
+        vec.rotate(direction); 
+        position += vec * speed; 
+        
+        position.x = std::max(margin, position.x);
+        position.x = std::min(window->getWidth() - margin, position.x);
+
+        position.y = std::max(margin, position.y);
+        position.y = std::min(window->getHeight() - margin, position.y);
+    }
     inline void clearSelection() { selection = Selection::none; }
     inline Selection getSelection() const { return selection; }
+
     inline ci::Vec2f getPos() const { return position; }
     inline void setPos(const ci::Vec2f &pos) { position = pos; }
-    inline void setSpeed(const ci::Vec2f &sp) { speed = sp; }
+
+    inline ci::Vec2f getOriginalPos() const { return originalPosition; }
+
+    inline float getDirection() { return direction; }
+    inline void setDirection(const float &dir) { direction = dir; }
+
+    inline float getSpeed() const { return speed; }
+    inline void setSpeed(float sp) { speed = sp; }
 
 private:
+    static const float margin;
     ci::signals::scoped_connection cbMouseDrag;
     ci::signals::scoped_connection cbMouseDown;
     ci::signals::scoped_connection cbMouseUp;
     ci::app::WindowRef window;
 
     ci::Vec2f position;
-    ci::Vec2f speed;
+    const ci::Vec2f originalPosition;
+    float direction;
+    float speed;
     Selection selection;
 };
 

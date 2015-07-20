@@ -3,10 +3,17 @@
 #include "cinder/Rect.h"
 #include "Options.h"
 
-GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, ci::Vec2f pos) : window(window), position(pos), selection(Selection::none)
+const float GraphNodeHandler::margin = 10.0f;
+
+GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, ci::Vec2f pos) : 
+    window(window), 
+    position(pos), 
+    originalPosition(pos), 
+    direction(0.0f),
+    speed(0.0f),
+    selection(Selection::none)
 {
     float half = Options::instance().nodeSize / 2;
-
     cbMouseDown = window->getSignalMouseDown().connect(0, std::bind(&GraphNodeHandler::mouseDown, this, std::placeholders::_1));
     cbMouseUp = window->getSignalMouseUp().connect(0, std::bind(&GraphNodeHandler::mouseUp, this, std::placeholders::_1));
     cbMouseDrag = window->getSignalMouseDrag().connect(0, std::bind(&GraphNodeHandler::mouseDrag, this, std::placeholders::_1));

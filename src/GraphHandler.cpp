@@ -93,13 +93,13 @@ void GraphHandler::update()
     {
         for (auto& nh : nodeHandlers)
         {
-            ci::Vec3f v;
-            v.x = nh->getPos().x * 0.005f;
-            v.y = nh->getPos().y * 0.005f;
-            v.z = ci::app::getElapsedSeconds() * 0.1f;
-            float angle = perlin.fBm(v) * 15.0f;
-            ci::Vec2f newSpeed(sin(angle), cos(angle));
-            nh->setSpeed(newSpeed);
+            ci::Vec2f v;
+            v.x = nh->getOriginalPos().x + float(ci::app::getElapsedSeconds()) * 0.1f;
+            v.y = nh->getOriginalPos().y + float(ci::app::getElapsedSeconds()) * 0.01f;
+            ci::Vec2f randVec = perlin.dfBm(v);
+            //ci::Vec2f newSpeed(sin(angle), cos(angle));
+            nh->setSpeed(randVec.x * 3);
+            nh->setDirection(randVec.y);
             nh->update();
         }
     }
