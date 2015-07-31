@@ -107,11 +107,39 @@ void GraphHandler::update()
     {
         updateEdgeWeights();
     }
+    if (Options::instance().animationPlaying && newState)
+    {        
+        auto state = edgeWeightDijkstraStates[animationState];
+        std::string text;
+        for (int i = 0; i < state.path.size(); ++i)
+        {
+            if (state.path[i].second == -1)
+                continue;
+            std::string line = std::to_string(state.path[i].second + 1) + "->" +
+                std::to_string(i + 1) +
+                "(" + std::to_string(int(state.path[i].first)) + ")";
+
+            if (!text.empty())
+            {
+                text += "\n";
+            }
+            text += line;
+        }
+
+        ci::TextBox legendTextBox = ci::TextBox().alignment(ci::TextBox::RIGHT).font(legendFont).size(ci::Vec2i(200, 200));
+        legendTextBox.setColor(ci::Color(1.0f, 1.0f, 1.0f));
+        legendTextBox.setBackgroundColor(ci::ColorA(0, 0, 0, 0.5));
+        legendTextBox.text(text);        
+        legendTexture = ci::gl::Texture(legendTextBox.render());
+    }
+
 }
 
 
 void GraphHandler::setup()
 {
+    legendFont = ci::Font("InputMono Black", 15);
+    legendTextureFont = ci::gl::TextureFont::create(legendFont);
 }
 
 void GraphHandler::recreateNodeHandlers()
@@ -151,7 +179,7 @@ void GraphHandler::loadGraph(std::string fileName)
     int N, M;
     in >> N >> M;
     g.clear();
-    g.setDirected(false);
+    g.setDirected(true);
     g.resize(N);
     g.setWeightedEdges(true);
     for (int i = 0; i < M; i++)
@@ -358,25 +386,34 @@ void GraphHandler::draw()
     ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);
 
     //fbo.bindFramebuffer();
+    
     if (Options::instance().animationPlaying)
     {        
         switch (Algorithm(Options::instance().algorithm))
         {
         case Algorithm::dijkstra:
-            drawAlgorithmStateDijkstra();
+            drawAlgorithmStateDijkstra(newState);
             break;
         case Algorithm::prim:
-            drawAlgorithmStateMstPrim();
+            drawAlgorithmStateMstPrim(newState);
             break;
         case Algorithm::kruskal:
-            drawAlgorithmStateMstKruskal();
+            drawAlgorithmStateMstKruskal(newState);
             break;
         }
         if (animationState < animationLastState - 1)
         {
             framesSpentInState++;
             if (framesSpentInState % Options::instance().speed == 0)
+            {
+                newState = true;
                 animationState++;
+            }
+            else
+            {
+                newState = false;
+            }
+
         }
     }
     else
@@ -504,8 +541,10 @@ void GraphHandler::drawLabels()
     const auto &cs = Options::instance().currentColorScheme;
     if (oldNodeSize != Options::instance().nodeSize)
     {
-        font = ci::Font("InputMono Black", Options::instance().nodeSize * 1.6f);
-        textureFont = ci::gl::TextureFont::create(font);
+        nodeFont = ci::Font("InputMono Black", Options::instance().nodeSize * 1.6f);
+        edgeFont = nodeFont;
+        nodeTextureFont = ci::gl::TextureFont::create(nodeFont);
+        edgeTextureFont = nodeTextureFont;
         oldNodeSize = Options::instance().nodeSize;
     }
 
@@ -516,10 +555,10 @@ void GraphHandler::drawLabels()
         {
             ci::gl::color(cs.nodeTextColor);
             auto label = std::to_string(i + 1);
-            auto labelOffset = textureFont->measureString(label) / 2;
+            auto labelOffset = nodeTextureFont->measureString(label) / 2;
             labelOffset.y *= 0.65f;
             labelOffset.x *= -1;
-            textureFont->drawString(label, nodeHandlers[i]->getPos() + labelOffset);
+            nodeTextureFont->drawString(label, nodeHandlers[i]->getPos() + labelOffset);
         }
     }
 
@@ -540,7 +579,7 @@ void GraphHandler::drawLabels()
             ci::Vec2f textMid = (fromVec + toVec) / 2;
             ci::Vec2f edgeDir = fromVec - toVec;
             float deg = ci::toDegrees(std::atan(edgeDir.y / edgeDir.x));
-            auto textRect = textureFont->measureString(labelText);
+            auto textRect = edgeTextureFont->measureString(labelText);
             float textWidth = textRect.x;
             ci::Vec2f textAlignmentOffset = edgeDir.normalized() * textWidth / 2.0f;
             if (fromVec.x < toVec.x)
@@ -560,7 +599,7 @@ void GraphHandler::drawLabels()
             }
             ci::Vec2f offset = -(fromVec + toVec).normalized() * 10; // place edge weight over the edge
             ci::gl::color(cs.edgeTextColor);
-            textureFont->drawString(labelText, offset);
+            edgeTextureFont->drawString(labelText, offset);
             ci::gl::popModelView();
         }
     }
@@ -607,7 +646,6 @@ void GraphHandler::fitToWindow()
     }
 }
 
-
 void GraphHandler::generateSpecialGraph(GraphType type)
 {
     std::cout << "GraphHandler::generateSpecialGraph(" << static_cast<int>(type) << ")\n";
@@ -628,7 +666,7 @@ void GraphHandler::generateSpecialGraph(GraphType type)
     default:
         std::cout << "GraphHandler::generateSpecialGraph - SKIP\n";
     }
-
+    newState = true;
     recreateNodeHandlers(nodePositions);
     std::cout << "End\n";
 }
@@ -660,13 +698,14 @@ void GraphHandler::prepareAnimation()
     framesSpentInState = 0;
 }
 
-void GraphHandler::drawAlgorithmStateDijkstra()
+void GraphHandler::drawAlgorithmStateDijkstra(bool newState)
 {
     if (animationState >= int(edgeWeightDijkstraStates.size()))
         return;
+    auto state = edgeWeightDijkstraStates[animationState];
 
-    auto state = edgeWeightDijkstraStates[animationState];    
-
+ 
+    const auto &cs = Options::instance().currentColorScheme;
     drawEdges();
     for (int i = 0; i < int(state.path.size()); ++i)
     {
@@ -675,23 +714,38 @@ void GraphHandler::drawAlgorithmStateDijkstra()
             continue;
         if (from == i)
             continue;
-        drawEdge(from, i, true);
+        drawEdge(from, i, cs.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
     }
 
-    std::vector<bool> nodeHighlight(g.getNodeCount(), false);
+    if (state.inspectedEdge.from != -1)
+    {
+        drawEdge(state.inspectedEdge.from, state.inspectedEdge.to, cs.highlightedEdgeColor1, Options::instance().highlighedEdgeWidth);
+    }
+
+    std::vector<ci::Color> nodeHighlight(g.getNodeCount(), cs.nodeColor);
     for (auto &p : state.openNodes)
     {
-        nodeHighlight[p.second] = true;
+        nodeHighlight[p.second] = cs.highlightedNodeColor2;
+    }
+
+    if (state.inspectedNode != -1)
+    {
+        nodeHighlight[state.inspectedNode] = cs.highlightedNodeColor1;
     }
 
     for (int i = 0; i < g.getNodeCount(); ++i)
     {
         nodeHandlers[i]->draw(nodeHighlight[i]);
     }
+
+    
+    if (legendTexture)
+        ci::gl::draw(legendTexture, ci::Vec2f(window->getWidth() - 200, 0));
 }
 
 
-void GraphHandler::drawAlgorithmStateMstPrim()
+
+void GraphHandler::drawAlgorithmStateMstPrim(bool newState)
 {
     if (animationState >= int(mstPrimStates.size()))
         return;
@@ -734,7 +788,7 @@ std::vector<ci::Color> GraphHandler::generateColors(int n)
 }
 
 
-void GraphHandler::drawAlgorithmStateMstKruskal()
+void GraphHandler::drawAlgorithmStateMstKruskal(bool newState)
 {
     if (animationState >= int(mstKruskalStates.size()))
         return;

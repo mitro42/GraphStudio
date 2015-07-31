@@ -1,7 +1,9 @@
 #pragma once
 #include <memory>
 #include <mutex>
+#include <string>
 #include <vector>
+
 #include "Graph.h"
 #include "GraphNodeHandler.h"
 
@@ -62,8 +64,13 @@ private:
     ci::signals::scoped_connection	cbMouseDown;
     ci::signals::scoped_connection	cbMouseDrag;
     ci::signals::scoped_connection	cbMouseUp;
-    ci::Font font;
-    ci::gl::TextureFontRef textureFont;
+    ci::Font edgeFont;
+    ci::Font nodeFont;
+    ci::Font legendFont;
+    ci::gl::TextureFontRef edgeTextureFont;
+    ci::gl::TextureFontRef nodeTextureFont;
+    ci::gl::TextureFontRef legendTextureFont;
+    ci::gl::Texture legendTexture;    
     ci::gl::Fbo fbo;
     ci::Area windowSize;
     std::recursive_mutex updateMutex;
@@ -75,6 +82,7 @@ private:
     bool changed = true;
     Force forceType;
 
+    bool newState;
     int animationState;
     int animationLastState;
     int framesSpentInState;
@@ -92,11 +100,12 @@ private:
     void drawLabels();
     void drawHighlightNodes();
     void drawColorScale();
+    
+    void drawAlgorithmStateDijkstra(bool newState);
+    void drawAlgorithmStateMstPrim(bool newState);
+    void drawAlgorithmStateMstKruskal(bool newState);
 
-    void drawAlgorithmStateDijkstra();
-    void drawAlgorithmStateMstPrim();
-    void drawAlgorithmStateMstKruskal();
-
+    ci::TextBox GraphHandler::getStateTextbox(const std::vector<std::string> &lines);
     std::vector<ci::Color> generateColors(int n);
 
     void repositionNodes(const std::vector<ci::Vec2f>& nodePositions);
