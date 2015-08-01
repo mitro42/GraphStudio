@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Graph.h"
+#include "GraphAnimationDrawer.h"
 #include "GraphNodeHandler.h"
 
 #include "cinder/Vector.h"
@@ -36,10 +37,10 @@ public:
     void pushNodes(ci::Vec2f position);
     void pullNodes(ci::Vec2f position);
 
-    void prepare(ci::app::WindowRef window);
+    void setup(ci::app::WindowRef window);
     void update();
-    void setup();
     void draw();
+    void prepareAnimation();
     void mouseDown(ci::app::MouseEvent &event);
     void mouseDrag(ci::app::MouseEvent &event);
     void mouseUp(ci::app::MouseEvent &event);
@@ -47,11 +48,10 @@ public:
 
     void fitToWindow();
 
-    void toggleAutomaticEdgeWeightUpdate() { automaticEdgeWeightUpdate = !automaticEdgeWeightUpdate; if (automaticEdgeWeightUpdate) g.setWeightedEdges(true); }
+    void toggleAutomaticEdgeWeightUpdate() { automaticEdgeWeightUpdate = !automaticEdgeWeightUpdate; if (automaticEdgeWeightUpdate) g->setWeightedEdges(true); }
     bool getAutomaticEdgeWeightUpdate() const { return automaticEdgeWeightUpdate; }
     void setAutomaticEdgeWeightUpdate(bool update) { automaticEdgeWeightUpdate = update; }
-
-    void prepareAnimation();
+    
     void generateSpecialGraph(GraphType type);
 private:
     enum class Force{
@@ -59,55 +59,26 @@ private:
         push = 1,
         pull = 2
     };
-
+    
     ci::app::WindowRef window;
     ci::signals::scoped_connection	cbMouseDown;
     ci::signals::scoped_connection	cbMouseDrag;
     ci::signals::scoped_connection	cbMouseUp;
-    ci::Font edgeFont;
-    ci::Font nodeFont;
-    ci::Font legendFont;
-    ci::gl::TextureFontRef edgeTextureFont;
-    ci::gl::TextureFontRef nodeTextureFont;
-    ci::gl::TextureFontRef legendTextureFont;
-    ci::gl::Texture legendTexture;    
     ci::gl::Fbo fbo;
     ci::Area windowSize;
     std::recursive_mutex updateMutex;
-    float oldNodeSize;
 
-    Graph g;
+    std::shared_ptr<Graph> g;
     std::vector<std::unique_ptr<GraphNodeHandler>> nodeHandlers;
+    std::unique_ptr<GraphAnimationDrawer> graphDrawer;
+
+    bool algorithmAnimationMode = false;
+    bool algorithmAnimationPlaying = false;
+
     bool automaticEdgeWeightUpdate = false;
     bool changed = true;
     Force forceType;
-
-    bool newState;
-    int animationState;
-    int animationLastState;
-    int framesSpentInState;
-    std::vector<graph_algorithm_capture::ShortestPathEdgeWeightDijkstraState> edgeWeightDijkstraStates;
-    std::vector<graph_algorithm_capture::MstPrimState> mstPrimStates;
-    std::vector<graph_algorithm_capture::MstKruskalState> mstKruskalStates;
-    std::vector<ci::Color> algorithmColorScale;
-
-    void drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle);
-    void drawEdge(int from, int to, ci::Color color, float width = 1.0f);
-    void drawEdge(int from, int to, bool highlight = false);
-    void drawEdges();
-    void drawHighlightEdges();
-    void drawNodes();
-    void drawLabels();
-    void drawHighlightNodes();
-    void drawColorScale();
     
-    void drawAlgorithmStateDijkstra(bool newState);
-    void drawAlgorithmStateMstPrim(bool newState);
-    void drawAlgorithmStateMstKruskal(bool newState);
-
-    ci::TextBox GraphHandler::getStateTextbox(const std::vector<std::string> &lines);
-    std::vector<ci::Color> generateColors(int n);
-
     void repositionNodes(const std::vector<ci::Vec2f>& nodePositions);
     void recreateNodeHandlers();
     void recreateNodeHandlers(const std::vector<ci::Vec2f> &nodePositions);

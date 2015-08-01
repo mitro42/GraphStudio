@@ -185,8 +185,7 @@ void GraphStudioApp::setup()
     params->addParam("Randomness", &GraphParamsTriangleMesh::instance().randomness, "min=0.0 step=0.1");
     params->addButton("Generate tri", std::bind(&GraphHandler::generateSpecialGraph, &gh, GraphHandler::GraphType::triangleMesh));
     
-    gh.prepare(getWindow());
-    gh.setup();
+    gh.setup(getWindow());
     /*
     fs::path path = getSaveFilePath();
     if (path.empty())
