@@ -6,16 +6,11 @@
 class GraphDrawer
 {
 public:
-    GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers) : g(graph), nodeHandlers(nodeHandlers)
-    {
-    }
-
+    GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window);
     ~GraphDrawer() = default;
 
     void update();
-    void setup(ci::app::WindowRef _window);
     void draw();
-
     
 protected:
 

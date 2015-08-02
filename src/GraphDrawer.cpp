@@ -2,9 +2,11 @@
 #include "GraphDrawer.h"
 #include "Options.h"
 
-void GraphDrawer::setup(ci::app::WindowRef _window)
+GraphDrawer::GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window) :
+    g(graph),
+    nodeHandlers(nodeHandlers),
+    window(window)
 {
-    window = _window;
     ci::gl::Fbo::Format format;
     format.enableColorBuffer();
     format.setSamples(4);

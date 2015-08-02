@@ -7,7 +7,8 @@
 class PrimDrawer: public GraphAnimationDrawer
 {
 public:
-    PrimDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers) : GraphAnimationDrawer(graph, nodeHandlers)
+    PrimDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window) :
+        GraphAnimationDrawer(graph, nodeHandlers, window)
     {
     }
 

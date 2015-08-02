@@ -7,7 +7,8 @@
 class KruskalDrawer : public GraphAnimationDrawer
 {
 public:
-    KruskalDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers) : GraphAnimationDrawer(graph, nodeHandlers)
+    KruskalDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window) :
+        GraphAnimationDrawer(graph, nodeHandlers, window)
     {
     }
 

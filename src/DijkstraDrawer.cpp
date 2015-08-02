@@ -84,7 +84,6 @@ void DijkstraDrawer::drawAlgorithmState()
 
 void DijkstraDrawer::drawAlgorithmResult()
 {
-    g->setDirected(true);
     startDrawing();
     drawEdges();
     auto tree = edgeWeightDijkstra(*g, Options::instance().startNode - 1, -1);
