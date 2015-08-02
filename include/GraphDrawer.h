@@ -30,6 +30,7 @@ protected:
     void drawEdge(int from, int to, ci::Color color, float width = 1.0f);
     void drawEdge(int from, int to, bool highlight = false);
 
+    void startDrawing();
     void drawEdges();
     void drawHighlightEdges();
     void drawNodes();

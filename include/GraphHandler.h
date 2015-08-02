@@ -78,6 +78,8 @@ private:
     bool automaticEdgeWeightUpdate = false;
     bool changed = true;
     Force forceType;
+
+    int currentAlgorithm;
     
     void repositionNodes(const std::vector<ci::Vec2f>& nodePositions);
     void recreateNodeHandlers();

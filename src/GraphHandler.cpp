@@ -132,6 +132,26 @@ void GraphHandler::update()
     {
         updateEdgeWeights();
     }
+    if (currentAlgorithm != Options::instance().algorithm)
+    {
+        currentAlgorithm = Options::instance().algorithm;
+        switch (Algorithm(currentAlgorithm))
+        {
+        default:
+        case Algorithm::none:
+            graphDrawer = std::make_unique<NoAlgorithmDrawer>(g, nodeHandlers);
+            break;
+        case Algorithm::prim:
+            graphDrawer = std::make_unique<PrimDrawer>(g, nodeHandlers);
+            break;
+        case Algorithm::kruskal:
+            graphDrawer = std::make_unique<KruskalDrawer>(g, nodeHandlers);
+            break;
+        case Algorithm::dijkstra:
+            graphDrawer = std::make_unique<DijkstraDrawer>(g, nodeHandlers);
+            break;
+        }
+    }
 
 }
 

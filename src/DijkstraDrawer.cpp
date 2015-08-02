@@ -29,6 +29,7 @@ void DijkstraDrawer::prepareNewState()
 
 void DijkstraDrawer::prepareAnimation()
 {
+    GraphAnimationDrawer::prepareAnimation();
     states = graph_algorithm_capture::edgeWeightDijkstraCaptureStates(*g, Options::instance().startNode - 1, -1);
     animationLastState = states.size();
 }
@@ -74,9 +75,17 @@ void DijkstraDrawer::drawAlgorithmState()
         nodeHandlers[i]->draw(nodeHighlight[i]);
     }
 
-    // edge highlights
-    /*
-    auto tree = edgeWeightDijkstra(g, Options::instance().startNode - 1, -1);
+    if (legendTexture)
+        ci::gl::draw(legendTexture, ci::Vec2f(window->getWidth() - 200, 0));
+}
+
+
+void DijkstraDrawer::drawAlgorithmResult()
+{
+    g->setDirected(true);
+    startDrawing();
+    drawEdges();
+    auto tree = edgeWeightDijkstra(*g, Options::instance().startNode - 1, -1);
     for (int i = 0; i < int(tree.size()); ++i)
     {
         auto from = tree[i].second;
@@ -86,8 +95,6 @@ void DijkstraDrawer::drawAlgorithmState()
             continue;
         drawEdge(from, i, true);
     }
-    */
-
-    if (legendTexture)
-        ci::gl::draw(legendTexture, ci::Vec2f(window->getWidth() - 200, 0));
+    drawNodes();
+    drawLabels();
 }

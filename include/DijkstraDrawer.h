@@ -13,9 +13,10 @@ public:
         legendTextureFont = ci::gl::TextureFont::create(legendFont);
     }
 
-    ~DijkstraDrawer();
+    ~DijkstraDrawer() = default;
 
     virtual void drawAlgorithmState() override;
+    virtual void drawAlgorithmResult() override;
     virtual void prepareNewState() override;
     virtual void prepareAnimation() override;
 private:

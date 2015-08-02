@@ -1,6 +1,11 @@
 #include "PrimDrawer.h"
 #include "Options.h"
 
+void PrimDrawer::prepareNewState()
+{
+
+}
+
 void PrimDrawer::drawAlgorithmState()
 {
     if (animationState >= int(states.size()))
@@ -28,18 +33,25 @@ void PrimDrawer::drawAlgorithmState()
         nodeHandlers[nodeIdx]->draw(state.visited[nodeIdx]);
     }
 
-    /*
-    auto edges = mstPrim(g, Options::instance().startNode - 1);
-    for (const auto &e : edges)
-    {
-        drawEdge(e.from, e.to, true);
-    }
-    */
     drawLabels();
 }
 
 void PrimDrawer::prepareAnimation()
 {
+    GraphAnimationDrawer::prepareAnimation();
     states = graph_algorithm_capture::mstPrimCaptureStates(*g, Options::instance().startNode - 1);
     animationLastState = states.size();
+}
+
+void PrimDrawer::drawAlgorithmResult()
+{
+    startDrawing();
+    drawEdges();
+    auto edges = mstPrim(*g, Options::instance().startNode - 1);
+    for (const auto &e : edges)
+    {
+        drawEdge(e.from, e.to, true);
+    }
+    drawNodes();
+    drawLabels();
 }

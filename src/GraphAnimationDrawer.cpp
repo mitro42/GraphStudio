@@ -18,6 +18,12 @@ void GraphAnimationDrawer::draw()
             animationState++;
         }
     }
-
-    drawAlgorithmState();
+    if (Options::instance().animationPlaying)
+    {
+        drawAlgorithmState();
+    }
+    else
+    {
+        drawAlgorithmResult();
+    }
 }

@@ -15,6 +15,7 @@ public:
     virtual void prepareAnimation();
 protected:
     virtual void drawAlgorithmState() = 0;
+    virtual void drawAlgorithmResult() = 0;
     virtual void prepare() {}
     virtual void pause() { paused = true; }
     virtual void resume() { paused = false; }

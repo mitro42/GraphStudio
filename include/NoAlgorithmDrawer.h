@@ -14,6 +14,7 @@ public:
 
     virtual void draw() { GraphDrawer::draw(); }
     virtual void drawAlgorithmState() override {}
+    virtual void drawAlgorithmResult() override { GraphDrawer::draw(); }
     virtual void prepareNewState() override {}
     virtual void prepareAnimation() override {}
 private:

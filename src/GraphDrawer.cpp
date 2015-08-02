@@ -16,16 +16,19 @@ void GraphDrawer::setup(ci::app::WindowRef _window)
 }
 
 
+void GraphDrawer::startDrawing()
+{
+    ci::gl::enableAlphaBlending();
+    ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);
+}
+
 
 void GraphDrawer::draw()
 {
     //if (!changed)
     //    return;
-    ci::gl::enableAlphaBlending();
-    
-    ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);
-
     //fbo.bindFramebuffer();
+    startDrawing();
 
     drawEdges();
     drawHighlightEdges();

@@ -1,6 +1,11 @@
 #include "KruskalDrawer.h"
 #include "Options.h"
 
+void KruskalDrawer::prepareNewState()
+{
+
+}
+
 void KruskalDrawer::drawAlgorithmState()
 {
     if (animationState >= int(states.size()))
@@ -26,20 +31,13 @@ void KruskalDrawer::drawAlgorithmState()
     {
         nodeHandlers[nodeIdx]->draw(nodeGroupColors[state.uf.root(nodeIdx)]);
     }
-
-    /*
-    auto edges = (algo == mstKruskal(g);
-    for (const auto &e : edges)
-    {
-        drawEdge(e.from, e.to, true);
-    }
-    */
-
+    
     drawLabels();
 }
 
 void KruskalDrawer::prepareAnimation()
 {
+    GraphAnimationDrawer::prepareAnimation();
     states = graph_algorithm_capture::mstKruskalCaptureStates(*g);
     animationLastState = states.size();
     nodeGroupColors = generateColors(g->getNodeCount());
@@ -58,4 +56,18 @@ void KruskalDrawer::drawColorScale(const std::vector<ci::Color> &colorScale)
             ci::gl::drawSolidRect(ci::Rectf(i*size, wHeight - size, (i + 1)*size, wHeight));
         }
     }
+}
+
+
+void KruskalDrawer::drawAlgorithmResult()
+{
+    startDrawing();
+    drawEdges();
+    auto edges = mstKruskal(*g);
+    for (const auto &e : edges)
+    {
+        drawEdge(e.from, e.to, true);
+    }
+    drawNodes();
+    drawLabels();
 }
