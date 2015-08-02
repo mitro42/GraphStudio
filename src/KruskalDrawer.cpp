@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "KruskalDrawer.h"
 #include "Options.h"
 
@@ -10,6 +11,7 @@ void KruskalDrawer::drawAlgorithmState()
 {
     if (animationState >= int(states.size()))
         return;
+    startDrawing();
 
     auto state = states[animationState];
     drawEdges();

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Options.h"
 
 std::vector<std::string> AlgorithmNames{

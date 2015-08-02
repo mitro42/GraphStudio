@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "GraphNodeHandler.h"
 
 #include "cinder/Rect.h"

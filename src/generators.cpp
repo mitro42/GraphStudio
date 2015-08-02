@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Graph.h"
 #include "generators.h"
 #include "Options.h"

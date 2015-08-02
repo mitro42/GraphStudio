@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "GraphHandler.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/GlslProg.h"

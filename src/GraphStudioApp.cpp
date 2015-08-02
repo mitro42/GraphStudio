@@ -1,9 +1,10 @@
+#include "stdafx.h"
 #include "cinder/app/AppNative.h"
-#include "cinder/Color.h"
 #include "cinder/gl/gl.h"
 #include "cinder/params/Params.h"
 #include "cinder/qtime/MovieWriter.h"
 #include "cinder/Xml.h"
+
 #include "GraphHandler.h"
 #include "Options.h"
 

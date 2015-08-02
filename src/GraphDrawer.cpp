@@ -1,4 +1,4 @@
-
+#include "stdafx.h"
 #include "GraphDrawer.h"
 #include "Options.h"
 

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "DijkstraDrawer.h"
 #include "Options.h"
 
@@ -39,8 +40,9 @@ void DijkstraDrawer::drawAlgorithmState()
 {
     if (animationState >= int(states.size()))
         return;
-    auto state = states[animationState];
+    startDrawing();
 
+    auto state = states[animationState];
 
     const auto &cs = Options::instance().currentColorScheme;
     drawEdges();

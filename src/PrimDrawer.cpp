@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "PrimDrawer.h"
 #include "Options.h"
 
@@ -10,6 +11,8 @@ void PrimDrawer::drawAlgorithmState()
 {
     if (animationState >= int(states.size()))
         return;
+
+    startDrawing();
 
     auto state = states[animationState];
     drawEdges();
