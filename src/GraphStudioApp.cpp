@@ -205,6 +205,7 @@ void GraphStudioApp::shutdown()
 
 void GraphStudioApp::keyDown(KeyEvent event)
 {
+    std::string nameBase = "graph_small2";
     if (event.getCode() == KeyEvent::KEY_SPACE)
     {
         Options::instance().animationPlaying = !Options::instance().animationPlaying;
@@ -220,15 +221,16 @@ void GraphStudioApp::keyDown(KeyEvent event)
     if (event.getChar() == 's')
     {
         std::cout << "Saving graph..." << std::endl;
-        gh.saveGraph("graph.txt");
-        gh.saveGraphPositions("graph.pos");
+        gh.saveGraph(nameBase + ".txt");
+        gh.saveGraphPositions(nameBase + ".pos");
         std::cout << "Done" << std::endl;
     }
     if (event.getChar() == 'l')
     {
         std::cout << "Loading graph..." << std::endl;
-        gh.loadGraph("input.txt");
-        gh.loadGraphPositions("graph.pos");
+        
+        gh.loadGraph(nameBase + ".txt");
+        gh.loadGraphPositions(nameBase + ".pos");
         Options::instance().startNode = 1;
         gh.fitToWindow();
         std::cout << "Done" << std::endl;
