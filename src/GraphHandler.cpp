@@ -134,7 +134,8 @@ void GraphHandler::update()
         updateEdgeWeights();
     }
     if (currentAlgorithm != Options::instance().algorithm)
-    {
+    {        
+        Options::instance().animationPlaying = false;
         currentAlgorithm = Options::instance().algorithm;
         switch (Algorithm(currentAlgorithm))
         {
@@ -186,9 +187,8 @@ void GraphHandler::loadGraph(std::string fileName)
     std::ifstream in(fileName);
     if (!in.good())
         throw("Cannot open file");
+    in >> *g;
     /*
-    in >> g;
-    */
     int N, M;
     in >> N >> M;
     g->clear();
@@ -201,6 +201,7 @@ void GraphHandler::loadGraph(std::string fileName)
         in >> a >> b >> w;
         g->addEdge(a - 1, b - 1, w);
     }
+    */
     /*
     int N;
     g->clear();
@@ -239,7 +240,7 @@ void GraphHandler::saveGraph(std::string fileName)
     std::ofstream out(fileName);
     if (!out.good())
         throw("Cannot open file");
-    out << g;
+    out << *g;
 }
 
 
