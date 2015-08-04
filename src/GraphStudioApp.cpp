@@ -172,6 +172,11 @@ void GraphStudioApp::setup()
 
     params->addButton("New", std::bind(&GraphStudioApp::addNewColorScheme, this));
     params->addSeparator();
+    params->addText("Random Edge Weights");
+    params->addParam("Min", &Options::instance().minRandomEdgeWeight, "min=1, max=1000, step=1");
+    params->addParam("Max", &Options::instance().maxRandomEdgeWeight, "min=1, max=1000, step=1");
+    params->addButton("Generate", std::bind(&GraphHandler::setRandomEdgeWeights, &gh));
+    params->addSeparator();
     params->addText("Generate Grid");
     params->addParam("Columns", &GraphParamsGrid::instance().columns, "min=1 step=1");
     params->addParam("Rows", &GraphParamsGrid::instance().rows, "min=1 step=1");

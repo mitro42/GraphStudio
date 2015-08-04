@@ -61,7 +61,8 @@ public:
     bool showNodeWeights;
     int weightPrecision;
     int edgeWeightScale;
-
+    float minRandomEdgeWeight;
+    float maxRandomEdgeWeight;
     int algorithm;
     int startNode;
     ColorScheme currentColorScheme;
@@ -85,6 +86,8 @@ private:
         algorithm = static_cast<int>(Algorithm::none);
         randomMovement = false;
         startNode = 1;
+        minRandomEdgeWeight = 0.0f;
+        maxRandomEdgeWeight = 100.0f;
     }
 
 public:

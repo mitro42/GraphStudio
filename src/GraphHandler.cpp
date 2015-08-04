@@ -8,6 +8,7 @@
 #include "cinder/CinderMath.h"
 #include <fstream>
 #include <string>
+#include <random>
 
 #include "NoAlgorithmDrawer.h"
 #include "DijkstraDrawer.h"
@@ -437,3 +438,18 @@ void GraphHandler::generateSpecialGraph(GraphType type)
     std::cout << "End\n";
 }
 
+
+void GraphHandler::setRandomEdgeWeights()
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> dis(int(Options::instance().minRandomEdgeWeight), int(Options::instance().maxRandomEdgeWeight));
+    std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
+    for (auto &node : *g)
+    {
+        for (int neighborIdx = 0; neighborIdx < node.getNeighborCount(); ++neighborIdx)
+        {
+            node.setEdgeWeight(neighborIdx, float(dis(gen)));
+        }
+    }
+}
