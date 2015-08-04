@@ -28,8 +28,10 @@ void PrimDrawer::drawAlgorithmState()
         drawEdge(e.from, e.to, cs.highlightedEdgeColor3, highlightedWidth);
     }
 
-
-    drawEdge(state.inspectedEdge.from, state.inspectedEdge.to, cs.highlightedEdgeColor1, highlightedWidth);
+    for (const auto& inspectedEdge: state.inspectedEdges)
+    {
+        drawEdge(inspectedEdge.from, inspectedEdge.to, cs.highlightedEdgeColor1, highlightedWidth);
+    }
 
     for (int nodeIdx = 0; nodeIdx < g->getNodeCount(); ++nodeIdx)
     {
