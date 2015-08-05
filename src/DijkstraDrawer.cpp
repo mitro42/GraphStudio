@@ -77,6 +77,7 @@ void DijkstraDrawer::drawAlgorithmState()
         nodeHandlers[i]->draw(nodeHighlight[i]);
     }
 
+    drawLabels();
     if (legendTexture)
         ci::gl::draw(legendTexture, ci::Vec2f(window->getWidth() - 200, 0));
 }
