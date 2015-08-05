@@ -3,6 +3,9 @@
 #include "Graph.h"
 #include "GraphNodeHandler.h"
 
+#include <cinder/gl/TextureFont.h>
+#include <cinder/gl/Fbo.h>
+
 class GraphDrawer
 {
 public:

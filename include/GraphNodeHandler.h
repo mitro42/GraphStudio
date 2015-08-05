@@ -1,5 +1,5 @@
 #pragma once
-#include "cinder/App/App.h"
+#include <cinder/App/MouseEvent.h>
 
 class GraphNodeHandler
 {

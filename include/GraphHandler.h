@@ -1,16 +1,7 @@
 #pragma once
-#include <memory>
-#include <mutex>
-#include <string>
-#include <vector>
 
-#include "Graph.h"
 #include "GraphAnimationDrawer.h"
 #include "GraphNodeHandler.h"
-
-#include "cinder/Vector.h"
-#include "cinder/gl/TextureFont.h"
-#include "cinder/gl/Fbo.h"
 
 class GraphHandler
 {

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "GraphNodeHandler.h"
 
-#include "cinder/Rect.h"
 #include "Options.h"
 
 const float GraphNodeHandler::margin = 10.0f;

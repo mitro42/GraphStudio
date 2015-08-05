@@ -1,14 +1,5 @@
 #include "stdafx.h"
 #include "GraphHandler.h"
-#include "cinder/gl/Fbo.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/Rand.h"
-#include "cinder/Perlin.h"
-#include "cinder/gl/TextureFont.h"
-#include "cinder/CinderMath.h"
-#include <fstream>
-#include <string>
-#include <random>
 
 #include "NoAlgorithmDrawer.h"
 #include "DijkstraDrawer.h"
@@ -17,7 +8,10 @@
 #include "Options.h"
 
 #include "generators.h"
+#include <random>
 
+#include <cinder/Perlin.h>
+#include <cinder/Rand.h>
 
 GraphHandler::GraphHandler() : forceType(Force::none)
 {

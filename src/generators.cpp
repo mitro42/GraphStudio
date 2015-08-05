@@ -3,7 +3,6 @@
 #include "generators.h"
 #include "Options.h"
 
-#include <cinder/Vector.h>
 #include <cinder/Rand.h>
 
 std::vector<ci::Vec2f> generateGridPositions(int N, int columns, int rows)
