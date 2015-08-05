@@ -35,9 +35,7 @@ std::vector<ci::Vec2f> generateGridPositions(int N, int columns, int rows)
 
 void generateGrid(const GraphParamsGrid& params, Graph &g, std::vector<ci::Vec2f> &nodePositions)
 {
-
-    g.clear();    
-    g.setDirected(params.directed);
+    g.clear(params.directed);
     g.setWeightedEdges(false);
     g.setWeightedNodes(false);
     for (int i = 0; i < params.rows; i++)
@@ -112,10 +110,9 @@ void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::
 
     std::vector<Edge> outerEdges;
     ci::randSeed(42);
-    g.setDirected(false);
+    g.clear(false);
     g.setWeightedEdges(false);
     g.setWeightedNodes(false);
-    g.clear();
     g.addNode();
     g.addNode();
     g.addEdge(0, 1);

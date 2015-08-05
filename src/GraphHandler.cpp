@@ -420,7 +420,6 @@ void GraphHandler::generateSpecialGraph(GraphType type)
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
     std::cout << "Start...\n";
 
-    g->clear();
     std::vector<ci::Vec2f> nodePositions;
     switch (type)
     {
