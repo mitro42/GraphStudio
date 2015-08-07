@@ -47,10 +47,10 @@ void GraphDrawer::drawEdges()
 {
     for (int nodeIdx = 0; nodeIdx < g->getNodeCount(); ++nodeIdx)
     {
-        const auto &node = g->getNode(nodeIdx);
-        for (int edgeIdx = 0; edgeIdx < node.getNeighborCount(); ++edgeIdx)
+        auto &node = g->getNode(nodeIdx);
+        for (auto edgePtr : node)
         {
-            drawEdge(nodeIdx, node.getNeighbor(edgeIdx), false);
+            drawEdge(edgePtr->from,  edgePtr->to, false);
         }
     }
 }
@@ -153,42 +153,43 @@ void GraphDrawer::drawLabels()
     // Edges
     if (Options::instance().showEdgeWeights && g->hasWeightedEdges())
     {
-        auto edges = g->getEdges();
-
-        for (const auto &edge : edges)
+        for (auto &node: *g)
         {
-            // writing edge weight
-            ci::Vec2f fromVec = nodeHandlers[edge.from]->getPos();
-            ci::Vec2f toVec = nodeHandlers[edge.to]->getPos();
+            for (auto &edgePtr : *node)
+            {
+                // writing edge weight
+                ci::Vec2f fromVec = nodeHandlers[edgePtr->from]->getPos();
+                ci::Vec2f toVec = nodeHandlers[edgePtr->to]->getPos();
 
-            std::stringstream ss;
-            ss << std::fixed << std::setprecision(Options::instance().weightPrecision) << edge.weight;
-            std::string labelText = ss.str();
-            ci::Vec2f textMid = (fromVec + toVec) / 2;
-            ci::Vec2f edgeDir = fromVec - toVec;
-            float deg = ci::toDegrees(std::atan(edgeDir.y / edgeDir.x));
-            auto textRect = edgeTextureFont->measureString(labelText);
-            float textWidth = textRect.x;
-            ci::Vec2f textAlignmentOffset = edgeDir.normalized() * textWidth / 2.0f;
-            if (fromVec.x < toVec.x)
-            {
-                textAlignmentOffset *= -1;
+                std::stringstream ss;
+                ss << std::fixed << std::setprecision(Options::instance().weightPrecision) << edgePtr->weight;
+                std::string labelText = ss.str();
+                ci::Vec2f textMid = (fromVec + toVec) / 2;
+                ci::Vec2f edgeDir = fromVec - toVec;
+                float deg = ci::toDegrees(std::atan(edgeDir.y / edgeDir.x));
+                auto textRect = edgeTextureFont->measureString(labelText);
+                float textWidth = textRect.x;
+                ci::Vec2f textAlignmentOffset = edgeDir.normalized() * textWidth / 2.0f;
+                if (fromVec.x < toVec.x)
+                {
+                    textAlignmentOffset *= -1;
+                }
+                ci::gl::pushModelView();
+                ci::gl::enableAlphaBlending();
+                ci::gl::translate(textMid - textAlignmentOffset);
+                if (edgeDir.x != 0)
+                {
+                    ci::gl::rotate(deg);
+                }
+                else
+                {
+                    ci::gl::rotate(90);
+                }
+                ci::Vec2f offset = -(fromVec + toVec).normalized() * 10; // place edge weight over the edge
+                ci::gl::color(cs.edgeTextColor);
+                edgeTextureFont->drawString(labelText, offset);
+                ci::gl::popModelView();
             }
-            ci::gl::pushModelView();
-            ci::gl::enableAlphaBlending();
-            ci::gl::translate(textMid - textAlignmentOffset);
-            if (edgeDir.x != 0)
-            {
-                ci::gl::rotate(deg);
-            }
-            else
-            {
-                ci::gl::rotate(90);
-            }
-            ci::Vec2f offset = -(fromVec + toVec).normalized() * 10; // place edge weight over the edge
-            ci::gl::color(cs.edgeTextColor);
-            edgeTextureFont->drawString(labelText, offset);
-            ci::gl::popModelView();
         }
     }
 }

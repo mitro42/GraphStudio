@@ -94,13 +94,13 @@ void GraphHandler::updateEdgeWeights()
     {
         auto &node = g->getNode(i);
         auto posStart = nodeHandlers[i]->getPos();
-        for (int j = 0; j < node.getNeighborCount(); ++j)
+        for (auto &edgePtr: node)
         {
-            auto neighbor = node.getNeighbor(j);
+            auto neighbor = edgePtr->otherEnd(i);
             auto posEnd = nodeHandlers[neighbor]->getPos();
             auto newWeight = ((posStart - posEnd).length()) / 100 * Options::instance().edgeWeightScale;
-            changed |= (node.getEdgeWeight(j) != newWeight);
-            node.setEdgeWeight(j, newWeight);
+            changed |= (edgePtr->weight != newWeight);
+            edgePtr->weight = newWeight;
         }
     }
 }
@@ -438,11 +438,11 @@ void GraphHandler::setRandomEdgeWeights()
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> dis(int(Options::instance().minRandomEdgeWeight), int(Options::instance().maxRandomEdgeWeight));
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
-    for (auto &node : *g)
+    for (auto node : *g)
     {
-        for (int neighborIdx = 0; neighborIdx < node.getNeighborCount(); ++neighborIdx)
+        for (auto edgePtr : *node)
         {
-            node.setEdgeWeight(neighborIdx, float(dis(gen)));
+            edgePtr->weight = float(dis(gen));
         }
     }
 }
