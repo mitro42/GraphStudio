@@ -35,7 +35,7 @@ void GraphNodeHandler::mouseDown(ci::app::MouseEvent &event)
 {
     if ((position - event.getPos()).length() < Options::instance().nodeSize)
     {
-        if (event.isAltDown())
+        if (event.isAltDown() && !Options::instance().animationPlaying)
         {
             selection = (selection == Selection::addEdge) ? Selection::none : Selection::addEdge;
         }

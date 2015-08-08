@@ -108,8 +108,12 @@ void GraphHandler::updateEdgeWeights()
 void GraphHandler::update()
 {
     static ci::Perlin perlin;
-    std::unique_lock<std::recursive_mutex> guard(updateMutex);
-    addNewEdgeIfNodesSelected();
+    std::unique_lock<std::recursive_mutex> guard(updateMutex);  
+    if(!Options::instance().animationPlaying)
+    {
+        addNewEdgeIfNodesSelected();
+    }
+
     if (Options::instance().randomMovement)
     {
         for (auto& nh : nodeHandlers)
@@ -124,10 +128,12 @@ void GraphHandler::update()
             nh->update();
         }
     }
-    if (automaticEdgeWeightUpdate)
+    
+    if (automaticEdgeWeightUpdate && !Options::instance().animationPlaying)
     {
         updateEdgeWeights();
     }
+
     if (currentAlgorithm != Options::instance().algorithm)
     {        
         Options::instance().animationPlaying = false;
@@ -333,7 +339,7 @@ void GraphHandler::mouseUp(ci::app::MouseEvent &event)
 
 void GraphHandler::mouseDown(ci::app::MouseEvent &event)
 {
-    if (event.isControlDown())
+    if (event.isControlDown() && !Options::instance().animationPlaying)
     {
         std::unique_lock<std::recursive_mutex> guard(updateMutex);
         nodeHandlers.emplace_back(new GraphNodeHandler(window, event.getPos()));
