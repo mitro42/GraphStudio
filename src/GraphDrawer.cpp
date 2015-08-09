@@ -65,6 +65,20 @@ void GraphDrawer::drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, floa
     ci::gl::drawLine(to, to - dir*headLength);
 }
 
+void GraphDrawer::drawArrow(ci::Vec2f from, ci::Vec2f to, ci::Color color, float width)
+{
+    ci::gl::color(color);
+    ci::gl::lineWidth(width);
+    drawArrow(from, to, Options::instance().arrowLength, Options::instance().arrowAngle);
+}
+
+void GraphDrawer::drawEdge(ci::Vec2f from, ci::Vec2f to, ci::Color color, float width)
+{
+    ci::gl::lineWidth(width);
+    ci::gl::color(color);
+    ci::gl::drawLine(from, to);
+}
+
 void GraphDrawer::drawEdge(int from, int to, ci::Color color, float width)
 {
     if (from == to)

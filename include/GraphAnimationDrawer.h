@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GraphDrawer.h"
+#include "Legend.h"
 
 class GraphAnimationDrawer : public GraphDrawer
 {
@@ -24,6 +25,7 @@ protected:
 
     int animationState;
     int animationLastState;
+    Legend legend;
 private:
     bool paused = true;
     int framesSpentInState;

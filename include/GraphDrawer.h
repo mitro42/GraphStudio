@@ -9,6 +9,7 @@
 class GraphDrawer
 {
 public:
+    friend class Legend;
     GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window);
     ~GraphDrawer() = default;
 
@@ -17,9 +18,12 @@ public:
     
 protected:
 
-    void drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle);
     void drawEdge(int from, int to, ci::Color color, float width = 1.0f);
     void drawEdge(int from, int to, bool highlight = false);
+
+    static void drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle);
+    static void drawArrow(ci::Vec2f from, ci::Vec2f to, ci::Color color, float width);
+    static void drawEdge(ci::Vec2f from, ci::Vec2f to, ci::Color color, float width);
 
     void startDrawing();
     void drawEdges();
