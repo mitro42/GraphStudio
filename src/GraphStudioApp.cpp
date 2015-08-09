@@ -173,7 +173,7 @@ void GraphStudioApp::setup()
     params->addText("Random Edge Weights");
     params->addParam("Min", &Options::instance().minRandomEdgeWeight, "min=1, max=1000, step=1");
     params->addParam("Max", &Options::instance().maxRandomEdgeWeight, "min=1, max=1000, step=1");
-    params->addButton("Generate", std::bind(&GraphHandler::setRandomEdgeWeights, &gh));
+    params->addButton("Generate Weights", std::bind(&GraphHandler::setRandomEdgeWeights, &gh));
     params->addSeparator();
     params->addText("Generate Grid");
     params->addParam("Columns", &GraphParamsGrid::instance().columns, "min=1 step=1");
@@ -183,7 +183,7 @@ void GraphStudioApp::setup()
     params->addParam("Vertical Edges", &GraphParamsGrid::instance().vertical);
     params->addParam("Diagonal /", &GraphParamsGrid::instance().upDiagonal);
     params->addParam("Diagonal \\", &GraphParamsGrid::instance().downDiagonal);
-    params->addButton("Generate", std::bind(&GraphHandler::generateSpecialGraph, &gh, GraphHandler::GraphType::grid));
+    params->addButton("Generate grid", std::bind(&GraphHandler::generateSpecialGraph, &gh, GraphHandler::GraphType::grid));
     params->addText("Generate Triangle Mesh");
     params->addParam("Triangles", &GraphParamsTriangleMesh::instance().triangles, "min=1 step=1");
     params->addParam("Randomness", &GraphParamsTriangleMesh::instance().randomness, "min=0.0 step=0.1");
