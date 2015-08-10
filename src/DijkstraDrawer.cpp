@@ -6,7 +6,7 @@ void DijkstraDrawer::prepareNewState()
 {
     auto state = states[animationState];
     std::string text;
-    for (int i = 0; i < state.path.size(); ++i)
+    for (size_t i = 0; i < state.path.size(); ++i)
     {
         if (state.path[i].second == -1)
             continue;
@@ -20,12 +20,12 @@ void DijkstraDrawer::prepareNewState()
         }
         text += line;
     }
-
+    /*
     ci::TextBox legendTextBox = ci::TextBox().alignment(ci::TextBox::RIGHT).font(legendFont).size(ci::Vec2i(200, 200));
     legendTextBox.setColor(ci::Color(1.0f, 1.0f, 1.0f));
     legendTextBox.setBackgroundColor(ci::ColorA(0, 0, 0, 0.5));
-    legendTextBox.text(text);
-    legendTexture = ci::gl::Texture(legendTextBox.render());
+    legendTextBox.text(text);    
+    */    
 }
 
 void DijkstraDrawer::prepareAnimation()
@@ -33,6 +33,14 @@ void DijkstraDrawer::prepareAnimation()
     GraphAnimationDrawer::prepareAnimation();
     states = graph_algorithm_capture::edgeWeightDijkstraCaptureStates(*g, Options::instance().startNode - 1, -1);
     animationLastState = states.size();
+    legend.clear();
+    auto &cs = Options::instance().currentColorScheme;
+    legend.add(LegendType::highlightedArrow, cs.highlightedEdgeColor2, "Minimal route tree");
+    legend.add(LegendType::highlightedArrow, cs.highlightedEdgeColor1, "Currently inspected edge");
+    legend.add(LegendType::arrow, cs.edgeColor, "Not processed yet");
+    legend.add(LegendType::node, cs.highlightedNodeColor1, "Finished");
+    legend.add(LegendType::node, cs.highlightedNodeColor2, "Reached");
+    legend.add(LegendType::node, cs.nodeColor, "Not reached yet");
 }
 
 
@@ -77,9 +85,12 @@ void DijkstraDrawer::drawAlgorithmState()
         nodeHandlers[i]->draw(nodeHighlight[i]);
     }
 
+    ci::gl::color(ci::Color::white());
+    if (legendTexture = legend.getTexture())
+    {
+        ci::gl::draw(legendTexture, ci::Vec2f(float(window->getWidth() - legendTexture.getWidth()), 0));
+    }
     drawLabels();
-    if (legendTexture)
-        ci::gl::draw(legendTexture, ci::Vec2f(window->getWidth() - 200, 0));
 }
 
 
