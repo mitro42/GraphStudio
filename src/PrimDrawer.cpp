@@ -41,6 +41,20 @@ void PrimDrawer::drawAlgorithmState()
     drawLabels();
 }
 
+void PrimDrawer::createLegend()
+{
+    legend.clear();
+    auto &cs = Options::instance().currentColorScheme;
+    legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor2, "MST");
+    legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor1, "Just found");
+    legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor3, "Found, not decided");
+    legend.add(LegendType::edge, cs.edgeColor, "Not processed yet");
+    legend.add(LegendType::node, cs.highlightedNodeColor1, "Finished");    
+    legend.add(LegendType::node, cs.nodeColor, "Remaining");
+}
+
+
+
 void PrimDrawer::prepareAnimation()
 {
     GraphAnimationDrawer::prepareAnimation();

@@ -14,10 +14,12 @@ public:
 
     ~KruskalDrawer() = default;
 
+protected:
     virtual void drawAlgorithmState() override;
     virtual void drawAlgorithmResult() override;
     virtual void prepareNewState() override;
     virtual void prepareAnimation() override;
+    virtual void createLegend() override;
 private:
     void drawColorScale(const std::vector<ci::Color> &colorScale);
     std::vector<ci::Color> nodeGroupColors;

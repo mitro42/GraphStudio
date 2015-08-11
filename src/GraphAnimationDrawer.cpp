@@ -6,6 +6,7 @@ void GraphAnimationDrawer::prepareAnimation()
 {
     animationState = 0;
     framesSpentInState = 0;
+    createLegend();
 }
 
 void GraphAnimationDrawer::draw()
@@ -26,5 +27,11 @@ void GraphAnimationDrawer::draw()
     else
     {
         drawAlgorithmResult();
+    }
+
+    ci::gl::color(ci::Color::white());
+    if (legendTexture = legend.getTexture())
+    {
+        ci::gl::draw(legendTexture, ci::Vec2f(float(window->getWidth() - legendTexture.getWidth()), 0));
     }
 }

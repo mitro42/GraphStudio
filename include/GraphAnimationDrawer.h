@@ -22,6 +22,7 @@ protected:
     virtual void pause() { paused = true; }
     virtual void resume() { paused = false; }
     virtual void prepareNewState() {}
+    virtual void createLegend() = 0;
 
     int animationState;
     int animationLastState;

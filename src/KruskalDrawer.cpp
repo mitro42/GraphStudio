@@ -37,6 +37,18 @@ void KruskalDrawer::drawAlgorithmState()
     drawLabels();
 }
 
+void KruskalDrawer::createLegend()
+{
+    legend.clear();
+    auto &cs = Options::instance().currentColorScheme;
+    legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor2, "MST");
+    legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor3, "Maybe in MST");
+    legend.add(LegendType::edge, cs.edgeColor, "Not in MST");
+    legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor1, "Inspected");
+//    legend.add(LegendType::nodes, cs.highlightedNodeColor1, "Finished");
+//    legend.add(LegendType::nodes, cs.nodeColor, "Remaining");
+}
+
 void KruskalDrawer::prepareAnimation()
 {
     GraphAnimationDrawer::prepareAnimation();

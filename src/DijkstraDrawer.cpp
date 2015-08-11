@@ -28,19 +28,23 @@ void DijkstraDrawer::prepareNewState()
     */    
 }
 
+void DijkstraDrawer::createLegend()
+{
+    legend.clear();
+    auto &cs = Options::instance().currentColorScheme;
+    legend.add(LegendType::highlightedArrow, cs.highlightedEdgeColor2, "Minimal paths");
+    legend.add(LegendType::highlightedArrow, cs.highlightedEdgeColor1, "Inspected");
+    legend.add(LegendType::arrow, cs.edgeColor, "Not processed yet");
+    legend.add(LegendType::node, cs.highlightedNodeColor1, "Finished");
+    legend.add(LegendType::node, cs.highlightedNodeColor2, "Reached");
+    legend.add(LegendType::node, cs.nodeColor, "Not reached yet");
+}
+
 void DijkstraDrawer::prepareAnimation()
 {
     GraphAnimationDrawer::prepareAnimation();
     states = graph_algorithm_capture::edgeWeightDijkstraCaptureStates(*g, Options::instance().startNode - 1, -1);
     animationLastState = states.size();
-    legend.clear();
-    auto &cs = Options::instance().currentColorScheme;
-    legend.add(LegendType::highlightedArrow, cs.highlightedEdgeColor2, "Minimal route tree");
-    legend.add(LegendType::highlightedArrow, cs.highlightedEdgeColor1, "Currently inspected edge");
-    legend.add(LegendType::arrow, cs.edgeColor, "Not processed yet");
-    legend.add(LegendType::node, cs.highlightedNodeColor1, "Finished");
-    legend.add(LegendType::node, cs.highlightedNodeColor2, "Reached");
-    legend.add(LegendType::node, cs.nodeColor, "Not reached yet");
 }
 
 
@@ -85,11 +89,6 @@ void DijkstraDrawer::drawAlgorithmState()
         nodeHandlers[i]->draw(nodeHighlight[i]);
     }
 
-    ci::gl::color(ci::Color::white());
-    if (legendTexture = legend.getTexture())
-    {
-        ci::gl::draw(legendTexture, ci::Vec2f(float(window->getWidth() - legendTexture.getWidth()), 0));
-    }
     drawLabels();
 }
 

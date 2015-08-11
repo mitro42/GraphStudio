@@ -15,11 +15,12 @@ public:
     }
 
     ~DijkstraDrawer() = default;
-
+protected:
     virtual void drawAlgorithmState() override;
     virtual void drawAlgorithmResult() override;
     virtual void prepareNewState() override;
     virtual void prepareAnimation() override;
+    virtual void createLegend() override;
 private:
     std::vector<graph_algorithm_capture::ShortestPathEdgeWeightDijkstraState> states;
 };
