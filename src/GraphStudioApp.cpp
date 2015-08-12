@@ -211,8 +211,36 @@ void GraphStudioApp::keyDown(KeyEvent event)
     std::string nameBase = "graph_small2";
     if (event.getCode() == KeyEvent::KEY_SPACE)
     {
-        Options::instance().animationPlaying = !Options::instance().animationPlaying;
-        gh.prepareAnimation();
+        // stop - play - pause - play - pause - play - until the last state is reached
+        if (!Options::instance().animationPlaying)
+        {
+            Options::instance().animationPlaying = true;
+            Options::instance().animationPaused = false;
+            gh.animationPrepare();
+        }
+        else
+        {
+            Options::instance().animationPaused = !Options::instance().animationPaused;
+            if (Options::instance().animationPaused)
+            {
+                gh.animationPause();
+            }
+            else
+            {
+                gh.animationResume();
+            }
+        }
+        
+        return;
+    }
+    else  if (event.getCode() == KeyEvent::KEY_RIGHT)
+    {
+        gh.animationNext();
+        return;
+    }
+    else  if (event.getCode() == KeyEvent::KEY_LEFT)
+    {
+        gh.animationPrevious();
         return;
     }
     if (event.getChar() == 'm')

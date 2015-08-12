@@ -15,12 +15,13 @@ public:
 
     virtual void draw();
     virtual void prepareAnimation();
+    virtual void pause() { paused = true; }
+    virtual void resume() { paused = false; }
+    virtual void nextState();
+    virtual void previousState();
 protected:
     virtual void drawAlgorithmState() = 0;
     virtual void drawAlgorithmResult() = 0;
-    virtual void prepare() {}
-    virtual void pause() { paused = true; }
-    virtual void resume() { paused = false; }
     virtual void prepareNewState() {}
     virtual void createLegend() = 0;
 
@@ -28,6 +29,7 @@ protected:
     int animationLastState;
     Legend legend;
 private:
+    bool animationMode = true;
     bool paused = true;
     int framesSpentInState;
 };

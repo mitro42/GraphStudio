@@ -56,6 +56,7 @@ public:
     float highlighedEdgeWidth;
     float force;
     bool animationPlaying;
+    bool animationPaused;
     bool randomMovement;
     bool showEdgeWeights;
     bool showNodeWeights;
@@ -83,7 +84,8 @@ private:
         showEdgeWeights = true;
         showNodeWeights = true;
         animationPlaying = false;
-        algorithm = static_cast<int>(Algorithm::none);
+        animationPaused = false;
+        algorithm = static_cast<int>(Algorithm::dijkstra);
         randomMovement = false;
         startNode = 1;
         minRandomEdgeWeight = 0.0f;

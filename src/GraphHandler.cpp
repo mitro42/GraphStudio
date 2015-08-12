@@ -47,13 +47,40 @@ void GraphHandler::draw()
 }
 
 
-void GraphHandler::prepareAnimation()
+void GraphHandler::animationPrepare()
 {
-    algorithmAnimationMode = true;
-    algorithmAnimationPlaying = true;
-    graphDrawer->prepareAnimation();
+    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
+    if (animationDrawer)
+        animationDrawer->prepareAnimation();
 }
 
+void GraphHandler::animationPause()
+{
+    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
+    if (animationDrawer)
+        animationDrawer->pause();
+}
+
+void GraphHandler::animationResume()
+{
+    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
+    if (animationDrawer)
+        animationDrawer->resume();
+}
+
+void GraphHandler::animationNext()
+{
+    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
+    if (animationDrawer)
+        animationDrawer->nextState();
+}
+
+void GraphHandler::animationPrevious()
+{
+    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
+    if (animationDrawer)
+        animationDrawer->previousState();
+}
 
 
 

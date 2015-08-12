@@ -4,6 +4,8 @@
 
 void GraphAnimationDrawer::prepareAnimation()
 {
+    animationMode = true;
+    paused = false;
     animationState = 0;
     framesSpentInState = 0;
     createLegend();
@@ -11,8 +13,8 @@ void GraphAnimationDrawer::prepareAnimation()
 
 void GraphAnimationDrawer::draw()
 {
-    if (animationState < animationLastState - 1)
-    {
+    if (animationState < animationLastState - 1 && !paused)
+    {        
         framesSpentInState++;
         if (framesSpentInState % Options::instance().speed == 0)
         {
@@ -20,7 +22,8 @@ void GraphAnimationDrawer::draw()
             animationState++;
         }
     }
-    if (Options::instance().animationPlaying)
+
+    if (animationMode)
     {
         drawAlgorithmState();
     }
@@ -33,5 +36,25 @@ void GraphAnimationDrawer::draw()
     if (legendTexture = legend.getTexture())
     {
         ci::gl::draw(legendTexture, ci::Vec2f(float(window->getWidth() - legendTexture.getWidth()), 0));
+    }
+}
+
+void GraphAnimationDrawer::nextState()
+{
+    if (animationState < animationLastState - 1)
+    {
+        animationState++;
+        prepareNewState();
+        paused = true;
+    }
+}
+
+void GraphAnimationDrawer::previousState()
+{
+    if (animationState > 0)
+    {
+        animationState--;
+        prepareNewState();
+        paused = true;
     }
 }

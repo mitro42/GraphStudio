@@ -31,7 +31,13 @@ public:
     void setup(ci::app::WindowRef window);
     void update();
     void draw();
-    void prepareAnimation();
+
+    void animationPrepare();
+    void animationPause();
+    void animationResume();
+    void animationNext();
+    void animationPrevious();
+
     void mouseDown(ci::app::MouseEvent &event);
     void mouseDrag(ci::app::MouseEvent &event);
     void mouseUp(ci::app::MouseEvent &event);
@@ -62,9 +68,6 @@ private:
     std::shared_ptr<Graph> g;
     std::vector<std::unique_ptr<GraphNodeHandler>> nodeHandlers;
     std::unique_ptr<GraphAnimationDrawer> graphDrawer;
-
-    bool algorithmAnimationMode = false;
-    bool algorithmAnimationPlaying = false;
 
     bool automaticEdgeWeightUpdate = false;
     bool changed = true;
