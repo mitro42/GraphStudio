@@ -135,7 +135,7 @@ void GraphStudioApp::setup()
 
     params = params::InterfaceGl::create("Graph Studio", Vec2i(200, 310));
     params->addParam("Node Size", &Options::instance().nodeSize, "min=1.0 max=50.0 step=1.0");
-    params->addParam("Edge Width", &Options::instance().edgeWidth, "min=0.0 max=10.0 step=0.1");
+    params->addParam("Edge Width", &Options::instance().edgeWidth, "min=0.1 max=10.0 step=0.1");
     params->addParam("Highlighted Edge Width", &Options::instance().highlighedEdgeWidth, "min=0.0 max=10.0 step=0.1");
     params->addParam("Arrow Length", &Options::instance().arrowLength, "min=1.0 max=50.0 step=1.0");
     params->addParam("Arrow Angle", &Options::instance().arrowAngle, "min=0.0 max=90.0 step=1.0");
