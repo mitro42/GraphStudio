@@ -15,7 +15,8 @@ public:
 
     void update();
     void draw();
-    
+    void resize(ci::Area newWindowSize);
+
 protected:
 
     void drawEdge(int from, int to, ci::Color color, float width = 1.0f);
@@ -32,7 +33,7 @@ protected:
     void drawLabels();
     void drawHighlightNodes();
     void drawColorScale();
-
+    
     ci::app::WindowRef window;
     const std::shared_ptr<Graph> g;
     const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers;
@@ -41,6 +42,7 @@ protected:
     ci::Font legendFont;
     ci::gl::Texture legendTexture;
 private:
+    void initFbo();
     float oldNodeSize;
     
     ci::gl::Fbo fbo;

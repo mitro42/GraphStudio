@@ -7,16 +7,25 @@ GraphDrawer::GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::un
     nodeHandlers(nodeHandlers),
     window(window)
 {
-    ci::gl::Fbo::Format format;
-    format.enableColorBuffer();
-    format.setSamples(4);
-    format.enableMipmapping();
-    fbo = ci::gl::Fbo(window->getWidth(), window->getHeight(), format);
+    initFbo();
 
     legendFont = ci::Font("InputMono Black", 15);
     legendTextureFont = ci::gl::TextureFont::create(legendFont);
 }
 
+void GraphDrawer::resize(ci::Area newWindowSize)
+{
+    initFbo();
+}
+
+void GraphDrawer::initFbo()
+{
+    ci::gl::Fbo::Format format;
+    //format.enableColorBuffer();
+    format.setSamples(8);
+    //format.enableMipmapping();
+    fbo = ci::gl::Fbo(window->getWidth(), window->getHeight(), format);
+}
 
 void GraphDrawer::startDrawing()
 {
@@ -36,7 +45,7 @@ void GraphDrawer::draw()
     drawHighlightEdges();
     drawNodes();
     drawLabels();
-
+    
     //fbo.unbindFramebuffer();
     //ci::gl::draw(fbo.getTexture());
 }
@@ -105,6 +114,13 @@ void GraphDrawer::drawEdge(int from, int to, ci::Color color, float width)
 
 void GraphDrawer::drawEdge(int from, int to, bool highlight)
 {
+    fbo.bindFramebuffer();
+    ci::Area viewPort = ci::gl::getViewport();
+    ci::gl::setViewport(fbo.getBounds());
+    ci::gl::pushMatrices();
+    ci::gl::setMatricesWindow(fbo.getSize(), false);
+    ci::gl::clear(ci::ColorA(0, 0, 0, 0.0f));
+
     float width = Options::instance().edgeWidth;
     ci::Color color = Options::instance().currentColorScheme.edgeColor;
     if (highlight)
@@ -114,6 +130,11 @@ void GraphDrawer::drawEdge(int from, int to, bool highlight)
     }
 
     drawEdge(from, to, color, width);
+
+    ci::gl::popMatrices();
+    ci::gl::setViewport(viewPort);
+    fbo.unbindFramebuffer();
+    ci::gl::draw(fbo.getTexture());
 }
 
 
@@ -140,6 +161,8 @@ void GraphDrawer::drawNodes()
 
 void GraphDrawer::drawLabels()
 {
+
+
     const auto &cs = Options::instance().currentColorScheme;
     if (oldNodeSize != Options::instance().nodeSize)
     {
@@ -206,6 +229,9 @@ void GraphDrawer::drawLabels()
             }
         }
     }
+
+
+   
 }
 
 void GraphDrawer::drawHighlightNodes()

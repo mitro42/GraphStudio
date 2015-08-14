@@ -400,6 +400,8 @@ void GraphHandler::resize(ci::Area newWindowSize)
         nh->setPos(ci::Vec2f(pos.x * xScale, pos.y * yScale));
     }
 
+    graphDrawer->resize(newWindowSize);
+
     windowSize = newWindowSize;
 }
 
