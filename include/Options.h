@@ -1,8 +1,8 @@
 #ifndef GRAPHSTUDIO_OPTIONS_H
 #define GRAPHSTUDIO_OPTIONS_H
 
-#include "cinder\Color.h"
-#include "cinder\Xml.h"
+#include "cinder/Color.h"
+#include "cinder/Xml.h"
 #include <string>
 #include <vector>
 

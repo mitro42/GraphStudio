@@ -84,13 +84,7 @@ void Legend::render()
 
         posY += rowHeight;
     }
-    /*
-    //ci::gl::clear(ci::Color::white());
-    ci::gl::lineWidth(10.0);
-    ci::gl::color(ci::Color("pink"));
-    ci::gl::drawLine(ci::Vec2f(0, 0), ci::Vec2f(width, height));
-    ci::gl::drawLine(ci::Vec2f(width, 0), ci::Vec2f(0, height));
-    */
+
     ci::gl::popMatrices();
     ci::gl::setViewport(viewPort);
 }

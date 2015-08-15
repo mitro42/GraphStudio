@@ -48,15 +48,12 @@ bool GraphDrawer::movingNodes() const
 
 void GraphDrawer::draw()
 {
-    //fbo.bindFramebuffer();
     startDrawing();
     drawEdges();
     drawHighlightEdges();
     drawNodes();
     drawLabels();
     clearChanged();
-    //fbo.unbindFramebuffer();
-    //ci::gl::draw(fbo.getTexture());
 }
 
 

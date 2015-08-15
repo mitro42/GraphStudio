@@ -8,7 +8,6 @@
 std::vector<ci::Vec2f> generateGridPositions(int N, int columns, int rows)
 {
     std::vector<ci::Vec2f> nodePositions(N);
-    //std::unique_lock<std::recursive_mutex> guard(updateMutex);
     int row = 0;
     int col = 0;
     int margin = 100;

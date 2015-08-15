@@ -20,12 +20,6 @@ void DijkstraDrawer::prepareNewState()
         }
         text += line;
     }
-    /*
-    ci::TextBox legendTextBox = ci::TextBox().alignment(ci::TextBox::RIGHT).font(legendFont).size(ci::Vec2i(200, 200));
-    legendTextBox.setColor(ci::Color(1.0f, 1.0f, 1.0f));
-    legendTextBox.setBackgroundColor(ci::ColorA(0, 0, 0, 0.5));
-    legendTextBox.text(text);    
-    */    
 }
 
 void DijkstraDrawer::createLegend()

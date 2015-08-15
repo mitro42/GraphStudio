@@ -45,8 +45,6 @@ void KruskalDrawer::createLegend()
     legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor3, "Maybe in MST");
     legend.add(LegendType::edge, cs.edgeColor, "Not in MST");
     legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor1, "Inspected");
-//    legend.add(LegendType::nodes, cs.highlightedNodeColor1, "Finished");
-//    legend.add(LegendType::nodes, cs.nodeColor, "Remaining");
 }
 
 void KruskalDrawer::prepareAnimation()
