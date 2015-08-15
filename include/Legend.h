@@ -37,13 +37,15 @@ public:
     void add(LegendType type, ci::Color color, const std::string &label)
     {
         contents.emplace_back(type, color, label);
-        render();
+        changed = true;
     }
 
     ci::gl::Texture getTexture();
 
 private:
     void render();
+
+    bool changed = true;
 
     int width;
     int height;    

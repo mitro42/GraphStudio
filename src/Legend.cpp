@@ -14,9 +14,14 @@ Legend::Legend() : width(0), height(0)
 
 ci::gl::Texture Legend::getTexture()
 { 
-    if (!fbo)
+    if (!fbo && contents.empty())
     {
         return ci::gl::Texture();
+    }
+    else 
+    {
+        render();
+        changed = false;
     }
 
     return fbo.getTexture(); 
