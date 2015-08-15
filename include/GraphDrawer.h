@@ -41,9 +41,12 @@ protected:
     const std::shared_ptr<Graph> g;
     const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers;
     std::vector<ci::Color> generateColors(int n);
-    ci::gl::TextureFontRef legendTextureFont;
+
     ci::Font legendFont;
     ci::gl::Texture legendTexture;
+    ci::gl::TextureFontRef legendTextureFont;
+    ci::gl::TextureFontRef edgeTextureFont;
+    ci::gl::TextureFontRef nodeTextureFont;
 private:
     bool changed = true;
     void initFbo();
@@ -54,10 +57,6 @@ private:
 
     ci::Font edgeFont;
     ci::Font nodeFont;
-    
-    ci::gl::TextureFontRef edgeTextureFont;
-    ci::gl::TextureFontRef nodeTextureFont;
-
     
     ci::TextBox getStateTextbox(const std::vector<std::string> &lines);
 };

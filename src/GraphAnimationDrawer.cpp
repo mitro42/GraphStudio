@@ -2,6 +2,7 @@
 #include "GraphAnimationDrawer.h"
 #include "Options.h"
 
+#include <string>
 void GraphAnimationDrawer::prepareAnimation()
 {
     animationMode = true;
@@ -9,6 +10,13 @@ void GraphAnimationDrawer::prepareAnimation()
     animationState = 0;
     framesSpentInState = 0;
     createLegend();
+}
+
+void GraphAnimationDrawer::drawAnimationStateNumber()
+{
+    ci::gl::color(ci::ColorA(0.0f, 0.0f, 0.0f, 0.5f));
+    std::string stateNumber = std::to_string(animationState) + "/" + std::to_string(animationLastState);
+    nodeTextureFont->drawString(stateNumber, ci::Vec2f(20.0f, window->getHeight() - 20.0f));
 }
 
 void GraphAnimationDrawer::draw()
@@ -24,7 +32,7 @@ void GraphAnimationDrawer::draw()
     }
 
     if (animationMode)
-    {
+    {        
         drawAlgorithmState();
     }
     else
@@ -37,6 +45,8 @@ void GraphAnimationDrawer::draw()
     {
         ci::gl::draw(legendTexture, ci::Vec2f(float(window->getWidth() - legendTexture.getWidth()), 0));
     }
+
+    drawAnimationStateNumber();
     clearChanged();
 }
 

@@ -24,6 +24,7 @@ protected:
     virtual void drawAlgorithmResult() = 0;
     virtual void prepareNewState() {}
     virtual void createLegend() = 0;
+    virtual void drawAnimationStateNumber();
 
     int animationState;
     int animationLastState;
