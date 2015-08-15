@@ -29,7 +29,7 @@ protected:
     int animationLastState;
     Legend legend;
 private:
-    bool animationMode = true;
+    bool animationMode = false;
     bool paused = true;
     int framesSpentInState;
 };

@@ -37,6 +37,7 @@ void GraphAnimationDrawer::draw()
     {
         ci::gl::draw(legendTexture, ci::Vec2f(float(window->getWidth() - legendTexture.getWidth()), 0));
     }
+    clearChanged();
 }
 
 void GraphAnimationDrawer::nextState()

@@ -32,6 +32,8 @@ public:
     void update();
     void draw();
 
+    void setChanged() { changed = true; }
+
     void animationPrepare();
     void animationPause();
     void animationResume();
@@ -61,7 +63,7 @@ private:
     ci::signals::scoped_connection	cbMouseDown;
     ci::signals::scoped_connection	cbMouseDrag;
     ci::signals::scoped_connection	cbMouseUp;
-    ci::gl::Fbo fbo;
+    
     ci::Area windowSize;
     std::recursive_mutex updateMutex;
 

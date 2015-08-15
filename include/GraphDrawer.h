@@ -13,10 +13,10 @@ public:
     GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window);
     ~GraphDrawer() = default;
 
-    void update();
+    //void update();
     void draw();
     void resize(ci::Area newWindowSize);
-
+    void setChanged() { changed = true; }
 protected:
 
     void drawEdge(int from, int to, ci::Color color, float width = 1.0f);
@@ -33,7 +33,10 @@ protected:
     void drawLabels();
     void drawHighlightNodes();
     void drawColorScale();
-    
+
+    void clearChanged() { changed = false; }
+    bool movingNodes() const;
+        
     ci::app::WindowRef window;
     const std::shared_ptr<Graph> g;
     const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers;
@@ -42,10 +45,12 @@ protected:
     ci::Font legendFont;
     ci::gl::Texture legendTexture;
 private:
+    bool changed = true;
     void initFbo();
     float oldNodeSize;
     
-    ci::gl::Fbo fbo;
+    ci::gl::Fbo edgeFbo;
+    ci::gl::Fbo labelFbo;
 
     ci::Font edgeFont;
     ci::Font nodeFont;

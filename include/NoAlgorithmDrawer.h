@@ -14,7 +14,7 @@ public:
     ~NoAlgorithmDrawer() = default;
 
 protected:
-    virtual void draw() { GraphDrawer::draw(); }
+    virtual void draw() override { GraphDrawer::draw(); }
     virtual void drawAlgorithmState() override {}
     virtual void drawAlgorithmResult() override { GraphDrawer::draw(); }
     virtual void prepareNewState() override {}

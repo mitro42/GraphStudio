@@ -2,6 +2,9 @@
 #include "GraphDrawer.h"
 #include "Options.h"
 
+#include <algorithm>
+#include <numeric>
+
 GraphDrawer::GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window) :
     g(graph),
     nodeHandlers(nodeHandlers),
@@ -22,30 +25,36 @@ void GraphDrawer::initFbo()
 {
     ci::gl::Fbo::Format format;
     //format.enableColorBuffer();
-    format.setSamples(8);
+    format.setSamples(4);
     //format.enableMipmapping();
-    fbo = ci::gl::Fbo(window->getWidth(), window->getHeight(), format);
+    edgeFbo = ci::gl::Fbo(window->getWidth(), window->getHeight(), format);
+    labelFbo = ci::gl::Fbo(window->getWidth(), window->getHeight(), format);
 }
 
 void GraphDrawer::startDrawing()
 {
     ci::gl::enableAlphaBlending();
-    ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);
+    ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);    
 }
 
 
+bool GraphDrawer::movingNodes() const
+{
+    return std::accumulate(begin(nodeHandlers), end(nodeHandlers), false,
+        [](bool lhs, const std::unique_ptr<GraphNodeHandler>& rhs) 
+            { return lhs || (rhs->getSelection() == GraphNodeHandler::Selection::move); }
+    );
+}
+
 void GraphDrawer::draw()
 {
-    //if (!changed)
-    //    return;
     //fbo.bindFramebuffer();
     startDrawing();
-
     drawEdges();
     drawHighlightEdges();
     drawNodes();
     drawLabels();
-    
+    clearChanged();
     //fbo.unbindFramebuffer();
     //ci::gl::draw(fbo.getTexture());
 }
@@ -54,14 +63,29 @@ void GraphDrawer::draw()
 
 void GraphDrawer::drawEdges()
 {
-    for (int nodeIdx = 0; nodeIdx < g->getNodeCount(); ++nodeIdx)
+    if (changed)
     {
-        auto &node = g->getNode(nodeIdx);
-        for (auto edgePtr : node)
+        //std::cout << "Redrawing edges" << std::endl;
+        edgeFbo.bindFramebuffer();
+        ci::Area viewPort = ci::gl::getViewport();
+        ci::gl::setViewport(edgeFbo.getBounds());
+        ci::gl::pushMatrices();
+        ci::gl::setMatricesWindow(edgeFbo.getSize(), false);
+        ci::gl::clear(ci::ColorA(0, 0, 0, 0.0f));
+
+        for (int nodeIdx = 0; nodeIdx < g->getNodeCount(); ++nodeIdx)
         {
-            drawEdge(edgePtr->from,  edgePtr->to, false);
+            auto &node = g->getNode(nodeIdx);
+            for (auto edgePtr : node)
+            {
+                drawEdge(edgePtr->from, edgePtr->to, false);
+            }
         }
+        ci::gl::popMatrices();
+        ci::gl::setViewport(viewPort);
+        edgeFbo.unbindFramebuffer();        
     }
+    ci::gl::draw(edgeFbo.getTexture());
 }
 
 void GraphDrawer::drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle)
@@ -114,12 +138,6 @@ void GraphDrawer::drawEdge(int from, int to, ci::Color color, float width)
 
 void GraphDrawer::drawEdge(int from, int to, bool highlight)
 {
-    fbo.bindFramebuffer();
-    ci::Area viewPort = ci::gl::getViewport();
-    ci::gl::setViewport(fbo.getBounds());
-    ci::gl::pushMatrices();
-    ci::gl::setMatricesWindow(fbo.getSize(), false);
-    ci::gl::clear(ci::ColorA(0, 0, 0, 0.0f));
 
     float width = Options::instance().edgeWidth;
     ci::Color color = Options::instance().currentColorScheme.edgeColor;
@@ -128,13 +146,7 @@ void GraphDrawer::drawEdge(int from, int to, bool highlight)
         width = Options::instance().highlighedEdgeWidth;
         color = Options::instance().currentColorScheme.highlightedEdgeColor2;
     }
-
     drawEdge(from, to, color, width);
-
-    ci::gl::popMatrices();
-    ci::gl::setViewport(viewPort);
-    fbo.unbindFramebuffer();
-    ci::gl::draw(fbo.getTexture());
 }
 
 
@@ -161,78 +173,92 @@ void GraphDrawer::drawNodes()
 
 void GraphDrawer::drawLabels()
 {
-
-
-    const auto &cs = Options::instance().currentColorScheme;
-    if (oldNodeSize != Options::instance().nodeSize)
+    if (changed)
     {
-        nodeFont = ci::Font("InputMono Black", Options::instance().nodeSize * 1.6f);
-        edgeFont = nodeFont;
-        nodeTextureFont = ci::gl::TextureFont::create(nodeFont);
-        edgeTextureFont = nodeTextureFont;
-        oldNodeSize = Options::instance().nodeSize;
-    }
+        //std::cout << "Redrawing labels" << std::endl;
+        labelFbo.bindFramebuffer();
+        ci::Area viewPort = ci::gl::getViewport();
+        ci::gl::setViewport(labelFbo.getBounds());
+        ci::gl::pushMatrices();
+        ci::gl::setMatricesWindow(labelFbo.getSize(), false);
+        ci::gl::clear(ci::ColorA(0, 0, 0, 0.0f));
 
-    // Nodes
-    if (Options::instance().showNodeWeights)
-    {
-        for (int i = 0; i < g->getNodeCount(); ++i)
+
+        const auto &cs = Options::instance().currentColorScheme;
+        if (oldNodeSize != Options::instance().nodeSize)
         {
-            ci::gl::color(cs.nodeTextColor);
-            auto label = std::to_string(i + 1);
-            auto labelOffset = nodeTextureFont->measureString(label) / 2;
-            labelOffset.y *= 0.65f;
-            labelOffset.x *= -1;
-            nodeTextureFont->drawString(label, nodeHandlers[i]->getPos() + labelOffset);
+            nodeFont = ci::Font("InputMono Black", Options::instance().nodeSize * 1.6f);
+            edgeFont = nodeFont;
+            nodeTextureFont = ci::gl::TextureFont::create(nodeFont);
+            edgeTextureFont = nodeTextureFont;
+            oldNodeSize = Options::instance().nodeSize;
         }
-    }
 
-    // Edges
-    if (Options::instance().showEdgeWeights && g->hasWeightedEdges())
-    {
-        for (auto &node: *g)
+        // Nodes
+        if (Options::instance().showNodeWeights)
         {
-            for (auto &edgePtr : *node)
+            for (int i = 0; i < g->getNodeCount(); ++i)
             {
-                // writing edge weight
-                ci::Vec2f fromVec = nodeHandlers[edgePtr->from]->getPos();
-                ci::Vec2f toVec = nodeHandlers[edgePtr->to]->getPos();
-
-                std::stringstream ss;
-                ss << std::fixed << std::setprecision(Options::instance().weightPrecision) << edgePtr->weight;
-                std::string labelText = ss.str();
-                ci::Vec2f textMid = (fromVec + toVec) / 2;
-                ci::Vec2f edgeDir = fromVec - toVec;
-                float deg = ci::toDegrees(std::atan(edgeDir.y / edgeDir.x));
-                auto textRect = edgeTextureFont->measureString(labelText);
-                float textWidth = textRect.x;
-                ci::Vec2f textAlignmentOffset = edgeDir.normalized() * textWidth / 2.0f;
-                if (fromVec.x < toVec.x)
-                {
-                    textAlignmentOffset *= -1;
-                }
-                ci::gl::pushModelView();
-                ci::gl::enableAlphaBlending();
-                ci::gl::translate(textMid - textAlignmentOffset);
-                if (edgeDir.x != 0)
-                {
-                    ci::gl::rotate(deg);
-                }
-                else
-                {
-                    ci::gl::rotate(90);
-                }
-                ci::Vec2f offset = -(fromVec + toVec).normalized() * 10; // place edge weight over the edge
-                ci::gl::color(cs.edgeTextColor);
-                edgeTextureFont->drawString(labelText, offset);
-                ci::gl::popModelView();
+                ci::gl::color(cs.nodeTextColor);
+                auto label = std::to_string(i + 1);
+                auto labelOffset = nodeTextureFont->measureString(label) / 2;
+                labelOffset.y *= 0.65f;
+                labelOffset.x *= -1;
+                nodeTextureFont->drawString(label, nodeHandlers[i]->getPos() + labelOffset);
             }
         }
+
+        // Edges
+        if (Options::instance().showEdgeWeights && g->hasWeightedEdges())
+        {
+            for (auto &node : *g)
+            {
+                for (auto &edgePtr : *node)
+                {
+                    // writing edge weight
+                    ci::Vec2f fromVec = nodeHandlers[edgePtr->from]->getPos();
+                    ci::Vec2f toVec = nodeHandlers[edgePtr->to]->getPos();
+
+                    std::stringstream ss;
+                    ss << std::fixed << std::setprecision(Options::instance().weightPrecision) << edgePtr->weight;
+                    std::string labelText = ss.str();
+                    ci::Vec2f textMid = (fromVec + toVec) / 2;
+                    ci::Vec2f edgeDir = fromVec - toVec;
+                    float deg = ci::toDegrees(std::atan(edgeDir.y / edgeDir.x));
+                    auto textRect = edgeTextureFont->measureString(labelText);
+                    float textWidth = textRect.x;
+                    ci::Vec2f textAlignmentOffset = edgeDir.normalized() * textWidth / 2.0f;
+                    if (fromVec.x < toVec.x)
+                    {
+                        textAlignmentOffset *= -1;
+                    }
+                    ci::gl::pushModelView();
+                    ci::gl::enableAlphaBlending();
+                    ci::gl::translate(textMid - textAlignmentOffset);
+                    if (edgeDir.x != 0)
+                    {
+                        ci::gl::rotate(deg);
+                    }
+                    else
+                    {
+                        ci::gl::rotate(90);
+                    }
+                    ci::Vec2f offset = -(fromVec + toVec).normalized() * 10; // place edge weight over the edge
+                    ci::gl::color(cs.edgeTextColor);
+                    edgeTextureFont->drawString(labelText, offset);
+                    ci::gl::popModelView();
+                }
+            }
+        }
+
+        ci::gl::popMatrices();
+        ci::gl::setViewport(viewPort);
+        labelFbo.unbindFramebuffer();        
     }
-
-
-   
+    ci::gl::draw(labelFbo.getTexture());
 }
+   
+
 
 void GraphDrawer::drawHighlightNodes()
 {

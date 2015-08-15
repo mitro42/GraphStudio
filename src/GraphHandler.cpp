@@ -41,9 +41,11 @@ void GraphHandler::draw()
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
     if (!guard.try_lock())
         return;
+    if (changed)
+        graphDrawer->setChanged();
 
     graphDrawer->draw();
-
+    changed = false;
 }
 
 
@@ -192,7 +194,7 @@ void GraphHandler::recreateNodeHandlers()
     for (const auto &node : *g)
     {
         auto pos = ci::Vec2f(ci::Rand::randFloat() * window->getWidth(), ci::Rand::randFloat() * window->getHeight());
-        nodeHandlers.emplace_back(new GraphNodeHandler(window, pos));
+        nodeHandlers.emplace_back(new GraphNodeHandler(window, *this, pos));
     }
     changed = true;
 }
@@ -203,7 +205,7 @@ void GraphHandler::recreateNodeHandlers(const std::vector<ci::Vec2f> &nodePositi
     nodeHandlers.clear();
     for (int i = 0; i < g->getNodeCount(); ++i)
     {
-        nodeHandlers.emplace_back(new GraphNodeHandler(window, nodePositions[i]));
+        nodeHandlers.emplace_back(new GraphNodeHandler(window, *this, nodePositions[i]));
     }
     changed = true;
 }
@@ -316,6 +318,7 @@ void GraphHandler::repositionNodes(const std::vector<ci::Vec2f>& nodePositions)
     {
         nodeHandlers[i]->setPos(nodePositions[i]);
     }
+    changed = true;
 }
 
 
@@ -328,6 +331,7 @@ void GraphHandler::pushNodes(ci::Vec2f position, float force)
         nodePosition += forceVect.normalized() * (force / forceVect.lengthSquared()) * 10;
         nh->setPos(nodePosition);
     }
+    changed = true;
 }
 
 
@@ -369,7 +373,7 @@ void GraphHandler::mouseDown(ci::app::MouseEvent &event)
     if (event.isControlDown() && !Options::instance().animationPlaying)
     {
         std::unique_lock<std::recursive_mutex> guard(updateMutex);
-        nodeHandlers.emplace_back(new GraphNodeHandler(window, event.getPos()));
+        nodeHandlers.emplace_back(new GraphNodeHandler(window, *this, event.getPos()));
         g->addNode();
         changed = true;
     }
@@ -403,6 +407,7 @@ void GraphHandler::resize(ci::Area newWindowSize)
     graphDrawer->resize(newWindowSize);
 
     windowSize = newWindowSize;
+    changed = true;
 }
 
 
@@ -441,6 +446,7 @@ void GraphHandler::fitToWindow()
         float newY = ((nh->getPos().y) - minY) / boundingRectHeight * window->getHeight() * (1 - 2 * marginY) + window->getHeight() * marginY;
         nh->setPos(ci::Vec2f(newX, newY));
     }
+    changed = true;
 }
 
 void GraphHandler::generateSpecialGraph(GraphType type)
@@ -463,6 +469,7 @@ void GraphHandler::generateSpecialGraph(GraphType type)
         std::cout << "GraphHandler::generateSpecialGraph - SKIP\n";
     }
     recreateNodeHandlers(nodePositions);
+    changed = true;
     std::cout << "End\n";
 }
 
@@ -480,4 +487,5 @@ void GraphHandler::setRandomEdgeWeights()
             edgePtr->weight = float(dis(gen));
         }
     }
+    changed = true;
 }

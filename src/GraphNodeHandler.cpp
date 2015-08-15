@@ -1,12 +1,15 @@
 #include "stdafx.h"
 #include "GraphNodeHandler.h"
 
+#include "GraphHandler.h"
 #include "Options.h"
+
 
 const float GraphNodeHandler::margin = 10.0f;
 
-GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, ci::Vec2f pos) : 
+GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, GraphHandler &graphHandler, ci::Vec2f pos) : 
     window(window), 
+    graphHandler(graphHandler),
     position(pos), 
     originalPosition(pos), 
     direction(0.0f),
@@ -26,6 +29,7 @@ void GraphNodeHandler::mouseDrag(ci::app::MouseEvent &event)
     if (selection == Selection::move)
     {
         position = event.getPos();
+        graphHandler.setChanged();
     }
     event.setHandled(selection == Selection::move);
 }

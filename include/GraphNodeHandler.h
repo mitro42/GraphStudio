@@ -1,6 +1,8 @@
 #pragma once
 #include <cinder/App/MouseEvent.h>
 
+class GraphHandler;
+
 class GraphNodeHandler
 {
 public:
@@ -10,7 +12,7 @@ public:
         addEdge
     };
 
-    GraphNodeHandler(ci::app::WindowRef window, ci::Vec2f pos);
+    GraphNodeHandler(ci::app::WindowRef window, GraphHandler &graphHandler, ci::Vec2f pos);
     
     void mouseDrag(ci::app::MouseEvent &event);
     void mouseDown(ci::app::MouseEvent &event);
@@ -50,7 +52,7 @@ private:
     ci::signals::scoped_connection cbMouseDown;
     ci::signals::scoped_connection cbMouseUp;
     ci::app::WindowRef window;
-
+    GraphHandler &graphHandler;
     ci::Vec2f position;
     const ci::Vec2f originalPosition;
     float direction;
