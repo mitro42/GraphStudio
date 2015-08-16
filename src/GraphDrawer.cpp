@@ -35,6 +35,15 @@ void GraphDrawer::startDrawing()
 {
     ci::gl::enableAlphaBlending();
     ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);    
+    if (oldNodeSize != Options::instance().nodeSize)
+    {
+        nodeFont = ci::Font("InputMono Black", Options::instance().nodeSize * 1.6f);
+        edgeFont = nodeFont;
+        nodeTextureFont = ci::gl::TextureFont::create(nodeFont);
+        edgeTextureFont = nodeTextureFont;
+        oldNodeSize = Options::instance().nodeSize;
+        changed = true;
+    }
 }
 
 
@@ -180,16 +189,7 @@ void GraphDrawer::drawLabels()
         ci::gl::setMatricesWindow(labelFbo.getSize(), false);
         ci::gl::clear(ci::ColorA(0, 0, 0, 0.0f));
 
-
         const auto &cs = Options::instance().currentColorScheme;
-        if (oldNodeSize != Options::instance().nodeSize)
-        {
-            nodeFont = ci::Font("InputMono Black", Options::instance().nodeSize * 1.6f);
-            edgeFont = nodeFont;
-            nodeTextureFont = ci::gl::TextureFont::create(nodeFont);
-            edgeTextureFont = nodeTextureFont;
-            oldNodeSize = Options::instance().nodeSize;
-        }
 
         // Nodes
         if (Options::instance().showNodeWeights)
