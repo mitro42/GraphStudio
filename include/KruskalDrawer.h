@@ -12,7 +12,7 @@ public:
     {
     }
 
-    ~KruskalDrawer() = default;
+    virtual ~KruskalDrawer() = default;
 
 protected:
     virtual void drawAlgorithmState() override;

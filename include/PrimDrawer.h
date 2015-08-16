@@ -12,7 +12,7 @@ public:
     {
     }
 
-    ~PrimDrawer() = default;
+    virtual ~PrimDrawer() = default;
 protected:
     virtual void drawAlgorithmState() override;
     virtual void drawAlgorithmResult() override;

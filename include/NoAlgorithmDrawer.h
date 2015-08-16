@@ -11,7 +11,8 @@ public:
         GraphAnimationDrawer(graph, nodeHandlers, window)
     {
     }
-    ~NoAlgorithmDrawer() = default;
+
+    virtual ~NoAlgorithmDrawer() = default;
 
 protected:
     virtual void draw() override { GraphDrawer::draw(); }

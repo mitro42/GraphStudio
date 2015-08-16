@@ -11,7 +11,7 @@ public:
     {
     }
 
-    ~GraphAnimationDrawer() = default;
+    virtual ~GraphAnimationDrawer() = default;
 
     virtual void draw();
     virtual void prepareAnimation();

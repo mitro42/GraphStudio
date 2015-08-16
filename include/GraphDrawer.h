@@ -11,7 +11,7 @@ class GraphDrawer
 public:
     friend class Legend;
     GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window);
-    ~GraphDrawer() = default;
+    virtual ~GraphDrawer() = default;
 
     //void update();
     void draw();
