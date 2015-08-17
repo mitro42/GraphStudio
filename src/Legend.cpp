@@ -18,8 +18,8 @@ ci::gl::Texture Legend::getTexture()
     {
         return ci::gl::Texture();
     }
-    else 
-    {
+    else
+    {        
         render();
         changed = false;
     }
@@ -40,6 +40,8 @@ void Legend::render()
     {
         fbo = ci::gl::Fbo(int(requiredSize.x), int(requiredSize.y), format);
     }
+    else
+        return;
     
     ci::gl::SaveFramebufferBinding bindingSaver;
     fbo.bindFramebuffer();
