@@ -29,8 +29,9 @@ void DijkstraDrawer::createLegend()
     legend.add(LegendType::highlightedArrow, cs.highlightedEdgeColor2, "Minimal paths");
     legend.add(LegendType::highlightedArrow, cs.highlightedEdgeColor1, "Inspected");
     legend.add(LegendType::arrow, cs.edgeColor, "Not processed yet");
-    legend.add(LegendType::node, cs.highlightedNodeColor1, "Finished");
+    legend.add(LegendType::node, cs.highlightedNodeColor3, "Finished");
     legend.add(LegendType::node, cs.highlightedNodeColor2, "Reached");
+    legend.add(LegendType::node, cs.highlightedNodeColor1, "Inspected");
     legend.add(LegendType::node, cs.nodeColor, "Not reached yet");
 }
 
@@ -47,9 +48,8 @@ void DijkstraDrawer::drawAlgorithmState()
     if (animationState >= int(states.size()))
         return;
     startDrawing();
-
     auto state = states[animationState];
-
+    
     const auto &cs = Options::instance().currentColorScheme;
     drawEdges();
     for (int i = 0; i < int(state.path.size()); ++i)
@@ -73,6 +73,11 @@ void DijkstraDrawer::drawAlgorithmState()
         nodeHighlight[p.second] = cs.highlightedNodeColor2;
     }
 
+    for (auto &p : state.closedNodes)
+    {
+        nodeHighlight[p.second] = cs.highlightedNodeColor3;
+    }
+
     if (state.inspectedNode != -1)
     {
         nodeHighlight[state.inspectedNode] = cs.highlightedNodeColor1;
@@ -84,6 +89,7 @@ void DijkstraDrawer::drawAlgorithmState()
     }
 
     drawLabels();
+    drawStepDescription(state.description);    
 }
 
 
