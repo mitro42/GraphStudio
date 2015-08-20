@@ -15,7 +15,7 @@ void GraphAnimationDrawer::prepareAnimation()
 void GraphAnimationDrawer::drawAnimationStateNumber()
 {
     ci::gl::color(ci::ColorA(0.0f, 0.0f, 0.0f, 0.5f));
-    std::string stateNumber = std::to_string(animationState) + "/" + std::to_string(animationLastState);
+    std::string stateNumber = std::to_string(animationState + 1) + "/" + std::to_string(animationLastState);
     nodeTextureFont->drawString(stateNumber, ci::Vec2f(20.0f, window->getHeight() - 20.0f));
 }
 
