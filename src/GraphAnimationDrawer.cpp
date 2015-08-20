@@ -69,3 +69,11 @@ void GraphAnimationDrawer::previousState()
         paused = true;
     }
 }
+
+
+void GraphAnimationDrawer::drawStepDescription(const std::string& description)
+{
+    ci::gl::color(ci::ColorA(0.0f, 0.0f, 0.0f, 0.7f));
+    auto size = stepDescriptionTextureFont->measureString(description);
+    stepDescriptionTextureFont->drawString(description, ci::Vec2f((window->getWidth() - size.x) / 2.0f, window->getHeight() - size.y));
+}
