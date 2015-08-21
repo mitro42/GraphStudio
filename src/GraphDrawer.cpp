@@ -84,7 +84,7 @@ void GraphDrawer::drawEdges()
             auto &node = g->getNode(nodeIdx);
             for (auto edgePtr : node)
             {
-                drawEdge(edgePtr->from, edgePtr->to, false);
+                drawEdge(edgePtr->from, edgePtr->to, Options::instance().currentColorScheme.edgeColor, Options::instance().edgeWidth);
             }
         }
         ci::gl::popMatrices();
@@ -140,19 +140,6 @@ void GraphDrawer::drawEdge(int from, int to, ci::Color color, float width)
     {
         ci::gl::drawLine(fromVec, toVec);
     }
-}
-
-void GraphDrawer::drawEdge(int from, int to, bool highlight)
-{
-
-    float width = Options::instance().edgeWidth;
-    ci::Color color = Options::instance().currentColorScheme.edgeColor;
-    if (highlight)
-    {
-        width = Options::instance().highlighedEdgeWidth;
-        color = Options::instance().currentColorScheme.highlightedEdgeColor2;
-    }
-    drawEdge(from, to, color, width);
 }
 
 

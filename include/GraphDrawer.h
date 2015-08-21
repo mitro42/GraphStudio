@@ -19,8 +19,7 @@ public:
     void setChanged() { changed = true; }
 protected:
 
-    void drawEdge(int from, int to, ci::Color color, float width = 1.0f);
-    void drawEdge(int from, int to, bool highlight = false);
+    void drawEdge(int from, int to, ci::Color color, float width);
 
     static void drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle);
     static void drawArrow(ci::Vec2f from, ci::Vec2f to, ci::Color color, float width);

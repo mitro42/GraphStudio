@@ -69,7 +69,7 @@ void PrimDrawer::drawAlgorithmResult()
     auto edges = mstPrim(*g, Options::instance().startNode - 1);
     for (const auto &e : edges)
     {
-        drawEdge(e.from, e.to, true);
+        drawEdge(e.from, e.to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
     }
     drawNodes();
     drawLabels();
