@@ -2,6 +2,8 @@
 #include "DijkstraDrawer.h"
 #include "Options.h"
 
+#include <algorithm>
+
 void DijkstraDrawer::prepareNewState()
 {
     auto state = states[animationState];
@@ -51,7 +53,19 @@ void DijkstraDrawer::drawAlgorithmState()
     auto state = states[animationState];
     
     const auto &cs = Options::instance().currentColorScheme;
-    drawEdges();
+
+    std::set<GraphEdge> darkEdges;
+    darkEdges.insert(begin(state.processedEdges), end(state.processedEdges));
+    for (int nodeIdx = 0; nodeIdx < g->getNodeCount(); ++nodeIdx)
+    {
+        auto &node = g->getNode(nodeIdx);
+        for (auto edgePtr : node)
+        {
+            ci::Color c = darkEdges.find(*edgePtr) == darkEdges.end() ? cs.edgeColor : cs.darkEdgeColor;
+            drawEdge(edgePtr->from, edgePtr->to, c, Options::instance().edgeWidth);
+        }
+    }
+    
     for (int i = 0; i < int(state.path.size()); ++i)
     {
         auto from = state.path[i].second;
@@ -105,7 +119,7 @@ void DijkstraDrawer::drawAlgorithmResult()
             continue;
         if (from == i)
             continue;
-        drawEdge(from, i, true);
+        drawEdge(from, i, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
     }
     drawNodes();
     drawLabels();
