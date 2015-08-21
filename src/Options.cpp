@@ -16,6 +16,7 @@ ColorScheme::ColorScheme()
     backgroundColor = ci::Color(0.694f, 0.761f, 0.557f);
     nodeColor = ci::Color(0.176f, 0.133f, 0.310f);
     edgeColor = ci::Color(0.459f, 0.427f, 0.561f);
+    darkEdgeColor = ci::Color(0.359f, 0.327f, 0.401f);
     highlightedNodeColor1 = ci::Color("red");
     highlightedNodeColor2 = ci::Color(0.984f, 0.961f, 0.831f);
     highlightedNodeColor3 = ci::Color(0.984f, 0.961f, 0.831f);
@@ -41,6 +42,7 @@ ColorScheme ColorScheme::fromXml(ci::XmlTree &xml)
     cs.backgroundColor = colorFromXml(xml.getChild("backgroundColor"));
     cs.nodeColor = colorFromXml(xml.getChild("nodeColor"));
     cs.edgeColor = colorFromXml(xml.getChild("edgeColor"));
+    cs.darkEdgeColor = colorFromXml(xml.getChild("darkEdgeColor"));
     cs.highlightedNodeColor1 = colorFromXml(xml.getChild("highlightedNodeColor1"));
     cs.highlightedNodeColor2 = colorFromXml(xml.getChild("highlightedNodeColor2"));
     cs.highlightedNodeColor3 = colorFromXml(xml.getChild("highlightedNodeColor3"));
@@ -65,6 +67,7 @@ ci::XmlTree ColorScheme::toXml() const
     xml.push_back(colorToXml("backgroundColor", backgroundColor));
     xml.push_back(colorToXml("nodeColor", nodeColor));
     xml.push_back(colorToXml("edgeColor", edgeColor));
+    xml.push_back(colorToXml("darkEdgeColor", darkEdgeColor));
     xml.push_back(colorToXml("highlightedNodeColor1", highlightedNodeColor1));
     xml.push_back(colorToXml("highlightedNodeColor2", highlightedNodeColor2));
     xml.push_back(colorToXml("highlightedNodeColor3", highlightedNodeColor3));

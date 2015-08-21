@@ -158,7 +158,8 @@ void GraphStudioApp::setup()
     params->addParam("Highlighted Node 2", &Options::instance().currentColorScheme.highlightedNodeColor2);
     params->addParam("Highlighted Node 3", &Options::instance().currentColorScheme.highlightedNodeColor3);
 
-    params->addParam("Edge ", &Options::instance().currentColorScheme.edgeColor);
+    params->addParam("Edge", &Options::instance().currentColorScheme.edgeColor);
+    params->addParam("Dark Edge", &Options::instance().currentColorScheme.darkEdgeColor);
     params->addParam("Highlighted Edge 1", &Options::instance().currentColorScheme.highlightedEdgeColor1);
     params->addParam("Highlighted Edge 2", &Options::instance().currentColorScheme.highlightedEdgeColor2);
     params->addParam("Highlighted Edge 3", &Options::instance().currentColorScheme.highlightedEdgeColor3);

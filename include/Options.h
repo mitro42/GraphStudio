@@ -28,6 +28,7 @@ struct ColorScheme
     ci::Color addEdgeNodeColor;
 
     ci::Color edgeColor;
+    ci::Color darkEdgeColor;
     ci::Color highlightedEdgeColor1;
     ci::Color highlightedEdgeColor2;
     ci::Color highlightedEdgeColor3;
