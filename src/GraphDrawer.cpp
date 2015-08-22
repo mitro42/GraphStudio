@@ -217,7 +217,6 @@ void GraphDrawer::drawLabels()
                         textAlignmentOffset *= -1;
                     }
                     ci::gl::pushModelView();
-                    ci::gl::enableAlphaBlending();
                     ci::gl::translate(textMid - textAlignmentOffset);
                     if (edgeDir.x != 0)
                     {
@@ -227,7 +226,7 @@ void GraphDrawer::drawLabels()
                     {
                         ci::gl::rotate(90);
                     }
-                    ci::Vec2f offset = -(fromVec + toVec).normalized() * 10; // place edge weight over the edge
+                    ci::Vec2f offset = -ci::Vec2f(0.0f, 5.0f + Options::instance().highlighedEdgeWidth); // place edge weight over the edge
                     ci::gl::color(cs.edgeTextColor);
                     edgeTextureFont->drawString(labelText, offset);
                     ci::gl::popModelView();
@@ -239,6 +238,7 @@ void GraphDrawer::drawLabels()
         ci::gl::setViewport(viewPort);
         labelFbo.unbindFramebuffer();        
     }
+    ci::gl::color(ci::Color::white());
     ci::gl::draw(labelFbo.getTexture());
 }
    
