@@ -164,7 +164,7 @@ void GraphDrawer::drawNodes()
     }
 }
 
-void GraphDrawer::drawLabels()
+void GraphDrawer::drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &colors)
 {
     if (changed)
     {
@@ -174,7 +174,7 @@ void GraphDrawer::drawLabels()
         ci::gl::setViewport(labelFbo.getBounds());
         ci::gl::pushMatrices();
         ci::gl::setMatricesWindow(labelFbo.getSize(), false);
-        ci::gl::clear(ci::ColorA(0, 0, 0, 0.0f));
+        ci::gl::clear(ci::ColorA(Options::instance().currentColorScheme.backgroundColor, 0.0f));
 
         const auto &cs = Options::instance().currentColorScheme;
 
@@ -227,7 +227,11 @@ void GraphDrawer::drawLabels()
                         ci::gl::rotate(90);
                     }
                     ci::Vec2f offset = -ci::Vec2f(0.0f, 5.0f + Options::instance().highlighedEdgeWidth); // place edge weight over the edge
-                    ci::gl::color(cs.edgeTextColor);
+                    ci::ColorA c = cs.edgeTextColor;
+                    auto it = colors.find(edgePtr);
+                    if (it != colors.end())
+                        c = it->second;
+                    ci::gl::color(c);
                     edgeTextureFont->drawString(labelText, offset);
                     ci::gl::popModelView();
                 }

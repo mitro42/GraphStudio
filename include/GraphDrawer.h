@@ -3,6 +3,8 @@
 #include "Graph.h"
 #include "GraphNodeHandler.h"
 
+#include <memory>
+
 #include <cinder/gl/TextureFont.h>
 #include <cinder/gl/Fbo.h>
 
@@ -29,7 +31,7 @@ protected:
     void drawEdges();
     void drawHighlightEdges();
     void drawNodes();
-    void drawLabels();
+    void drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &colors = std::map<std::shared_ptr<GraphEdge>, ci::ColorA>());
     void drawHighlightNodes();
     void drawColorScale();
 
