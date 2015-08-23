@@ -15,12 +15,13 @@ void DijkstraDrawer::createLegend()
     legend.clear();
     auto &cs = Options::instance().currentColorScheme;
     legend.add(LegendType::highlightedArrow, cs.highlightedEdgeColor2, "Minimal paths");
-    legend.add(LegendType::highlightedArrow, cs.highlightedEdgeColor1, "Inspected");
-    legend.add(LegendType::arrow, cs.edgeColor, "Not processed yet");
+    legend.add(LegendType::highlightedArrow, cs.highlightedEdgeColor1, "Currently inspected");
+    legend.add(LegendType::arrow, cs.darkEdgeColor, "Processed and ignored");
+    legend.add(LegendType::arrow, cs.edgeColor, "Not processed");
     legend.add(LegendType::node, cs.highlightedNodeColor3, "Finished");
-    legend.add(LegendType::node, cs.highlightedNodeColor2, "Reached");
-    legend.add(LegendType::node, cs.highlightedNodeColor1, "Inspected");
-    legend.add(LegendType::node, cs.nodeColor, "Not reached yet");
+    legend.add(LegendType::node, cs.highlightedNodeColor2, "Reached but not processed");
+    legend.add(LegendType::node, cs.highlightedNodeColor1, "Currently inspected");
+    legend.add(LegendType::node, cs.nodeColor, "Not reached");
 }
 
 void DijkstraDrawer::prepareAnimation()
