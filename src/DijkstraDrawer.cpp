@@ -7,21 +7,7 @@
 void DijkstraDrawer::prepareNewState()
 {
     auto state = states[animationState];
-    std::string text;
-    for (size_t i = 0; i < state.path.size(); ++i)
-    {
-        if (state.path[i].second == -1)
-            continue;
-        std::string line = std::to_string(state.path[i].second + 1) + "->" +
-            std::to_string(i + 1) +
-            "(" + std::to_string(int(state.path[i].first)) + ")";
-
-        if (!text.empty())
-        {
-            text += "\n";
-        }
-        text += line;
-    }
+    setChanged();
 }
 
 void DijkstraDrawer::createLegend()
@@ -51,58 +37,78 @@ void DijkstraDrawer::drawAlgorithmState()
         return;
     startDrawing();
     auto state = states[animationState];
-    
     const auto &cs = Options::instance().currentColorScheme;
-
-    std::set<GraphEdge> darkEdges;
-    darkEdges.insert(begin(state.processedEdges), end(state.processedEdges));
+    // Edges -----
+    // preparing edge parameters before drawing
+    std::map<std::shared_ptr<GraphEdge>, std::pair<ci::Color, float>> edgeParams;
+    // by default edges are drawn with edgeColor and edgeWidth (no highlighting)
     for (int nodeIdx = 0; nodeIdx < g->getNodeCount(); ++nodeIdx)
     {
         auto &node = g->getNode(nodeIdx);
         for (auto edgePtr : node)
         {
-            ci::Color c = darkEdges.find(*edgePtr) == darkEdges.end() ? cs.edgeColor : cs.darkEdgeColor;
-            drawEdge(edgePtr->from, edgePtr->to, c, Options::instance().edgeWidth);
+            edgeParams[edgePtr] = std::make_pair(cs.edgeColor, Options::instance().edgeWidth);
         }
     }
-    
-    for (int i = 0; i < int(state.path.size()); ++i)
+
+    // now the params for all dropped edges are overwritten
+    for (auto &edgePtr : state.processedEdges)
     {
-        auto from = state.path[i].second;
-        if (from == -1)
-            continue;
-        if (from == i)
-            continue;
-        drawEdge(from, i, cs.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
+        edgeParams[edgePtr] = std::make_pair(cs.darkEdgeColor, Options::instance().edgeWidth);
     }
 
-    if (state.inspectedEdge.from != -1)
+    // overwriting the edges of the current best paths
+    for (auto &p : state.path)
     {
-        drawEdge(state.inspectedEdge.from, state.inspectedEdge.to, cs.highlightedEdgeColor1, Options::instance().highlighedEdgeWidth);
+        if (p.second == nullptr)
+            continue;
+        edgeParams[p.second] = std::make_pair(cs.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
     }
 
+    // and finally the currently inspected edge
+    if (state.inspectedEdge != nullptr)
+        edgeParams[state.inspectedEdge] = std::make_pair(cs.highlightedEdgeColor1, Options::instance().highlighedEdgeWidth);
+
+    for (auto &p : edgeParams)
+    {
+        drawEdge(p.first->from, p.first->to, p.second.first, p.second.second);
+    }
+
+    // Nodes ---------
+    // Preparing open nodes
     std::vector<ci::Color> nodeHighlight(g->getNodeCount(), cs.nodeColor);
     for (auto &p : state.openNodes)
     {
         nodeHighlight[p.second] = cs.highlightedNodeColor2;
     }
 
+    // Preparing closed nodes
     for (auto &p : state.closedNodes)
     {
         nodeHighlight[p.second] = cs.highlightedNodeColor3;
     }
 
+    // Preparing current node
     if (state.inspectedNode != -1)
     {
         nodeHighlight[state.inspectedNode] = cs.highlightedNodeColor1;
     }
 
+    // Drawing nodes
     for (int i = 0; i < g->getNodeCount(); ++i)
     {
         nodeHandlers[i]->draw(nodeHighlight[i]);
     }
 
-    drawLabels();
+    // Labels -----
+    // preparing edge label colors
+    std::map<std::shared_ptr<GraphEdge>, ci::ColorA> edgeLabelColors;    
+    for (auto &edgePtr : edgeParams)
+    {
+        edgeLabelColors[edgePtr.first] = edgePtr.second.first;
+    }
+    drawLabels(edgeLabelColors);
+    
     drawStepDescription(state.description);    
 }
 
@@ -114,12 +120,10 @@ void DijkstraDrawer::drawAlgorithmResult()
     auto tree = edgeWeightDijkstra(*g, Options::instance().startNode - 1, -1);
     for (int i = 0; i < int(tree.size()); ++i)
     {
-        auto from = tree[i].second;
-        if (from == -1)
+        auto edgePtr = tree[i].second;
+        if (edgePtr == nullptr)
             continue;
-        if (from == i)
-            continue;
-        drawEdge(from, i, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
+        drawEdge(edgePtr->from, edgePtr->to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
     }
     drawNodes();
     drawLabels();
