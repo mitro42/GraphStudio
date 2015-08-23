@@ -8,7 +8,7 @@
 Legend::Legend() : width(0), height(0)
 {    
     format.setSamples(8);
-    ci::Font font = ci::Font("InputMono", 20.0f);
+    ci::Font font = ci::Font("InputMono Black", 20.0f);
     textureFont = ci::gl::TextureFont::create(font);
 };
 
@@ -35,7 +35,7 @@ void Legend::render()
         currentSize = fbo.getSize();
     }
     const int rowHeight = 25;
-    ci::Vec2f requiredSize(300.0f, float(contents.size() * rowHeight));
+    ci::Vec2f requiredSize(350.0f, float(contents.size() * rowHeight));
     if (requiredSize != currentSize)
     {
         fbo = ci::gl::Fbo(int(requiredSize.x), int(requiredSize.y), format);
@@ -49,7 +49,7 @@ void Legend::render()
     ci::gl::setViewport(fbo.getBounds());
     ci::gl::pushMatrices();
     ci::gl::setMatricesWindow(fbo.getSize(), false);
-    ci::gl::clear(ci::ColorA("black", 0.1f));
+    ci::gl::clear(ci::ColorA(Options::instance().currentColorScheme.backgroundColor, 0.1f));
     
     float posY = rowHeight / 2;
     for (const auto &element: contents)
