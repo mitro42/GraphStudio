@@ -11,9 +11,6 @@ GraphDrawer::GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::un
     window(window)
 {
     initFbo();
-
-    legendFont = ci::Font("InputMono Black", 15);
-    legendTextureFont = ci::gl::TextureFont::create(legendFont);
 }
 
 void GraphDrawer::resize(ci::Area newWindowSize)
@@ -25,10 +22,10 @@ void GraphDrawer::initFbo()
 {
     ci::gl::Fbo::Format format;
     //format.enableColorBuffer();
-    format.setSamples(4);
+    format.setSamples(8);
     //format.enableMipmapping();
     edgeFbo = ci::gl::Fbo(window->getWidth(), window->getHeight(), format);
-    labelFbo = ci::gl::Fbo(window->getWidth(), window->getHeight(), format);
+    labelFbo = ci::gl::Fbo(window->getWidth(), window->getHeight());
 }
 
 void GraphDrawer::startDrawing()
@@ -96,12 +93,14 @@ void GraphDrawer::drawEdges()
 
 void GraphDrawer::drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle)
 {
-    ci::gl::drawLine(from, to);
     ci::Vec2f dir = (to - from).normalized();
+    ci::Vec2f lineEnd = to - dir * headLength / 2.0;
+    ci::gl::drawLine(from, lineEnd);
+
     dir.rotate(ci::toRadians(headAngle));
-    ci::gl::drawLine(to, to - dir*headLength);
+    ci::gl::drawSolidTriangle(to, to - dir*headLength, lineEnd);
     dir.rotate(ci::toRadians(-2 * headAngle));
-    ci::gl::drawLine(to, to - dir*headLength);
+    ci::gl::drawSolidTriangle(to, to - dir*headLength, lineEnd);
 }
 
 void GraphDrawer::drawArrow(ci::Vec2f from, ci::Vec2f to, ci::Color color, float width)

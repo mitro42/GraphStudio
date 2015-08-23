@@ -43,9 +43,7 @@ protected:
     const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers;
     std::vector<ci::Color> generateColors(int n);
 
-    ci::Font legendFont;
     ci::gl::Texture legendTexture;
-    ci::gl::TextureFontRef legendTextureFont;
     ci::gl::TextureFontRef edgeTextureFont;
     ci::gl::TextureFontRef nodeTextureFont;
 private:
