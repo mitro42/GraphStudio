@@ -210,6 +210,7 @@ void GraphStudioApp::shutdown()
 void GraphStudioApp::keyDown(KeyEvent event)
 {
     std::string nameBase = "graph_small2";
+    static const std::vector<std::string> extensions{ "graph", "txt" };
     if (event.getCode() == KeyEvent::KEY_SPACE)
     {
         // stop - play - pause - play - pause - play - until the last state is reached
@@ -252,20 +253,46 @@ void GraphStudioApp::keyDown(KeyEvent event)
     }
     if (event.getChar() == 's')
     {
-        std::cout << "Saving graph..." << std::endl;
-        gh.saveGraph(nameBase + ".txt");
-        gh.saveGraphPositions(nameBase + ".pos");
-        std::cout << "Done" << std::endl;
+        boost::filesystem::path path;
+        if (event.isAltDown())
+        {
+            path = getSaveFilePath("", extensions);
+            if (path.empty())
+                return;
+
+            if (path.extension().empty())
+            {
+                path += ".graph";
+            }
+            gh.saveGraph(path.string());
+            gh.saveGraphPositions(path.replace_extension("pos").string());
+        }
+        else
+        {
+            gh.saveGraph(nameBase + ".txt");
+            gh.saveGraphPositions(nameBase + ".pos");
+        }
     }
     if (event.getChar() == 'l')
     {
-        std::cout << "Loading graph..." << std::endl;
-        
-        gh.loadGraph(nameBase + ".txt");
-        gh.loadGraphPositions(nameBase + ".pos");
+        boost::filesystem::path path;
+        if (event.isAltDown())
+        {
+            path = getOpenFilePath(nameBase + ".txt", extensions);
+            if (path.empty())
+                return;
+
+            gh.loadGraph(path.string());
+            gh.loadGraphPositions(path.replace_extension("pos").string());
+        }
+        else
+        {
+            gh.loadGraph(nameBase + ".txt");
+            gh.loadGraphPositions(nameBase + ".pos");
+        }
+
         Options::instance().startNode = 1;
         gh.fitToWindow();
-        std::cout << "Done" << std::endl;
     }
     if (event.getChar() == 'u')
     {
