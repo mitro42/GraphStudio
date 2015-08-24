@@ -269,7 +269,10 @@ void GraphHandler::saveGraph(std::string fileName)
 {
     std::ofstream out(fileName);
     if (!out.good())
-        throw("Cannot open file");
+    {
+        std::cout << "Cannot open graph file: [" << fileName << "]" << std::endl;
+        return;
+    }
     out << *g;
 }
 
@@ -279,7 +282,11 @@ void GraphHandler::loadGraphPositions(std::string fileName)
     std::unique_lock<std::recursive_mutex> guard(updateMutex);
     std::ifstream in(fileName);
     if (!in.good())
-        throw("Cannot open file");
+    {
+        std::cout << "Cannot open positions file: [" << fileName << "]" << std::endl;
+        return;
+    }
+        
     float x, y;
     int idx = 0;
     while (in >> x && idx < int(nodeHandlers.size()))
