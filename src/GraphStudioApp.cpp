@@ -191,15 +191,7 @@ void GraphStudioApp::setup()
     params->addButton("Generate tri", std::bind(&GraphHandler::generateSpecialGraph, &gh, GraphHandler::GraphType::triangleMesh));
     
     gh.setup(getWindow());
-    /*
-    fs::path path = getSaveFilePath();
-    if (path.empty())
-        return; // user cancelled save
-    qtime::MovieWriter::Format format;
-    if (qtime::MovieWriter::getUserCompressionSettings(&format)) {
-        mMovieWriter = qtime::MovieWriter::create(path, getWindowWidth(), getWindowHeight(), format);
-    }
-    */
+
 }
 
 void GraphStudioApp::shutdown()
@@ -305,7 +297,28 @@ void GraphStudioApp::keyDown(KeyEvent event)
     }
     if (event.getChar() == 'r')
     {
-        gh.reorderNodesSquare();
+        if (event.isControlDown())
+        {
+            setFullScreen(true);
+            hideCursor();
+            params->hide();
+            Options::instance().animationPlaying = true;
+            Options::instance().animationPaused = false;
+            gh.animationPrepare();
+            /*
+            fs::path path = getSaveFilePath();
+            if (path.empty())
+            return; // user cancelled save
+            qtime::MovieWriter::Format format;
+            if (qtime::MovieWriter::getUserCompressionSettings(&format)) {
+            mMovieWriter = qtime::MovieWriter::create(path, getWindowWidth(), getWindowHeight(), format);
+            }
+            */
+        }
+        else
+        {
+            gh.reorderNodesSquare();
+        }
     }
 
     if (event.getChar() == 'q')
@@ -343,7 +356,8 @@ void GraphStudioApp::draw()
     // clear out the window with black
     gl::clear(Color(0, 0, 0));
     gh.draw();
-    params->draw();
+    if (!Options::instance().animationPlaying || Options::instance().animationPaused)
+        params->draw();
     /*
     if (mMovieWriter)
         mMovieWriter->addFrame(copyWindowSurface());
