@@ -108,6 +108,10 @@ void GraphHandler::addNewEdgeIfNodesSelected()
     }
     if (start != -1 && end != -1)
     {
+        if (nodeHandlers[start]->getSelectedInFrame() > nodeHandlers[end]->getSelectedInFrame())
+        {
+            std::swap(start, end);
+        }
         //std::cout << "New edge: " << start << " - " << end << std::endl;
         g->addEdge(start, end);
         nodeHandlers[start]->clearSelection();

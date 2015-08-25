@@ -46,6 +46,8 @@ public:
     inline float getSpeed() const { return speed; }
     inline void setSpeed(float sp) { speed = sp; }
 
+    inline uint32_t getSelectedInFrame() const { return selectedInFrame; }
+
 private:
     static const float margin;
     ci::signals::scoped_connection cbMouseDrag;
@@ -58,5 +60,6 @@ private:
     float direction;
     float speed;
     Selection selection;
+    uint32_t selectedInFrame;
 };
 

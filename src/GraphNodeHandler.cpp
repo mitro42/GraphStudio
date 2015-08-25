@@ -41,7 +41,16 @@ void GraphNodeHandler::mouseDown(ci::app::MouseEvent &event)
     {
         if (event.isAltDown() && !Options::instance().animationPlaying)
         {
-            selection = (selection == Selection::addEdge) ? Selection::none : Selection::addEdge;
+            if (selection == Selection::addEdge)
+            {
+                selection = Selection::none;
+            }
+            else
+            {
+                selection = Selection::addEdge;
+                selectedInFrame = ci::app::getElapsedFrames();
+            }
+
         }
         else
         {
