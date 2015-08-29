@@ -237,6 +237,16 @@ void GraphStudioApp::keyDown(KeyEvent event)
         gh.animationPrevious();
         return;
     }
+    else  if (event.getCode() == KeyEvent::KEY_ESCAPE)
+    {
+        Options::instance().animationPlaying = false;
+        Options::instance().animationPaused = true;
+        gh.animationPause();
+        setFullScreen(false);
+        showCursor();
+        params->show();
+        return;
+    }
     if (event.getChar() == 'm')
     {
         Options::instance().randomMovement = !Options::instance().randomMovement;
