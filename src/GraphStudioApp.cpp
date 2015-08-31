@@ -190,6 +190,7 @@ void GraphStudioApp::setup()
     params->addParam("Randomness", &GraphParamsTriangleMesh::instance().randomness, "min=0.0 step=0.1");
     params->addButton("Generate tri", std::bind(&GraphHandler::generateSpecialGraph, &gh, GraphHandler::GraphType::triangleMesh));
     
+    prevColorSchemeIndex = -1;
     gh.setup(getWindow());
 
 }
