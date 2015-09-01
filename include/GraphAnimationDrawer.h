@@ -12,7 +12,7 @@ public:
         animationState(0), 
         animationLastState(0)
     {
-        ci::Font stepFont = ci::Font("InputMono Black", 30);
+        ci::Font stepFont = ci::Font("InputMono Black", 36);
         stepDescriptionTextureFont = ci::gl::TextureFont::create(stepFont);
     }
 

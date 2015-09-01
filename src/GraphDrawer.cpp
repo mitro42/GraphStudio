@@ -185,7 +185,7 @@ void GraphDrawer::drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &c
                 ci::gl::color(cs.nodeTextColor);
                 auto label = std::to_string(i + 1);
                 auto labelOffset = nodeTextureFont->measureString(label) / 2;
-                labelOffset.y *= 0.65f;
+                labelOffset.y *= 0.68f;
                 labelOffset.x *= -1;
                 nodeTextureFont->drawString(label, nodeHandlers[i]->getPos() + labelOffset);
             }

@@ -444,7 +444,7 @@ void GraphHandler::fitToWindow()
     const float midY = (maxY + minY) / 2;
 
     const float marginX = 0.1f;
-    const float marginY = 0.05f;
+    const float marginY = 0.1f;
 
     float targetHeight = float(window->getHeight());
     float targetWidth = float(window->getWidth());
