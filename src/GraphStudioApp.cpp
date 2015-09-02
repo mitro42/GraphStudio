@@ -41,7 +41,7 @@ void GraphStudioApp::prepareSettings(Settings *settings)
 {
     settings->enableConsoleWindow();
     settings->setWindowSize(800, 600);
-    settings->setFrameRate(60.0f);
+    settings->setFrameRate(30.0f);
 }
 
 
@@ -311,20 +311,22 @@ void GraphStudioApp::keyDown(KeyEvent event)
         if (event.isControlDown())
         {
             setFullScreen(true);
-            hideCursor();
+            
             params->hide();
             Options::instance().animationPlaying = true;
             Options::instance().animationPaused = false;
             gh.animationPrepare();
-            /*
+
             fs::path path = getSaveFilePath();
             if (path.empty())
-            return; // user cancelled save
+                return; // user cancelled save
             qtime::MovieWriter::Format format;
-            if (qtime::MovieWriter::getUserCompressionSettings(&format)) {
-            mMovieWriter = qtime::MovieWriter::create(path, getWindowWidth(), getWindowHeight(), format);
+            if (qtime::MovieWriter::getUserCompressionSettings(&format)) 
+            {
+                hideCursor();
+                mMovieWriter = qtime::MovieWriter::create(path, getWindowWidth(), getWindowHeight(), format);
             }
-            */
+
         }
         else
         {
@@ -369,10 +371,9 @@ void GraphStudioApp::draw()
     gh.draw();
     if (!Options::instance().animationPlaying || Options::instance().animationPaused)
         params->draw();
-    /*
+    
     if (mMovieWriter)
-        mMovieWriter->addFrame(copyWindowSurface());
-    */
+        mMovieWriter->addFrame(copyWindowSurface());    
 }
 
 void GraphStudioApp::resize()
