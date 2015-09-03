@@ -25,4 +25,3 @@
 #include <cinder/gl/TextureFont.h>
 #include <cinder/gl/gl.h>
 #include <cinder/params/Params.h>
-#include <cinder/qtime/MovieWriter.h>

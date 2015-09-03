@@ -37,7 +37,7 @@ public:
     void animationPrepare();
     void animationPause();
     void animationResume();
-    void animationNext();
+    bool animationNext(); // returns true if there are more states to play
     void animationPrevious();
 
     void mouseDown(ci::app::MouseEvent &event);

@@ -16,7 +16,7 @@ void GraphAnimationDrawer::drawAnimationStateNumber()
 {
     ci::gl::color(ci::ColorA(0.0f, 0.0f, 0.0f, 0.5f));
     std::string stateNumber = std::to_string(animationState + 1) + "/" + std::to_string(animationLastState);
-    nodeTextureFont->drawString(stateNumber, ci::Vec2f(20.0f, window->getHeight() - 20.0f));
+    stepDescriptionTextureFont->drawString(stateNumber, ci::Vec2f(20.0f, window->getHeight() - 20.0f));
 }
 
 void GraphAnimationDrawer::draw()
@@ -50,14 +50,16 @@ void GraphAnimationDrawer::draw()
     clearChanged();
 }
 
-void GraphAnimationDrawer::nextState()
+bool GraphAnimationDrawer::nextState()
 {
     if (animationState < animationLastState - 1)
     {
         animationState++;
         prepareNewState();
         paused = true;
+        return true;
     }
+    return false;    
 }
 
 void GraphAnimationDrawer::previousState()

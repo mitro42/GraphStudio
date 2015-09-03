@@ -5,7 +5,7 @@
 
 #include <cinder/app/AppNative.h>
 #include <cinder/params/Params.h>
-#include <cinder/qtime/MovieWriter.h>
+#include <cinder/ImageIo.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -24,14 +24,15 @@ public:
     const ColorScheme &getCurrentColorScheme();
 private:
     ci::params::InterfaceGlRef	params;
-    qtime::MovieWriterRef	mMovieWriter;
     std::map<std::string, ColorScheme> colorSchemes;
     std::vector<std::string> colorSchemeNames;
     GraphHandler gh;
+    bool recording = false;
     int prevColorSchemeIndex;
     void addNewColorScheme();
     void storeColorScheme();
-
+    void prepareRecording();
+    void stopRecording();
     void loadSettings();
     void saveSettings();
 };
@@ -200,6 +201,32 @@ void GraphStudioApp::shutdown()
     saveSettings();
 }
 
+void GraphStudioApp::stopRecording()
+{
+    recording = false;
+    Options::instance().animationPlaying = false;
+    Options::instance().animationPaused = true;
+    gh.animationPause();
+    setFullScreen(false);
+    //showCursor();
+    params->show();
+    setFrameRate(30.0f);
+}
+
+
+void GraphStudioApp::prepareRecording()
+{
+    setFrameRate(30.0f);
+    recording = true;
+    setFullScreen(true);
+    params->hide();
+    Options::instance().animationPlaying = true;
+    Options::instance().animationPaused = false;
+    gh.animationPrepare();
+    gh.animationPause();
+}
+
+
 void GraphStudioApp::keyDown(KeyEvent event)
 {
     std::string nameBase = "graph_small2";
@@ -240,12 +267,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
     }
     else  if (event.getCode() == KeyEvent::KEY_ESCAPE)
     {
-        Options::instance().animationPlaying = false;
-        Options::instance().animationPaused = true;
-        gh.animationPause();
-        setFullScreen(false);
-        showCursor();
-        params->show();
+        stopRecording();
         return;
     }
     if (event.getChar() == 'm')
@@ -310,23 +332,13 @@ void GraphStudioApp::keyDown(KeyEvent event)
     {
         if (event.isControlDown())
         {
-            setFullScreen(true);
-            
-            params->hide();
-            Options::instance().animationPlaying = true;
-            Options::instance().animationPaused = false;
-            gh.animationPrepare();
-
-            fs::path path = getSaveFilePath();
-            if (path.empty())
-                return; // user cancelled save
-            qtime::MovieWriter::Format format;
-            if (qtime::MovieWriter::getUserCompressionSettings(&format)) 
+            if (recording)
             {
-                hideCursor();
-                mMovieWriter = qtime::MovieWriter::create(path, getWindowWidth(), getWindowHeight(), format);
+                stopRecording();
+                return;
             }
 
+            prepareRecording();
         }
         else
         {
@@ -341,6 +353,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
     }
     
 }
+
 
 
 void GraphStudioApp::mouseDown( MouseEvent event )
@@ -366,14 +379,27 @@ void GraphStudioApp::update()
 
 void GraphStudioApp::draw()
 {
+    if (recording)
+    {        
+        static int imageIdx = 0;
+        imageIdx++;
+        std::stringstream ss;
+        ss << "anim" << std::setw(4) << std::setfill('0') << imageIdx << ".png";
+        ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);
+        std::cout << "GraphStudioApp::doRecording() " << ss.str() << std::endl;
+        gh.draw();
+
+        auto surface = copyWindowSurface();
+        writeImage(ss.str(), surface);
+        if (!gh.animationNext())
+            stopRecording();
+        return;        
+    }
     // clear out the window with black
     gl::clear(Color(0, 0, 0));
     gh.draw();
     if (!Options::instance().animationPlaying || Options::instance().animationPaused)
         params->draw();
-    
-    if (mMovieWriter)
-        mMovieWriter->addFrame(copyWindowSurface());    
 }
 
 void GraphStudioApp::resize()

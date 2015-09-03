@@ -22,7 +22,7 @@ public:
     virtual void prepareAnimation();
     virtual void pause() { paused = true; }
     virtual void resume() { paused = false; }
-    virtual void nextState();
+    virtual bool nextState(); // returns true if there are more states to play
     virtual void previousState();
 protected:
     virtual void drawAlgorithmState() = 0;

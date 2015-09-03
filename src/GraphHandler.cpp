@@ -70,11 +70,12 @@ void GraphHandler::animationResume()
         animationDrawer->resume();
 }
 
-void GraphHandler::animationNext()
+bool GraphHandler::animationNext()
 {
     GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
     if (animationDrawer)
-        animationDrawer->nextState();
+        return animationDrawer->nextState();
+    return false;
 }
 
 void GraphHandler::animationPrevious()
