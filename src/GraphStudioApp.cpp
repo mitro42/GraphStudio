@@ -20,13 +20,19 @@ public:
     void draw() override;
     void resize() override;
     void shutdown() override;
-
+    
     const ColorScheme &getCurrentColorScheme();
 private:
     ci::params::InterfaceGlRef	params;
     std::map<std::string, ColorScheme> colorSchemes;
     std::vector<std::string> colorSchemeNames;
     GraphHandler gh;
+
+    static const std::vector<std::string> extensions;
+    std::string graphFileName;
+    std::string defaultPath;
+    std::string configFilePath;
+
     bool recording = false;
     int prevColorSchemeIndex;
     void addNewColorScheme();
@@ -35,7 +41,12 @@ private:
     void stopRecording();
     void loadSettings();
     void saveSettings();
+    void saveGraph(bool saveAs);
+    void loadGraph();
+
 };
+
+const std::vector<std::string> GraphStudioApp::extensions{ "graph", "txt" };
 
 
 void GraphStudioApp::prepareSettings(Settings *settings)
@@ -83,6 +94,7 @@ void GraphStudioApp::storeColorScheme()
 void GraphStudioApp::saveSettings()
 {
     ci::XmlTree configXml("graphStudioSettings", "");
+    configXml.push_back(ci::XmlTree("defaultSavePath", defaultPath));
     configXml.push_back(ci::XmlTree("nodeSize", std::to_string(Options::instance().nodeSize)));
     configXml.push_back(ci::XmlTree("edgeWidth", std::to_string(Options::instance().edgeWidth)));
     configXml.push_back(ci::XmlTree("highlightedEdgeWidth", std::to_string(Options::instance().highlighedEdgeWidth)));
@@ -100,14 +112,24 @@ void GraphStudioApp::saveSettings()
     }
     configXml.push_back(csList);
 
-    configXml.write(ci::writeFile("config.xml"));
+    configXml.write(ci::writeFile(configFilePath));
 }
 
 
 void GraphStudioApp::loadSettings()
-{
-    ci::XmlTree configXml(ci::loadFile("config.xml"));
+{    
+    boost::filesystem::path configFile = boost::filesystem::current_path() / "config.xml";    
+    configFilePath = configFile.generic_string();
+    if (!boost::filesystem::exists(configFile))
+    { 
+        std::cout << "Cannot find config file [" << configFilePath << "]" << std::endl;
+        return;
+    }
+    configFilePath = configFile.generic_string();
+
+    ci::XmlTree configXml(ci::loadFile(configFilePath));
     ci::XmlTree settings = configXml.getChild("graphStudioSettings");
+    defaultPath = settings.getChild("defaultSavePath").getValue();
     Options::instance().nodeSize = settings.getChild("nodeSize").getValue<float>();
     Options::instance().edgeWidth = settings.getChild("edgeWidth").getValue<float>();
     Options::instance().highlighedEdgeWidth = settings.getChild("highlightedEdgeWidth").getValue<float>();
@@ -226,11 +248,51 @@ void GraphStudioApp::prepareRecording()
     gh.animationPause();
 }
 
+void GraphStudioApp::saveGraph(bool saveAs)
+{
+    boost::filesystem::path path;
+    if (graphFileName.empty() || saveAs)
+    {
+        path = getSaveFilePath(defaultPath, extensions);
+        if (path.empty())
+            return;
+
+        if (path.extension().empty())
+        {
+            path += ".graph";
+        }
+        graphFileName = path.filename().string();
+        gh.saveGraph(path.string());
+        gh.saveGraphPositions(path.replace_extension("pos").string());
+    }
+    else
+    {
+        boost::filesystem::path fullPath = defaultPath;
+        fullPath /= graphFileName;
+        gh.saveGraph(graphFileName);
+        gh.saveGraphPositions(fullPath.replace_extension("pos").generic_string());
+    }
+}
+
+void GraphStudioApp::loadGraph()
+{
+    boost::filesystem::path path = defaultPath;
+    path = getOpenFilePath(path / graphFileName, extensions);
+    if (path.empty())
+        return;
+
+    defaultPath = path.parent_path().generic_string();
+    graphFileName = path.filename().string();
+    gh.loadGraph(path.string());
+    gh.loadGraphPositions(path.replace_extension("pos").string());
+
+    Options::instance().startNode = 1;
+    gh.fitToWindow();
+}
 
 void GraphStudioApp::keyDown(KeyEvent event)
 {
-    std::string nameBase = "graph_small2";
-    static const std::vector<std::string> extensions{ "graph", "txt" };
+    
     if (event.getCode() == KeyEvent::KEY_SPACE)
     {
         // stop - play - pause - play - pause - play - until the last state is reached
@@ -278,46 +340,11 @@ void GraphStudioApp::keyDown(KeyEvent event)
     }
     if (event.getChar() == 's')
     {
-        boost::filesystem::path path;
-        if (event.isAltDown())
-        {
-            path = getSaveFilePath("", extensions);
-            if (path.empty())
-                return;
-
-            if (path.extension().empty())
-            {
-                path += ".graph";
-            }
-            gh.saveGraph(path.string());
-            gh.saveGraphPositions(path.replace_extension("pos").string());
-        }
-        else
-        {
-            gh.saveGraph(nameBase + ".txt");
-            gh.saveGraphPositions(nameBase + ".pos");
-        }
+        saveGraph(event.isAltDown());
     }
     if (event.getChar() == 'l')
     {
-        boost::filesystem::path path;
-        if (event.isAltDown())
-        {
-            path = getOpenFilePath(nameBase + ".txt", extensions);
-            if (path.empty())
-                return;
-
-            gh.loadGraph(path.string());
-            gh.loadGraphPositions(path.replace_extension("pos").string());
-        }
-        else
-        {
-            gh.loadGraph(nameBase + ".txt");
-            gh.loadGraphPositions(nameBase + ".pos");
-        }
-
-        Options::instance().startNode = 1;
-        gh.fitToWindow();
+        loadGraph();
     }
     if (event.getChar() == 'u')
     {
@@ -353,7 +380,6 @@ void GraphStudioApp::keyDown(KeyEvent event)
     }
     
 }
-
 
 
 void GraphStudioApp::mouseDown( MouseEvent event )
