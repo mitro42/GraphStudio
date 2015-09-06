@@ -68,7 +68,7 @@ void GraphStudioApp::addNewColorScheme()
     cs.name = newName;
     colorSchemeNames.push_back(cs.name);
     colorSchemes[cs.name] = cs;
-    Options::instance().currentColorSchemeIdx = colorSchemes.size() - 1;
+    Options::instance().currentColorSchemeIdx = int(colorSchemes.size() - 1);
     params->addParam("ColorScheme", colorSchemeNames, &Options::instance().currentColorSchemeIdx);
 }
 

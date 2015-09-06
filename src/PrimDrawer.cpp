@@ -59,7 +59,7 @@ void PrimDrawer::prepareAnimation()
 {
     GraphAnimationDrawer::prepareAnimation();
     states = graph_algorithm_capture::mstPrimCaptureStates(*g, Options::instance().startNode - 1);
-    animationLastState = states.size();
+    animationLastState = int(states.size());
 }
 
 void PrimDrawer::drawAlgorithmResult()

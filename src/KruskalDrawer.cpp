@@ -51,7 +51,7 @@ void KruskalDrawer::prepareAnimation()
 {
     GraphAnimationDrawer::prepareAnimation();
     states = graph_algorithm_capture::mstKruskalCaptureStates(*g);
-    animationLastState = states.size();
+    animationLastState = int(states.size());
     nodeGroupColors = generateColors(g->getNodeCount());
     std::random_shuffle(begin(nodeGroupColors), end(nodeGroupColors));
 }

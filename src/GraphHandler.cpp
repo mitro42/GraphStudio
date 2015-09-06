@@ -92,7 +92,7 @@ void GraphHandler::addNewEdgeIfNodesSelected()
     std::unique_lock<std::recursive_mutex> guard(updateMutex);
     int start = -1;
     int end = -1;
-    for (size_t i = 0; i < nodeHandlers.size(); ++i)
+    for (int i = 0; i < int(nodeHandlers.size()); ++i)
     {
         if (nodeHandlers[i]->getSelection() == GraphNodeHandler::Selection::addEdge)
         {

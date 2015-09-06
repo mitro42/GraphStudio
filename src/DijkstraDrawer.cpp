@@ -28,7 +28,7 @@ void DijkstraDrawer::prepareAnimation()
 {
     GraphAnimationDrawer::prepareAnimation();
     states = graph_algorithm_capture::edgeWeightDijkstraCaptureStates(*g, Options::instance().startNode - 1, -1);
-    animationLastState = states.size();
+    animationLastState = int(states.size());
 }
 
 
