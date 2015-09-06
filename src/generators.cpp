@@ -34,7 +34,7 @@ std::vector<ci::Vec2f> generateGridPositions(int N, int columns, int rows)
 void generateGrid(const GraphParamsGrid& params, Graph &g, std::vector<ci::Vec2f> &nodePositions)
 {
     g.clear(params.directed);
-    g.setWeightedEdges(false);
+    g.setWeightedEdges(true);
     g.setWeightedNodes(false);
     for (int i = 0; i < params.rows; i++)
     {
@@ -51,7 +51,7 @@ void generateGrid(const GraphParamsGrid& params, Graph &g, std::vector<ci::Vec2f
             for (int j = 0; j < params.columns - 1; j++)
             {
                 int start = i*params.columns + j;
-                g.addEdge(start, start + 1);
+                g.addEdge(start, start + 1, 1.0);
             }
         }
     }
@@ -63,7 +63,7 @@ void generateGrid(const GraphParamsGrid& params, Graph &g, std::vector<ci::Vec2f
             for (int j = 0; j < params.columns; j++)
             {
                 int start = i*params.columns + j;
-                g.addEdge(start, start + params.columns);
+                g.addEdge(start, start + params.columns, 1.0);
             }
         }
     }
@@ -75,7 +75,7 @@ void generateGrid(const GraphParamsGrid& params, Graph &g, std::vector<ci::Vec2f
             for (int j = 0; j < params.columns - 1; j++)
             {
                 int start = i*params.columns + j;
-                g.addEdge(start, start + 1 - params.columns);
+                g.addEdge(start, start + 1 - params.columns, 1.0);
             }
         }
     }
@@ -108,8 +108,8 @@ void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::
 
     std::vector<Edge> outerEdges;
     ci::randSeed(42);
-    g.clear(false);
-    g.setWeightedEdges(false);
+    g.clear(true);
+    g.setWeightedEdges(true);
     g.setWeightedNodes(false);
     g.addNode();
     g.addNode();
@@ -122,7 +122,7 @@ void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::
     while (int(nodePositions.size()) < GraphParamsTriangleMesh::instance().triangles+2)
     {
         // select a random edge on perimeter of the mesh
-        int edgeIdx = ci::randInt(outerEdges.size());
+        int edgeIdx = ci::randInt(int32_t(outerEdges.size()));
         auto edge = outerEdges[edgeIdx];
 
         // remove from the outerEdges vector
@@ -131,8 +131,8 @@ void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::
         outerEdges.resize(size - 1);
 
         int newIdx = g.addNode();
-        g.addEdge(newIdx, edge.from);
-        g.addEdge(newIdx, edge.to);
+        g.addEdge(newIdx, edge.from, 1.0);
+        g.addEdge(newIdx, edge.to, 1.0);
         outerEdges.emplace_back(newIdx, edge.from, false);
         outerEdges.emplace_back(newIdx, edge.to, false);
 
