@@ -33,6 +33,15 @@ private:
     std::string defaultPath;
     std::string configFilePath;
 
+    float getEdgeWidth();
+    void setEdgeWidth(float width);
+
+    bool getShowEdgeWeights();
+    void setShowEdgeWeights(bool show);
+
+    bool getShowNodeWeights();
+    void setShowNodeWeights(bool show);
+
     bool recording = false;
     int prevColorSchemeIndex;
     void addNewColorScheme();
@@ -152,18 +161,63 @@ void GraphStudioApp::loadSettings()
 }
 
 
+float GraphStudioApp::getEdgeWidth()
+{
+    return Options::instance().edgeWidth;
+}
+
+
+void GraphStudioApp::setEdgeWidth(float width)
+{
+    Options::instance().edgeWidth = width;
+    gh.setChanged();
+}
+
+bool GraphStudioApp::getShowEdgeWeights()
+{
+    return Options::instance().showEdgeWeights;
+}
+
+void GraphStudioApp::setShowEdgeWeights(bool show)
+{
+    Options::instance().showEdgeWeights = show;
+    gh.setChanged();
+}
+
+bool GraphStudioApp::getShowNodeWeights()
+{
+    return Options::instance().showNodeWeights;
+}
+
+void GraphStudioApp::setShowNodeWeights(bool show)
+{
+    Options::instance().showNodeWeights = show;
+    gh.setChanged();
+}
+
 void GraphStudioApp::setup()
 {    
     loadSettings();
 
     params = params::InterfaceGl::create("Graph Studio", Vec2i(200, 310));
     params->addParam("Node Size", &Options::instance().nodeSize, "min=1.0 max=50.0 step=1.0");
-    params->addParam("Edge Width", &Options::instance().edgeWidth, "min=0.1 max=10.0 step=0.1");
+
+    std::function<void(float)> edgeWidthSetter = std::bind(&GraphStudioApp::setEdgeWidth, this, std::placeholders::_1);
+    std::function<float()> edgeWidthGetter = std::bind(&GraphStudioApp::getEdgeWidth, this);
+    params->addParam("Edge Width", edgeWidthSetter, edgeWidthGetter).min(0.1f).max(10.0f).step(0.1f);
+
     params->addParam("Highlighted Edge Width", &Options::instance().highlighedEdgeWidth, "min=0.0 max=10.0 step=0.1");
     params->addParam("Arrow Length", &Options::instance().arrowLength, "min=1.0 max=50.0 step=1.0");
     params->addParam("Arrow Angle", &Options::instance().arrowAngle, "min=0.0 max=90.0 step=1.0");
-    params->addParam("Show Edge Weights", &Options::instance().showEdgeWeights);
-    params->addParam("Show Node Weights", &Options::instance().showNodeWeights);
+
+    std::function<void(bool)> showEdgeWeightsSetter = std::bind(&GraphStudioApp::setShowEdgeWeights, this, std::placeholders::_1);
+    std::function<bool()>     showEdgeWeightsGetter = std::bind(&GraphStudioApp::getShowEdgeWeights, this);
+    params->addParam("Show Edge Weights", showEdgeWeightsSetter, showEdgeWeightsGetter);
+
+    std::function<void(bool)> showNodeWeightsSetter = std::bind(&GraphStudioApp::setShowNodeWeights, this, std::placeholders::_1);
+    std::function<bool()>     showNodeWeightsGetter = std::bind(&GraphStudioApp::getShowNodeWeights, this);
+    params->addParam("Show Node Weights", showNodeWeightsSetter, showNodeWeightsGetter);
+
     params->addSeparator();
     params->addParam("Algorithm", AlgorithmNames, &Options::instance().algorithm);
     params->addParam("Starting Node",  &Options::instance().startNode, "min=1 step=1");
