@@ -137,10 +137,9 @@ void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::
         outerEdges.emplace_back(newIdx, edge.to, false);
 
 
-        ci::vec2 offset = glm::normalize(nodePositions[edge.from] - nodePositions[edge.to]);
-        glm::rotate(offset, float(M_PI / 2.0f));
+        ci::vec2 offset = glm::normalize(nodePositions[edge.from] - nodePositions[edge.to]);        
         ci::vec2 newPos = (nodePositions[edge.from] + nodePositions[edge.to]) / 2.0f;
-        newPos += offset * sqrt(3.0f) * 50.0f;
+        newPos += glm::rotate(offset, glm::half_pi<float>()) * sqrt(3.0f) * 50.0f;
         nodePositions.push_back(newPos);
     }
 }

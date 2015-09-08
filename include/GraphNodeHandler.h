@@ -23,8 +23,7 @@ public:
     inline void update() 
     { 
         auto vec = ci::vec2(1.0f, 0.0f); 
-        glm::rotate(vec, direction); 
-        position += vec * speed; 
+        position += glm::rotate(vec, direction) * speed;
         
         position.x = std::max(margin, position.x);
         position.x = std::min(window->getWidth() - margin, position.x);

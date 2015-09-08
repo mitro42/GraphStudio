@@ -92,11 +92,11 @@ void GraphDrawer::drawArrow(ci::vec2 from, ci::vec2 to, float headLength, float 
     ci::vec2 dir = glm::normalize(to - from);
     ci::vec2 lineEnd = to - dir * headLength / 2.0f;
     ci::gl::drawLine(from, lineEnd);
-
-    glm::rotate(dir, ci::toRadians(headAngle));
-    ci::gl::drawSolidTriangle(to, to - dir*headLength, lineEnd);
-    glm::rotate(dir, ci::toRadians(-2 * headAngle));
-    ci::gl::drawSolidTriangle(to, to - dir*headLength, lineEnd);
+    
+    auto rot = glm::rotate(dir, ci::toRadians(headAngle));
+    ci::gl::drawSolidTriangle(to, to - rot*headLength, lineEnd);
+    rot = glm::rotate(dir, ci::toRadians(-headAngle));
+    ci::gl::drawSolidTriangle(to, to - rot*headLength, lineEnd);    
 }
 
 void GraphDrawer::drawArrow(ci::vec2 from, ci::vec2 to, ci::Color color, float width)
@@ -126,9 +126,8 @@ void GraphDrawer::drawEdge(int from, int to, ci::Color color, float width)
     ci::vec2 toVec = nodeHandlers[to]->getPos();
     if (g->isDirected())
     {
-        ci::vec2 dir = toVec - fromVec;
-        glm::normalize(dir);
-        drawArrow(fromVec, toVec - Options::instance().nodeSize * dir,
+        ci::vec2 dir = toVec - fromVec;        
+        drawArrow(fromVec, toVec - Options::instance().nodeSize * glm::normalize(dir),
             Options::instance().arrowLength, Options::instance().arrowAngle);
     }
     else
@@ -204,7 +203,7 @@ void GraphDrawer::drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &c
                     std::string labelText = ss.str();
                     ci::vec2 textMid = (fromVec + toVec) / 2.0f;
                     ci::vec2 edgeDir = fromVec - toVec;
-                    float deg = ci::toDegrees(std::atan(edgeDir.y / edgeDir.x));
+                    float rad = std::atan(edgeDir.y / edgeDir.x);
                     auto textRect = edgeTextureFont->measureString(labelText);
                     float textWidth = textRect.x;
                     ci::vec2 textAlignmentOffset = glm::normalize(edgeDir) * textWidth / 2.0f;
@@ -216,11 +215,11 @@ void GraphDrawer::drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &c
                     ci::gl::translate(textMid - textAlignmentOffset);
                     if (edgeDir.x != 0)
                     {
-                        ci::gl::rotate(deg);
+                        ci::gl::rotate(rad);
                     }
                     else
                     {
-                        ci::gl::rotate(90);
+                        ci::gl::rotate(glm::half_pi<float>());
                     }
                     ci::vec2 offset = -ci::vec2(0.0f, 5.0f + Options::instance().highlighedEdgeWidth); // place edge weight over the edge
                     ci::ColorA c = cs.edgeTextColor;
