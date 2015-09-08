@@ -20,12 +20,10 @@ void GraphDrawer::resize(ci::Area newWindowSize)
 
 void GraphDrawer::initFbo()
 {
-    ci::gl::Fbo::Format format;
-    //format.enableColorBuffer();
-    format.setSamples(8);
-    //format.enableMipmapping();
+    auto format = ci::gl::Fbo::Format().samples(8);    
+    
     edgeFbo = ci::gl::Fbo::create(window->getWidth(), window->getHeight(), format);
-    labelFbo = ci::gl::Fbo::create(window->getWidth(), window->getHeight());
+    labelFbo = ci::gl::Fbo::create(window->getWidth(), window->getHeight(), format);
 }
 
 void GraphDrawer::startDrawing()

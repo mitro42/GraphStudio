@@ -489,4 +489,4 @@ void GraphStudioApp::resize()
     gh.resize(getWindowBounds());
 }
 
-CINDER_APP( GraphStudioApp, RendererGl )
+CINDER_APP(GraphStudioApp, RendererGl(RendererGl::Options().msaa(8)))
