@@ -5,9 +5,9 @@
 
 #include <cinder/Rand.h>
 
-std::vector<ci::Vec2f> generateGridPositions(int N, int columns, int rows)
+std::vector<ci::vec2> generateGridPositions(int N, int columns, int rows)
 {
-    std::vector<ci::Vec2f> nodePositions(N);
+    std::vector<ci::vec2> nodePositions(N);
     int row = 0;
     int col = 0;
     int margin = 100;
@@ -18,7 +18,7 @@ std::vector<ci::Vec2f> generateGridPositions(int N, int columns, int rows)
 
     for (int i = 0; i < N; ++i)
     {
-        nodePositions[i] = ci::Vec2f(margin + col * xStep, margin + row*yStep);
+        nodePositions[i] = ci::vec2(margin + col * xStep, margin + row*yStep);
         col++;
         if (col == columns)
         {
@@ -31,7 +31,7 @@ std::vector<ci::Vec2f> generateGridPositions(int N, int columns, int rows)
 
 
 
-void generateGrid(const GraphParamsGrid& params, Graph &g, std::vector<ci::Vec2f> &nodePositions)
+void generateGrid(const GraphParamsGrid& params, Graph &g, std::vector<ci::vec2> &nodePositions)
 {
     g.clear(params.directed);
     g.setWeightedEdges(true);
@@ -96,7 +96,7 @@ void generateGrid(const GraphParamsGrid& params, Graph &g, std::vector<ci::Vec2f
 }
 
 
-void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::vector<ci::Vec2f> &nodePositions)
+void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::vector<ci::vec2> &nodePositions)
 {
     struct Edge{
         int from = 0;
@@ -115,8 +115,8 @@ void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::
     g.addNode();
     g.addEdge(0, 1);
     outerEdges.emplace_back(0, 1, true);
-    ci::Vec2f center(400, 300); // TODO: replace with window size independent coordinates
-    ci::Vec2f centerOffset = ci::randVec2f() * 25;
+    ci::vec2 center(400, 300); // TODO: replace with window size independent coordinates
+    ci::vec2 centerOffset = ci::Rand::randVec2() * 25.0f;
     nodePositions.push_back(center + centerOffset);
     nodePositions.push_back(center - centerOffset);
     while (int(nodePositions.size()) < GraphParamsTriangleMesh::instance().triangles+2)
@@ -137,10 +137,10 @@ void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::
         outerEdges.emplace_back(newIdx, edge.to, false);
 
 
-        ci::Vec2f offset = (nodePositions[edge.from] - nodePositions[edge.to]).normalized();
-        offset.rotate(float(M_PI / 2.0f));
-        ci::Vec2f newPos = (nodePositions[edge.from] + nodePositions[edge.to]) / 2;
-        newPos += offset * sqrt(3.0f) * 50;
+        ci::vec2 offset = glm::normalize(nodePositions[edge.from] - nodePositions[edge.to]);
+        glm::rotate(offset, float(M_PI / 2.0f));
+        ci::vec2 newPos = (nodePositions[edge.from] + nodePositions[edge.to]) / 2.0f;
+        newPos += offset * sqrt(3.0f) * 50.0f;
         nodePositions.push_back(newPos);
     }
 }

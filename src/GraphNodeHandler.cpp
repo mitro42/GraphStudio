@@ -7,7 +7,7 @@
 
 const float GraphNodeHandler::margin = 10.0f;
 
-GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, GraphHandler &graphHandler, ci::Vec2f pos) : 
+GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, GraphHandler &graphHandler, ci::vec2 pos) : 
     window(window), 
     graphHandler(graphHandler),
     position(pos), 
@@ -37,7 +37,7 @@ void GraphNodeHandler::mouseDrag(ci::app::MouseEvent &event)
 
 void GraphNodeHandler::mouseDown(ci::app::MouseEvent &event)
 {
-    if ((position - event.getPos()).length() < Options::instance().nodeSize)
+    if (glm::length(position - ci::vec2(event.getPos())) < Options::instance().nodeSize)
     {
         if (event.isAltDown() && !Options::instance().animationPlaying)
         {

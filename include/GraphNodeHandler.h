@@ -12,7 +12,7 @@ public:
         addEdge
     };
 
-    GraphNodeHandler(ci::app::WindowRef window, GraphHandler &graphHandler, ci::Vec2f pos);
+    GraphNodeHandler(ci::app::WindowRef window, GraphHandler &graphHandler, ci::vec2 pos);
     
     void mouseDrag(ci::app::MouseEvent &event);
     void mouseDown(ci::app::MouseEvent &event);
@@ -22,8 +22,8 @@ public:
 
     inline void update() 
     { 
-        auto vec = ci::Vec2f(1.0f, 0.0f); 
-        vec.rotate(direction); 
+        auto vec = ci::vec2(1.0f, 0.0f); 
+        glm::rotate(vec, direction); 
         position += vec * speed; 
         
         position.x = std::max(margin, position.x);
@@ -35,10 +35,10 @@ public:
     inline void clearSelection() { selection = Selection::none; }
     inline Selection getSelection() const { return selection; }
 
-    inline ci::Vec2f getPos() const { return position; }
-    inline void setPos(const ci::Vec2f &pos) { position = pos; }
+    inline ci::vec2 getPos() const { return position; }
+    inline void setPos(const ci::vec2 &pos) { position = pos; }
 
-    inline ci::Vec2f getOriginalPos() const { return originalPosition; }
+    inline ci::vec2 getOriginalPos() const { return originalPosition; }
 
     inline float getDirection() { return direction; }
     inline void setDirection(const float &dir) { direction = dir; }
@@ -50,13 +50,13 @@ public:
 
 private:
     static const float margin;
-    ci::signals::scoped_connection cbMouseDrag;
-    ci::signals::scoped_connection cbMouseDown;
-    ci::signals::scoped_connection cbMouseUp;
+    ci::signals::ScopedConnection cbMouseDrag;
+    ci::signals::ScopedConnection cbMouseDown;
+    ci::signals::ScopedConnection cbMouseUp;
     ci::app::WindowRef window;
     GraphHandler &graphHandler;
-    ci::Vec2f position;
-    const ci::Vec2f originalPosition;
+    ci::vec2 position;
+    const ci::vec2 originalPosition;
     float direction;
     float speed;
     Selection selection;

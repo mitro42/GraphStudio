@@ -17,9 +17,9 @@
 #include <cinder/Rect.h>
 #include <cinder/Vector.h>
 #include <cinder/Xml.h>
-#include <cinder/App/AppNative.h>
-#include <cinder/App/MouseEvent.h>
-#include <cinder/App/Window.h>
+#include <cinder/app/AppBase.h>
+#include <cinder/app/MouseEvent.h>
+#include <cinder/app/Window.h>
 #include <cinder/gl/Fbo.h>
 #include <cinder/gl/GlslProg.h>
 #include <cinder/gl/TextureFont.h>

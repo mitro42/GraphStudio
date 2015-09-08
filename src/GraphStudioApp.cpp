@@ -3,23 +3,25 @@
 #include "GraphHandler.h"
 #include "Options.h"
 
-#include <cinder/app/AppNative.h>
+#include <cinder/app/App.h>
+#include <cinder/app/RendererGl.h>
 #include <cinder/params/Params.h>
 #include <cinder/ImageIo.h>
 
 using namespace ci;
 using namespace ci::app;
 
-class GraphStudioApp : public AppNative {
+class GraphStudioApp : public App {
 public:
-    void prepareSettings(Settings *settings) override;
+    ~GraphStudioApp();
+
+    static void prepareSettings(Settings *settings);
     void setup() override;
     void mouseDown(MouseEvent event) override;
     void keyDown(KeyEvent event) override;
     void update() override;
     void draw() override;
     void resize() override;
-    void shutdown() override;
     
     const ColorScheme &getCurrentColorScheme();
 private:
@@ -60,7 +62,7 @@ const std::vector<std::string> GraphStudioApp::extensions{ "graph", "txt" };
 
 void GraphStudioApp::prepareSettings(Settings *settings)
 {
-    settings->enableConsoleWindow();
+    settings->setConsoleWindowEnabled(true);
     settings->setWindowSize(800, 600);
     settings->setFrameRate(30.0f);
 }
@@ -199,7 +201,7 @@ void GraphStudioApp::setup()
 {    
     loadSettings();
 
-    params = params::InterfaceGl::create("Graph Studio", Vec2i(200, 310));
+    params = params::InterfaceGl::create("Graph Studio", ci::ivec2(200, 310));
     params->addParam("Node Size", &Options::instance().nodeSize, "min=1.0 max=50.0 step=1.0");
 
     std::function<void(float)> edgeWidthSetter = std::bind(&GraphStudioApp::setEdgeWidth, this, std::placeholders::_1);
@@ -272,7 +274,7 @@ void GraphStudioApp::setup()
 
 }
 
-void GraphStudioApp::shutdown()
+GraphStudioApp::~GraphStudioApp()
 {
     saveSettings();
 }
@@ -487,4 +489,4 @@ void GraphStudioApp::resize()
     gh.resize(getWindowBounds());
 }
 
-CINDER_APP_NATIVE( GraphStudioApp, RendererGl )
+CINDER_APP( GraphStudioApp, RendererGl )

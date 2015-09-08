@@ -24,9 +24,9 @@ public:
 
     void reorderNodesSquare();
     void reorderNodesGrid(int columns, int rows);
-    void pushNodes(ci::Vec2f position, float force);
-    void pushNodes(ci::Vec2f position);
-    void pullNodes(ci::Vec2f position);
+    void pushNodes(ci::vec2 position, float force);
+    void pushNodes(ci::vec2 position);
+    void pullNodes(ci::vec2 position);
 
     void setup(ci::app::WindowRef window);
     void update();
@@ -60,9 +60,9 @@ private:
     };
     
     ci::app::WindowRef window;
-    ci::signals::scoped_connection	cbMouseDown;
-    ci::signals::scoped_connection	cbMouseDrag;
-    ci::signals::scoped_connection	cbMouseUp;
+    ci::signals::ScopedConnection	cbMouseDown;
+    ci::signals::ScopedConnection	cbMouseDrag;
+    ci::signals::ScopedConnection	cbMouseUp;
     
     ci::Area windowSize;
     std::recursive_mutex updateMutex;
@@ -77,9 +77,9 @@ private:
 
     int currentAlgorithm;
     
-    void repositionNodes(const std::vector<ci::Vec2f>& nodePositions);
+    void repositionNodes(const std::vector<ci::vec2>& nodePositions);
     void recreateNodeHandlers();
-    void recreateNodeHandlers(const std::vector<ci::Vec2f> &nodePositions);
+    void recreateNodeHandlers(const std::vector<ci::vec2> &nodePositions);
     void addNewEdgeIfNodesSelected();
     void updateEdgeWeights();
 };

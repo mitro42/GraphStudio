@@ -12,11 +12,11 @@ Legend::Legend() : width(0), height(0)
     textureFont = ci::gl::TextureFont::create(font);
 };
 
-ci::gl::Texture Legend::getTexture()
+ci::gl::TextureRef Legend::getTexture()
 { 
     if (!fbo && contents.empty())
     {
-        return ci::gl::Texture();
+        return ci::gl::TextureRef();
     }
     else
     {        
@@ -24,31 +24,30 @@ ci::gl::Texture Legend::getTexture()
         changed = false;
     }
 
-    return fbo.getTexture(); 
+    return fbo->getColorTexture(); 
 }
 
 void Legend::render()
 {
-    ci::Vec2f currentSize;
+    ci::vec2 currentSize;
     if (fbo)
     {
-        currentSize = fbo.getSize();
+        currentSize = fbo->getSize();
     }
     const int rowHeight = 25;
-    ci::Vec2f requiredSize(350.0f, float(contents.size() * rowHeight));
+    ci::vec2 requiredSize(350.0f, float(contents.size() * rowHeight));
     if (requiredSize != currentSize)
     {
-        fbo = ci::gl::Fbo(int(requiredSize.x), int(requiredSize.y), format);
+        fbo = ci::gl::Fbo::create(int(requiredSize.x), int(requiredSize.y), format);
     }
     else
         return;
     
-    ci::gl::SaveFramebufferBinding bindingSaver;
-    fbo.bindFramebuffer();
-    ci::Area viewPort = ci::gl::getViewport();
-    ci::gl::setViewport(fbo.getBounds());
+    ci::gl::ScopedFramebuffer fbScp(fbo);
+    ci::gl::ScopedViewport scpVp(ci::ivec2(0), fbo->getSize());
+    
     ci::gl::pushMatrices();
-    ci::gl::setMatricesWindow(fbo.getSize(), false);
+    ci::gl::setMatricesWindow(fbo->getSize());
     ci::gl::clear(ci::ColorA(Options::instance().currentColorScheme.backgroundColor, 0.1f));
     
     float posY = rowHeight / 2;
@@ -61,32 +60,31 @@ void Legend::render()
             width = Options::instance().highlighedEdgeWidth;
             // fall trough
         case LegendType::arrow:
-            GraphDrawer::drawArrow(ci::Vec2f(5.0f, posY), ci::Vec2f(70.0f, posY), element.color, width);
+            GraphDrawer::drawArrow(ci::vec2(5.0f, posY), ci::vec2(70.0f, posY), element.color, width);
             break;
         case LegendType::highlightedEdge:
             width = Options::instance().highlighedEdgeWidth;
             // fall trough
         case LegendType::edge:
-            GraphDrawer::drawEdge(ci::Vec2f(5.0f, posY), ci::Vec2f(70.0f, posY), element.color, width);
+            GraphDrawer::drawEdge(ci::vec2(5.0f, posY), ci::vec2(70.0f, posY), element.color, width);
             break;
         case LegendType::node: 
             ci::gl::color(element.color);
-            ci::gl::drawSolidCircle(ci::Vec2f(40.0f, posY), 10.0f);
+            ci::gl::drawSolidCircle(ci::vec2(40.0f, posY), 10.0f);
             break;
         case LegendType::nodes:
             ci::gl::color(element.color);
-            ci::gl::drawSolidCircle(ci::Vec2f(25.0f, posY), 10.0f);
-            ci::gl::drawSolidCircle(ci::Vec2f(55.0f, posY), 10.0f);
+            ci::gl::drawSolidCircle(ci::vec2(25.0f, posY), 10.0f);
+            ci::gl::drawSolidCircle(ci::vec2(55.0f, posY), 10.0f);
             break;
         default:
             break;
         }
 
-        textureFont->drawString(element.label, ci::Vec2f(80, posY + rowHeight / 4));
+        textureFont->drawString(element.label, ci::vec2(80, posY + rowHeight / 4));
 
         posY += rowHeight;
     }
 
     ci::gl::popMatrices();
-    ci::gl::setViewport(viewPort);
 }

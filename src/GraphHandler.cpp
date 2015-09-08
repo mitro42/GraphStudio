@@ -132,7 +132,7 @@ void GraphHandler::updateEdgeWeights()
         {
             auto neighbor = edgePtr->otherEnd(i);
             auto posEnd = nodeHandlers[neighbor]->getPos();
-            auto newWeight = ((posStart - posEnd).length()) / 100 * Options::instance().edgeWeightScale;
+            auto newWeight = (glm::length(posStart - posEnd)) / 100 * Options::instance().edgeWeightScale;
             changed |= (edgePtr->weight != newWeight);
             edgePtr->weight = newWeight;
         }
@@ -152,11 +152,11 @@ void GraphHandler::update()
     {
         for (auto& nh : nodeHandlers)
         {
-            ci::Vec2f v;
+            ci::vec2 v;
             v.x = nh->getOriginalPos().x + float(ci::app::getElapsedSeconds()) * 0.1f;
             v.y = nh->getOriginalPos().y + float(ci::app::getElapsedSeconds()) * 0.01f;
-            ci::Vec2f randVec = perlin.dfBm(v);
-            //ci::Vec2f newSpeed(sin(angle), cos(angle));
+            ci::vec2 randVec = perlin.dfBm(v);
+            //ci::vec2 newSpeed(sin(angle), cos(angle));
             nh->setSpeed(randVec.x * 3);
             nh->setDirection(randVec.y);
             nh->update();
@@ -198,13 +198,13 @@ void GraphHandler::recreateNodeHandlers()
     nodeHandlers.clear();
     for (const auto &node : *g)
     {
-        auto pos = ci::Vec2f(ci::Rand::randFloat() * window->getWidth(), ci::Rand::randFloat() * window->getHeight());
+        auto pos = ci::vec2(ci::Rand::randFloat() * window->getWidth(), ci::Rand::randFloat() * window->getHeight());
         nodeHandlers.emplace_back(new GraphNodeHandler(window, *this, pos));
     }
     changed = true;
 }
 
-void GraphHandler::recreateNodeHandlers(const std::vector<ci::Vec2f> &nodePositions)
+void GraphHandler::recreateNodeHandlers(const std::vector<ci::vec2> &nodePositions)
 {
     std::unique_lock<std::recursive_mutex> guard(updateMutex);
     nodeHandlers.clear();
@@ -297,7 +297,7 @@ void GraphHandler::loadGraphPositions(std::string fileName)
     while (in >> x && idx < int(nodeHandlers.size()))
     {
         in >> y;
-        nodeHandlers[idx++]->setPos(ci::Vec2f(x, y));
+        nodeHandlers[idx++]->setPos(ci::vec2(x, y));
     }
     changed = true;
 }
@@ -324,7 +324,7 @@ void GraphHandler::reorderNodesSquare()
 }
 
 
-void GraphHandler::repositionNodes(const std::vector<ci::Vec2f>& nodePositions)
+void GraphHandler::repositionNodes(const std::vector<ci::vec2>& nodePositions)
 {
     for (int i = 0; i < g->getNodeCount(); ++i)
     {
@@ -334,26 +334,26 @@ void GraphHandler::repositionNodes(const std::vector<ci::Vec2f>& nodePositions)
 }
 
 
-void GraphHandler::pushNodes(ci::Vec2f position, float force)
+void GraphHandler::pushNodes(ci::vec2 position, float force)
 {
     for (auto &nh : nodeHandlers)
     {
         auto nodePosition = nh->getPos();
         auto forceVect = (position - nodePosition);
-        nodePosition += forceVect.normalized() * (force / forceVect.lengthSquared()) * 10;
+        nodePosition += glm::normalize(forceVect) * (force / glm::length2(forceVect) * 10.0f);
         nh->setPos(nodePosition);
     }
     changed = true;
 }
 
 
-void GraphHandler::pushNodes(ci::Vec2f position)
+void GraphHandler::pushNodes(ci::vec2 position)
 {
     pushNodes(position, Options::instance().force);
 }
 
 
-void GraphHandler::pullNodes(ci::Vec2f position)
+void GraphHandler::pullNodes(ci::vec2 position)
 {
     pushNodes(position, -Options::instance().force);
 }
@@ -413,7 +413,7 @@ void GraphHandler::resize(ci::Area newWindowSize)
     for (auto &nh : nodeHandlers)
     {
         auto pos = nh->getPos();
-        nh->setPos(ci::Vec2f(pos.x * xScale, pos.y * yScale));
+        nh->setPos(ci::vec2(pos.x * xScale, pos.y * yScale));
     }
 
     graphDrawer->resize(newWindowSize);
@@ -456,7 +456,7 @@ void GraphHandler::fitToWindow()
     {
         float newX = ((nh->getPos().x) - minX) / boundingRectWidth * window->getWidth() * (1 - 2 * marginX) + window->getWidth() * marginX;
         float newY = ((nh->getPos().y) - minY) / boundingRectHeight * window->getHeight() * (1 - 2 * marginY) + window->getHeight() * marginY;
-        nh->setPos(ci::Vec2f(newX, newY));
+        nh->setPos(ci::vec2(newX, newY));
     }
     changed = true;
 }
@@ -467,7 +467,7 @@ void GraphHandler::generateSpecialGraph(GraphType type)
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
     std::cout << "Start...\n";
 
-    std::vector<ci::Vec2f> nodePositions;
+    std::vector<ci::vec2> nodePositions;
     switch (type)
     {
     case GraphType::grid:

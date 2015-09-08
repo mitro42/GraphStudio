@@ -24,8 +24,8 @@ void GraphDrawer::initFbo()
     //format.enableColorBuffer();
     format.setSamples(8);
     //format.enableMipmapping();
-    edgeFbo = ci::gl::Fbo(window->getWidth(), window->getHeight(), format);
-    labelFbo = ci::gl::Fbo(window->getWidth(), window->getHeight());
+    edgeFbo = ci::gl::Fbo::create(window->getWidth(), window->getHeight(), format);
+    labelFbo = ci::gl::Fbo::create(window->getWidth(), window->getHeight());
 }
 
 void GraphDrawer::startDrawing()
@@ -69,11 +69,11 @@ void GraphDrawer::drawEdges()
     if (changed)
     {
         //std::cout << "Redrawing edges" << std::endl;
-        edgeFbo.bindFramebuffer();
-        ci::Area viewPort = ci::gl::getViewport();
-        ci::gl::setViewport(edgeFbo.getBounds());
+        ci::gl::ScopedFramebuffer scpFbEdge(edgeFbo);
+        ci::gl::ScopedViewport scpVpEdge(edgeFbo->getSize());
+        
         ci::gl::pushMatrices();
-        ci::gl::setMatricesWindow(edgeFbo.getSize(), false);
+        ci::gl::setMatricesWindow(edgeFbo->getSize());
         ci::gl::clear(ci::ColorA(0, 0, 0, 0.0f));
 
         for (int nodeIdx = 0; nodeIdx < g->getNodeCount(); ++nodeIdx)
@@ -85,32 +85,30 @@ void GraphDrawer::drawEdges()
             }
         }
         ci::gl::popMatrices();
-        ci::gl::setViewport(viewPort);
-        edgeFbo.unbindFramebuffer();        
     }
-    ci::gl::draw(edgeFbo.getTexture());
+    ci::gl::draw(edgeFbo->getColorTexture());
 }
 
-void GraphDrawer::drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle)
+void GraphDrawer::drawArrow(ci::vec2 from, ci::vec2 to, float headLength, float headAngle)
 {
-    ci::Vec2f dir = (to - from).normalized();
-    ci::Vec2f lineEnd = to - dir * headLength / 2.0;
+    ci::vec2 dir = glm::normalize(to - from);
+    ci::vec2 lineEnd = to - dir * headLength / 2.0f;
     ci::gl::drawLine(from, lineEnd);
 
-    dir.rotate(ci::toRadians(headAngle));
+    glm::rotate(dir, ci::toRadians(headAngle));
     ci::gl::drawSolidTriangle(to, to - dir*headLength, lineEnd);
-    dir.rotate(ci::toRadians(-2 * headAngle));
+    glm::rotate(dir, ci::toRadians(-2 * headAngle));
     ci::gl::drawSolidTriangle(to, to - dir*headLength, lineEnd);
 }
 
-void GraphDrawer::drawArrow(ci::Vec2f from, ci::Vec2f to, ci::Color color, float width)
+void GraphDrawer::drawArrow(ci::vec2 from, ci::vec2 to, ci::Color color, float width)
 {
     ci::gl::color(color);
     ci::gl::lineWidth(width);
     drawArrow(from, to, Options::instance().arrowLength, Options::instance().arrowAngle);
 }
 
-void GraphDrawer::drawEdge(ci::Vec2f from, ci::Vec2f to, ci::Color color, float width)
+void GraphDrawer::drawEdge(ci::vec2 from, ci::vec2 to, ci::Color color, float width)
 {
     ci::gl::lineWidth(width);
     ci::gl::color(color);
@@ -126,12 +124,12 @@ void GraphDrawer::drawEdge(int from, int to, ci::Color color, float width)
     ci::gl::color(color);
 
     // calculating the end points and drawing the lines/arrows
-    ci::Vec2f fromVec = nodeHandlers[from]->getPos();
-    ci::Vec2f toVec = nodeHandlers[to]->getPos();
+    ci::vec2 fromVec = nodeHandlers[from]->getPos();
+    ci::vec2 toVec = nodeHandlers[to]->getPos();
     if (g->isDirected())
     {
-        ci::Vec2f dir = toVec - fromVec;
-        dir.normalize();
+        ci::vec2 dir = toVec - fromVec;
+        glm::normalize(dir);
         drawArrow(fromVec, toVec - Options::instance().nodeSize * dir,
             Options::instance().arrowLength, Options::instance().arrowAngle);
     }
@@ -168,11 +166,12 @@ void GraphDrawer::drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &c
     if (changed)
     {
         //std::cout << "Redrawing labels" << std::endl;
-        labelFbo.bindFramebuffer();
-        ci::Area viewPort = ci::gl::getViewport();
-        ci::gl::setViewport(labelFbo.getBounds());
+        ci::gl::ScopedFramebuffer scpFbLabel(labelFbo);
+        ci::gl::ScopedViewport scpVpLabel(ci::ivec2(0), labelFbo->getSize());
+        
+        
         ci::gl::pushMatrices();
-        ci::gl::setMatricesWindow(labelFbo.getSize(), false);
+        ci::gl::setMatricesWindow(labelFbo->getSize());
         ci::gl::clear(ci::ColorA(Options::instance().currentColorScheme.backgroundColor, 0.0f));
 
         const auto &cs = Options::instance().currentColorScheme;
@@ -184,7 +183,7 @@ void GraphDrawer::drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &c
             {
                 ci::gl::color(cs.nodeTextColor);
                 auto label = std::to_string(i + 1);
-                auto labelOffset = nodeTextureFont->measureString(label) / 2;
+                auto labelOffset = nodeTextureFont->measureString(label) / 2.0f;
                 labelOffset.y *= 0.68f;
                 labelOffset.x *= -1;
                 nodeTextureFont->drawString(label, nodeHandlers[i]->getPos() + labelOffset);
@@ -199,18 +198,18 @@ void GraphDrawer::drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &c
                 for (auto &edgePtr : *node)
                 {
                     // writing edge weight
-                    ci::Vec2f fromVec = nodeHandlers[edgePtr->from]->getPos();
-                    ci::Vec2f toVec = nodeHandlers[edgePtr->to]->getPos();
+                    ci::vec2 fromVec = nodeHandlers[edgePtr->from]->getPos();
+                    ci::vec2 toVec = nodeHandlers[edgePtr->to]->getPos();
 
                     std::stringstream ss;
                     ss << std::fixed << std::setprecision(Options::instance().weightPrecision) << edgePtr->weight;
                     std::string labelText = ss.str();
-                    ci::Vec2f textMid = (fromVec + toVec) / 2;
-                    ci::Vec2f edgeDir = fromVec - toVec;
+                    ci::vec2 textMid = (fromVec + toVec) / 2.0f;
+                    ci::vec2 edgeDir = fromVec - toVec;
                     float deg = ci::toDegrees(std::atan(edgeDir.y / edgeDir.x));
                     auto textRect = edgeTextureFont->measureString(labelText);
                     float textWidth = textRect.x;
-                    ci::Vec2f textAlignmentOffset = edgeDir.normalized() * textWidth / 2.0f;
+                    ci::vec2 textAlignmentOffset = glm::normalize(edgeDir) * textWidth / 2.0f;
                     if (fromVec.x < toVec.x)
                     {
                         textAlignmentOffset *= -1;
@@ -225,7 +224,7 @@ void GraphDrawer::drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &c
                     {
                         ci::gl::rotate(90);
                     }
-                    ci::Vec2f offset = -ci::Vec2f(0.0f, 5.0f + Options::instance().highlighedEdgeWidth); // place edge weight over the edge
+                    ci::vec2 offset = -ci::vec2(0.0f, 5.0f + Options::instance().highlighedEdgeWidth); // place edge weight over the edge
                     ci::ColorA c = cs.edgeTextColor;
                     auto it = colors.find(edgePtr);
                     if (it != colors.end())
@@ -238,11 +237,9 @@ void GraphDrawer::drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &c
         }
 
         ci::gl::popMatrices();
-        ci::gl::setViewport(viewPort);
-        labelFbo.unbindFramebuffer();        
     }
     ci::gl::color(ci::Color::white());
-    ci::gl::draw(labelFbo.getTexture());
+    ci::gl::draw(labelFbo->getColorTexture());
 }
    
 

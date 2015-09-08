@@ -40,7 +40,7 @@ public:
         changed = true;
     }
 
-    ci::gl::Texture getTexture();
+    ci::gl::TextureRef getTexture();
 
 private:
     void render();
@@ -53,5 +53,5 @@ private:
     ci::gl::TextureFontRef textureFont;
 
     std::vector<LegendItem> contents;
-    ci::gl::Fbo  fbo;
+    ci::gl::FboRef  fbo;
 };

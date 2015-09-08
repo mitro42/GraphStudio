@@ -23,9 +23,9 @@ protected:
 
     void drawEdge(int from, int to, ci::Color color, float width);
 
-    static void drawArrow(ci::Vec2f from, ci::Vec2f to, float headLength, float headAngle);
-    static void drawArrow(ci::Vec2f from, ci::Vec2f to, ci::Color color, float width);
-    static void drawEdge(ci::Vec2f from, ci::Vec2f to, ci::Color color, float width);
+    static void drawArrow(ci::vec2 from, ci::vec2 to, float headLength, float headAngle);
+    static void drawArrow(ci::vec2 from, ci::vec2 to, ci::Color color, float width);
+    static void drawEdge(ci::vec2 from, ci::vec2 to, ci::Color color, float width);
 
     void startDrawing();
     void drawEdges();
@@ -43,7 +43,7 @@ protected:
     const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers;
     std::vector<ci::Color> generateColors(int n);
 
-    ci::gl::Texture legendTexture;
+    ci::gl::TextureRef legendTexture;
     ci::gl::TextureFontRef edgeTextureFont;
     ci::gl::TextureFontRef nodeTextureFont;
 private:
@@ -51,8 +51,8 @@ private:
     void initFbo();
     float oldNodeSize;
     
-    ci::gl::Fbo edgeFbo;
-    ci::gl::Fbo labelFbo;
+    ci::gl::FboRef edgeFbo;
+    ci::gl::FboRef labelFbo;
 
     ci::Font edgeFont;
     ci::Font nodeFont;
