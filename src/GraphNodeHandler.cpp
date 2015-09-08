@@ -17,9 +17,9 @@ GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, GraphHandler &grap
     selection(Selection::none)
 {
     float half = Options::instance().nodeSize / 2;
-    cbMouseDown = window->getSignalMouseDown().connect(0, std::bind(&GraphNodeHandler::mouseDown, this, std::placeholders::_1));
-    cbMouseUp = window->getSignalMouseUp().connect(0, std::bind(&GraphNodeHandler::mouseUp, this, std::placeholders::_1));
-    cbMouseDrag = window->getSignalMouseDrag().connect(0, std::bind(&GraphNodeHandler::mouseDrag, this, std::placeholders::_1));
+    cbMouseDown = window->getSignalMouseDown().connect(2, std::bind(&GraphNodeHandler::mouseDown, this, std::placeholders::_1));
+    cbMouseUp = window->getSignalMouseUp().connect(2, std::bind(&GraphNodeHandler::mouseUp, this, std::placeholders::_1));
+    cbMouseDrag = window->getSignalMouseDrag().connect(2, std::bind(&GraphNodeHandler::mouseDrag, this, std::placeholders::_1));
 }
 
 

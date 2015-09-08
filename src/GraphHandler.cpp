@@ -26,9 +26,9 @@ GraphHandler::~GraphHandler()
 void GraphHandler::setup(ci::app::WindowRef _window)
 {
     window = _window;
-    cbMouseDown = window->getSignalMouseDown().connect(std::bind(&GraphHandler::mouseDown, this, std::placeholders::_1));
-    cbMouseDrag = window->getSignalMouseDrag().connect(std::bind(&GraphHandler::mouseDrag, this, std::placeholders::_1));
-    cbMouseUp = window->getSignalMouseUp().connect(std::bind(&GraphHandler::mouseUp, this, std::placeholders::_1));
+    cbMouseDown = window->getSignalMouseDown().connect(1, std::bind(&GraphHandler::mouseDown, this, std::placeholders::_1));
+    cbMouseDrag = window->getSignalMouseDrag().connect(1, std::bind(&GraphHandler::mouseDrag, this, std::placeholders::_1));
+    cbMouseUp = window->getSignalMouseUp().connect(1, std::bind(&GraphHandler::mouseUp, this, std::placeholders::_1));
 
     windowSize = window->getBounds();    
     g = std::make_shared<Graph>(true);
