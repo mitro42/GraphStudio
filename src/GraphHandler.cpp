@@ -161,6 +161,7 @@ void GraphHandler::update()
             nh->setDirection(randVec.y);
             nh->update();
         }
+        setChanged();
     }
     
     if (automaticEdgeWeightUpdate && !Options::instance().animationPlaying)
