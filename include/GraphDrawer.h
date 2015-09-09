@@ -49,7 +49,6 @@ protected:
 private:
     bool changed = true;
     void initFbo();
-    float oldNodeSize;
     
     ci::gl::FboRef edgeFbo;
     ci::gl::FboRef labelFbo;

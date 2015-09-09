@@ -29,16 +29,12 @@ void GraphDrawer::initFbo()
 void GraphDrawer::startDrawing()
 {
     ci::gl::enableAlphaBlending();
-    ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);    
-    if (oldNodeSize != Options::instance().nodeSize)
-    {
-        nodeFont = ci::Font("InputMono Black", Options::instance().nodeSize * 1.6f);
-        edgeFont = nodeFont;
-        nodeTextureFont = ci::gl::TextureFont::create(nodeFont);
-        edgeTextureFont = nodeTextureFont;
-        oldNodeSize = Options::instance().nodeSize;
-        changed = true;
-    }
+    ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);
+
+    nodeFont = ci::Font("InputMono Black", Options::instance().nodeSize * 1.6f);
+    edgeFont = nodeFont;
+    nodeTextureFont = ci::gl::TextureFont::create(nodeFont);
+    edgeTextureFont = nodeTextureFont;
 }
 
 
