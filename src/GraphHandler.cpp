@@ -26,9 +26,9 @@ GraphHandler::~GraphHandler()
 void GraphHandler::setup(ci::app::WindowRef _window)
 {
     window = _window;
-    cbMouseDown = window->getSignalMouseDown().connect(1, std::bind(&GraphHandler::mouseDown, this, std::placeholders::_1));
-    cbMouseDrag = window->getSignalMouseDrag().connect(1, std::bind(&GraphHandler::mouseDrag, this, std::placeholders::_1));
-    cbMouseUp = window->getSignalMouseUp().connect(1, std::bind(&GraphHandler::mouseUp, this, std::placeholders::_1));
+    cbMouseDown = window->getSignalMouseDown().connect(0, std::bind(&GraphHandler::mouseDown, this, std::placeholders::_1));
+    cbMouseDrag = window->getSignalMouseDrag().connect(0, std::bind(&GraphHandler::mouseDrag, this, std::placeholders::_1));
+    cbMouseUp = window->getSignalMouseUp().connect(0, std::bind(&GraphHandler::mouseUp, this, std::placeholders::_1));
 
     windowSize = window->getBounds();    
     g = std::make_shared<Graph>(true);
@@ -169,30 +169,30 @@ void GraphHandler::update()
         updateEdgeWeights();
     }
 
-    if (currentAlgorithm != Options::instance().algorithm)
-    {        
-        Options::instance().animationPlaying = false;
-        currentAlgorithm = Options::instance().algorithm;
-        switch (Algorithm(currentAlgorithm))
-        {
-        default:
-        case Algorithm::none:
-            graphDrawer = std::make_unique<NoAlgorithmDrawer>(g, nodeHandlers, window);
-            break;
-        case Algorithm::prim:
-            graphDrawer = std::make_unique<PrimDrawer>(g, nodeHandlers, window);
-            break;
-        case Algorithm::kruskal:
-            graphDrawer = std::make_unique<KruskalDrawer>(g, nodeHandlers, window);
-            break;
-        case Algorithm::dijkstra:
-            graphDrawer = std::make_unique<DijkstraDrawer>(g, nodeHandlers, window);
-            break;
-        }
-    }
 
 }
 
+
+void GraphHandler::algorithmChanged()
+{
+    Options::instance().animationPlaying = false;
+    switch (Algorithm(Options::instance().algorithm))
+    {
+    default:
+    case Algorithm::none:
+        graphDrawer = std::make_unique<NoAlgorithmDrawer>(g, nodeHandlers, window);
+        break;
+    case Algorithm::prim:
+        graphDrawer = std::make_unique<PrimDrawer>(g, nodeHandlers, window);
+        break;
+    case Algorithm::kruskal:
+        graphDrawer = std::make_unique<KruskalDrawer>(g, nodeHandlers, window);
+        break;
+    case Algorithm::dijkstra:
+        graphDrawer = std::make_unique<DijkstraDrawer>(g, nodeHandlers, window);
+        break;
+    }
+}
 void GraphHandler::recreateNodeHandlers()
 {
     std::unique_lock<std::recursive_mutex> guard(updateMutex);

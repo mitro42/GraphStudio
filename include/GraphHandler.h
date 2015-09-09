@@ -22,6 +22,8 @@ public:
     void loadGraphPositions(std::string fileName);
     void saveGraphPositions(std::string fileName);
 
+    void algorithmChanged();
+
     void reorderNodesSquare();
     void reorderNodesGrid(int columns, int rows);
     void pushNodes(ci::vec2 position, float force);
@@ -75,8 +77,6 @@ private:
     bool changed = true;
     Force forceType;
 
-    int currentAlgorithm;
-    
     void repositionNodes(const std::vector<ci::vec2>& nodePositions);
     void recreateNodeHandlers();
     void recreateNodeHandlers(const std::vector<ci::vec2> &nodePositions);

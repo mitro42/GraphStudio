@@ -35,17 +35,11 @@ private:
     std::string defaultPath;
     std::string configFilePath;
 
-    float getEdgeWidth();
-    void setEdgeWidth(float width);
-
-    bool getShowEdgeWeights();
-    void setShowEdgeWeights(bool show);
-
-    bool getShowNodeWeights();
-    void setShowNodeWeights(bool show);
+    void setGraphChanged();
+    void algorithmChanged();
+    void colorSchemeChanged();
 
     bool recording = false;
-    int prevColorSchemeIndex;
     void addNewColorScheme();
     void storeColorScheme();
     void prepareRecording();
@@ -163,115 +157,85 @@ void GraphStudioApp::loadSettings()
 }
 
 
-float GraphStudioApp::getEdgeWidth()
+void GraphStudioApp::setGraphChanged()
 {
-    return Options::instance().edgeWidth;
-}
-
-
-void GraphStudioApp::setEdgeWidth(float width)
-{
-    Options::instance().edgeWidth = width;
     gh.setChanged();
 }
 
-bool GraphStudioApp::getShowEdgeWeights()
+void GraphStudioApp::algorithmChanged()
 {
-    return Options::instance().showEdgeWeights;
+    gh.algorithmChanged();
 }
 
-void GraphStudioApp::setShowEdgeWeights(bool show)
+void GraphStudioApp::colorSchemeChanged()
 {
-    Options::instance().showEdgeWeights = show;
-    gh.setChanged();
-}
-
-bool GraphStudioApp::getShowNodeWeights()
-{
-    return Options::instance().showNodeWeights;
-}
-
-void GraphStudioApp::setShowNodeWeights(bool show)
-{
-    Options::instance().showNodeWeights = show;
-    gh.setChanged();
+    Options::instance().currentColorScheme = colorSchemes[colorSchemeNames[Options::instance().currentColorSchemeIdx]];
 }
 
 void GraphStudioApp::setup()
 {    
     loadSettings();
+    std::function<void()> updaterFunction = std::bind(&GraphStudioApp::setGraphChanged, this);
 
     params = params::InterfaceGl::create("Graph Studio", ci::ivec2(200, 310));
-    params->addParam("Node Size", &Options::instance().nodeSize, "min=1.0 max=50.0 step=1.0");
-
-    std::function<void(float)> edgeWidthSetter = std::bind(&GraphStudioApp::setEdgeWidth, this, std::placeholders::_1);
-    std::function<float()> edgeWidthGetter = std::bind(&GraphStudioApp::getEdgeWidth, this);
-    params->addParam("Edge Width", edgeWidthSetter, edgeWidthGetter).min(0.1f).max(10.0f).step(0.1f);
-
-    params->addParam("Highlighted Edge Width", &Options::instance().highlighedEdgeWidth, "min=0.0 max=10.0 step=0.1");
-    params->addParam("Arrow Length", &Options::instance().arrowLength, "min=1.0 max=50.0 step=1.0");
-    params->addParam("Arrow Angle", &Options::instance().arrowAngle, "min=0.0 max=90.0 step=1.0");
-
-    std::function<void(bool)> showEdgeWeightsSetter = std::bind(&GraphStudioApp::setShowEdgeWeights, this, std::placeholders::_1);
-    std::function<bool()>     showEdgeWeightsGetter = std::bind(&GraphStudioApp::getShowEdgeWeights, this);
-    params->addParam("Show Edge Weights", showEdgeWeightsSetter, showEdgeWeightsGetter);
-
-    std::function<void(bool)> showNodeWeightsSetter = std::bind(&GraphStudioApp::setShowNodeWeights, this, std::placeholders::_1);
-    std::function<bool()>     showNodeWeightsGetter = std::bind(&GraphStudioApp::getShowNodeWeights, this);
-    params->addParam("Show Node Weights", showNodeWeightsSetter, showNodeWeightsGetter);
+    params->addParam<float>("Node Size", &Options::instance().nodeSize).updateFn(updaterFunction).min(1.0f).max(50.0f).step(1.0f);
+    params->addParam<float>("Edge Width", &Options::instance().edgeWidth).updateFn(updaterFunction).min(0.1f).max(10.0f).step(0.1f);
+    params->addParam<float>("Highlighted Edge Width", &Options::instance().highlighedEdgeWidth).updateFn(updaterFunction).min(0.0f).max(10.0f).step(0.1f);
+    params->addParam<float>("Arrow Length", &Options::instance().arrowLength).updateFn(updaterFunction).min(1.0f).max(50.0f).step(1.0f);
+    params->addParam<float>("Arrow Angle", &Options::instance().arrowAngle).updateFn(updaterFunction).min(0.0f).max(90.0f).step(1.0f);
+    params->addParam<bool>("Show Edge Weights", &Options::instance().showEdgeWeights).updateFn(updaterFunction);
+    params->addParam<bool>("Show Node Weights", &Options::instance().showNodeWeights).updateFn(updaterFunction);
 
     params->addSeparator();
-    params->addParam("Algorithm", AlgorithmNames, &Options::instance().algorithm);
-    params->addParam("Starting Node",  &Options::instance().startNode, "min=1 step=1");
+    params->addParam("Algorithm", AlgorithmNames, &Options::instance().algorithm).updateFn(std::bind(&GraphStudioApp::algorithmChanged, this));
+    params->addParam<int>("Starting Node",  &Options::instance().startNode).min(1).step(1);
     params->addSeparator();
-    params->addParam("Force", &Options::instance().force, "min=1.0 max=300.0 step=1.0");
-    params->addParam("Speed", &Options::instance().speed, "min=1.0 max=300.0 step=1.0");
-    params->addParam("Edge Weight Scale", &Options::instance().edgeWeightScale, "min=1.0 max=1000.0 step=1.0");
+    params->addParam<float>("Force", &Options::instance().force).updateFn(updaterFunction).min(1.0f).max(300.0f).step(1.0f);
+    params->addParam<int>("Speed", &Options::instance().speed).updateFn(updaterFunction).min(1).max(300).step(1);
+    params->addParam<int>("Edge Weight Scale", &Options::instance().edgeWeightScale).updateFn(updaterFunction).min(1.0f).max(1000.0f).step(1.0f);
     params->addSeparator();
     params->addText("Colors");
-    params->addParam("ColorScheme", colorSchemeNames, &Options::instance().currentColorSchemeIdx);
-    params->addParam("Background", &Options::instance().currentColorScheme.backgroundColor);
+    params->addParam("ColorScheme", colorSchemeNames, &Options::instance().currentColorSchemeIdx).updateFn(std::bind(&GraphStudioApp::colorSchemeChanged, this));
+    params->addParam<ci::Color>("Background", &Options::instance().currentColorScheme.backgroundColor);
 
-    params->addParam("Node ", &Options::instance().currentColorScheme.nodeColor);
-    params->addParam("Highlighted Node 1", &Options::instance().currentColorScheme.highlightedNodeColor1);
-    params->addParam("Highlighted Node 2", &Options::instance().currentColorScheme.highlightedNodeColor2);
-    params->addParam("Highlighted Node 3", &Options::instance().currentColorScheme.highlightedNodeColor3);
+    params->addParam<ci::Color>("Node ", &Options::instance().currentColorScheme.nodeColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Node 1", &Options::instance().currentColorScheme.highlightedNodeColor1).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Node 2", &Options::instance().currentColorScheme.highlightedNodeColor2).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Node 3", &Options::instance().currentColorScheme.highlightedNodeColor3).updateFn(updaterFunction);
 
-    params->addParam("Edge", &Options::instance().currentColorScheme.edgeColor);
-    params->addParam("Dark Edge", &Options::instance().currentColorScheme.darkEdgeColor);
-    params->addParam("Highlighted Edge 1", &Options::instance().currentColorScheme.highlightedEdgeColor1);
-    params->addParam("Highlighted Edge 2", &Options::instance().currentColorScheme.highlightedEdgeColor2);
-    params->addParam("Highlighted Edge 3", &Options::instance().currentColorScheme.highlightedEdgeColor3);
+    params->addParam<ci::Color>("Edge", &Options::instance().currentColorScheme.edgeColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Dark Edge", &Options::instance().currentColorScheme.darkEdgeColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Edge 1", &Options::instance().currentColorScheme.highlightedEdgeColor1).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Edge 2", &Options::instance().currentColorScheme.highlightedEdgeColor2).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Edge 3", &Options::instance().currentColorScheme.highlightedEdgeColor3).updateFn(updaterFunction);
 
-    params->addParam("Node Text", &Options::instance().currentColorScheme.nodeTextColor);
-    params->addParam("highlightednodeText", &Options::instance().currentColorScheme.highlightednodeTextColor);
-    params->addParam("Edge Text", &Options::instance().currentColorScheme.edgeTextColor);
-    params->addParam("Highlighted Edge Text", &Options::instance().currentColorScheme.highlightedEdgeTextColor);
+    params->addParam<ci::Color>("Node Text", &Options::instance().currentColorScheme.nodeTextColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("highlightednodeText", &Options::instance().currentColorScheme.highlightednodeTextColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Edge Text", &Options::instance().currentColorScheme.edgeTextColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Edge Text", &Options::instance().currentColorScheme.highlightedEdgeTextColor).updateFn(updaterFunction);
 
     params->addButton("New", std::bind(&GraphStudioApp::addNewColorScheme, this));
     params->addSeparator();
     params->addText("Random Edge Weights");
-    params->addParam("Min", &Options::instance().minRandomEdgeWeight, "min=1, max=1000, step=1");
-    params->addParam("Max", &Options::instance().maxRandomEdgeWeight, "min=1, max=1000, step=1");
+    params->addParam<float>("Min", &Options::instance().minRandomEdgeWeight).updateFn(updaterFunction).min(1.0f).max(1000.0f).step(1.0f);
+    params->addParam<float>("Max", &Options::instance().maxRandomEdgeWeight).updateFn(updaterFunction).min(1.0f).max(1000.0f).step(1.0f);
     params->addButton("Generate Weights", std::bind(&GraphHandler::setRandomEdgeWeights, &gh));
     params->addSeparator();
     params->addText("Generate Grid");
-    params->addParam("Columns", &GraphParamsGrid::instance().columns, "min=1 step=1");
-    params->addParam("Rows", &GraphParamsGrid::instance().rows, "min=1 step=1");
-    params->addParam("Directed", &GraphParamsGrid::instance().directed);
-    params->addParam("Horizontal Edges", &GraphParamsGrid::instance().horizontal);
-    params->addParam("Vertical Edges", &GraphParamsGrid::instance().vertical);
-    params->addParam("Diagonal /", &GraphParamsGrid::instance().upDiagonal);
-    params->addParam("Diagonal \\", &GraphParamsGrid::instance().downDiagonal);
+    params->addParam<int>("Columns", &GraphParamsGrid::instance().columns).min(1).step(1);
+    params->addParam<int>("Rows", &GraphParamsGrid::instance().rows).min(1).step(1);
+    params->addParam<bool>("Directed", &GraphParamsGrid::instance().directed);
+    params->addParam<bool>("Horizontal Edges", &GraphParamsGrid::instance().horizontal);
+    params->addParam<bool>("Vertical Edges", &GraphParamsGrid::instance().vertical);
+    params->addParam<bool>("Diagonal /", &GraphParamsGrid::instance().upDiagonal);
+    params->addParam<bool>("Diagonal \\", &GraphParamsGrid::instance().downDiagonal);
     params->addButton("Generate grid", std::bind(&GraphHandler::generateSpecialGraph, &gh, GraphHandler::GraphType::grid));
     params->addText("Generate Triangle Mesh");
-    params->addParam("Triangles", &GraphParamsTriangleMesh::instance().triangles, "min=1 step=1");
-    params->addParam("Randomness", &GraphParamsTriangleMesh::instance().randomness, "min=0.0 step=0.1");
+    params->addParam<int>("Triangles", &GraphParamsTriangleMesh::instance().triangles).min(1).step(1);
+    params->addParam<float>("Randomness", &GraphParamsTriangleMesh::instance().randomness).min(0.0f).step(0.1f);
     params->addButton("Generate tri", std::bind(&GraphHandler::generateSpecialGraph, &gh, GraphHandler::GraphType::triangleMesh));
     
-    prevColorSchemeIndex = -1;
     gh.setup(getWindow());
-
 }
 
 GraphStudioApp::~GraphStudioApp()
@@ -447,15 +411,7 @@ void GraphStudioApp::mouseDown( MouseEvent event )
 void GraphStudioApp::update()
 {
     gh.update();
-    if (prevColorSchemeIndex != Options::instance().currentColorSchemeIdx)
-    {
-        prevColorSchemeIndex = Options::instance().currentColorSchemeIdx;
-        Options::instance().currentColorScheme = colorSchemes[colorSchemeNames[Options::instance().currentColorSchemeIdx]];
-    }
-    else
-    {
-        storeColorScheme();
-    }
+    storeColorScheme();
 }
 
 
