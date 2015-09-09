@@ -459,7 +459,7 @@ void GraphHandler::fitToWindow()
         float newY = ((nh->getPos().y) - minY) / boundingRectHeight * window->getHeight() * (1 - 2 * marginY) + window->getHeight() * marginY;
         nh->setPos(ci::vec2(newX, newY));
     }
-    changed = true;
+    setChanged();
 }
 
 void GraphHandler::generateSpecialGraph(GraphType type)

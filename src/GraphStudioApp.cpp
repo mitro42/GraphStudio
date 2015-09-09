@@ -234,8 +234,10 @@ void GraphStudioApp::setup()
     params->addParam<int>("Triangles", &GraphParamsTriangleMesh::instance().triangles).min(1).step(1);
     params->addParam<float>("Randomness", &GraphParamsTriangleMesh::instance().randomness).min(0.0f).step(0.1f);
     params->addButton("Generate tri", std::bind(&GraphHandler::generateSpecialGraph, &gh, GraphHandler::GraphType::triangleMesh));
-    
+
     gh.setup(getWindow());
+    colorSchemeChanged();
+    algorithmChanged();
 }
 
 GraphStudioApp::~GraphStudioApp()
