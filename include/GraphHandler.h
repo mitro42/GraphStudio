@@ -34,7 +34,7 @@ public:
     void update();
     void draw();
 
-    void setChanged() { changed = true; }
+    void setChanged() { changed = true; animationPrepare(); }
 
     void animationPrepare();
     void animationPause();

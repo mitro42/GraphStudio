@@ -192,6 +192,7 @@ void GraphHandler::algorithmChanged()
         graphDrawer = std::make_unique<DijkstraDrawer>(g, nodeHandlers, window);
         break;
     }
+    graphDrawer->prepareAnimation();
 }
 void GraphHandler::recreateNodeHandlers()
 {
@@ -267,7 +268,7 @@ void GraphHandler::loadGraph(std::string fileName)
     */
 
     recreateNodeHandlers();
-    changed = true;
+    setChanged();
 }
 
 

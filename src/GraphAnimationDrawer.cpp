@@ -6,7 +6,7 @@
 void GraphAnimationDrawer::prepareAnimation()
 {
     animationMode = true;
-    paused = false;
+    paused = true;
     animationState = 0;
     framesSpentInState = 0;
     createLegend();

@@ -188,7 +188,7 @@ void GraphStudioApp::setup()
 
     params->addSeparator();
     params->addParam("Algorithm", AlgorithmNames, &Options::instance().algorithm).updateFn(std::bind(&GraphStudioApp::algorithmChanged, this));
-    params->addParam<int>("Starting Node",  &Options::instance().startNode).min(1).step(1);
+    params->addParam<int>("Starting Node", &Options::instance().startNode).min(1).step(1).updateFn(std::bind(&GraphStudioApp::algorithmChanged, this));
     params->addSeparator();
     params->addParam<float>("Force", &Options::instance().force).updateFn(updaterFunction).min(1.0f).max(300.0f).step(1.0f);
     params->addParam<int>("Speed", &Options::instance().speed).updateFn(updaterFunction).min(1).max(300).step(1);
@@ -317,12 +317,10 @@ void GraphStudioApp::keyDown(KeyEvent event)
     
     if (event.getCode() == KeyEvent::KEY_SPACE)
     {
-        // stop - play - pause - play - pause - play - until the last state is reached
         if (!Options::instance().animationPlaying)
         {
             Options::instance().animationPlaying = true;
             Options::instance().animationPaused = false;
-            gh.animationPrepare();
         }
         else
         {

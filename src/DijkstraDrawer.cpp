@@ -34,9 +34,18 @@ void DijkstraDrawer::prepareAnimation()
 
 void DijkstraDrawer::drawAlgorithmState()
 {
+    startDrawing();
     if (animationState >= int(states.size()))
         return;
-    startDrawing();
+
+    if (animationState == -1)
+    {
+        if (g->getNodeCount() == 0)
+            return;
+
+        prepareAnimation();
+    }
+
     auto state = states[animationState];
     const auto &cs = Options::instance().currentColorScheme;
     // Edges -----
@@ -115,7 +124,15 @@ void DijkstraDrawer::drawAlgorithmState()
 
 
 void DijkstraDrawer::drawAlgorithmResult()
-{
+{    
+    if (states.empty())
+    {
+        prepareAnimation();
+    }
+
+    animationState = int(states.size() - 1);
+    drawAlgorithmState();
+    /*
     startDrawing();
     drawEdges();
     auto tree = edgeWeightDijkstra(*g, Options::instance().startNode - 1, -1);
@@ -128,4 +145,5 @@ void DijkstraDrawer::drawAlgorithmResult()
     }
     drawNodes();
     drawLabels();
+    */
 }
