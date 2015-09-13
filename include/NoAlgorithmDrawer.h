@@ -21,5 +21,6 @@ protected:
     virtual void prepareNewState() override {}
     virtual void prepareAnimation() override {}
     virtual void createLegend() override {}
+    virtual void animationGoToLast() override {}
 private:
 };

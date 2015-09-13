@@ -85,6 +85,19 @@ void GraphHandler::animationPrevious()
         animationDrawer->previousState();
 }
 
+void GraphHandler::animationGoToFirst()
+{
+    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
+    if (animationDrawer)
+        animationDrawer->animationGoToFirst();
+}
+
+void GraphHandler::animationGoToLast()
+{
+    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
+    if (animationDrawer)
+        animationDrawer->animationGoToLast();
+}
 
 
 void GraphHandler::addNewEdgeIfNodesSelected()

@@ -41,6 +41,8 @@ public:
     void animationResume();
     bool animationNext(); // returns true if there are more states to play
     void animationPrevious();
+    void animationGoToFirst();
+    void animationGoToLast();
 
     void mouseDown(ci::app::MouseEvent &event);
     void mouseDrag(ci::app::MouseEvent &event);

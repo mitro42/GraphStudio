@@ -19,6 +19,7 @@ protected:
     virtual void prepareNewState() override;
     virtual void prepareAnimation() override;
     virtual void createLegend() override;
+    virtual void animationGoToLast() override { animationState = states.size() - 1; }
 private:
     std::vector<graph_algorithm_capture::MstPrimState> states;
 };

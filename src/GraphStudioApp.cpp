@@ -352,6 +352,16 @@ void GraphStudioApp::keyDown(KeyEvent event)
         stopRecording();
         return;
     }
+    else  if (event.getCode() == KeyEvent::KEY_HOME)
+    {
+        gh.animationGoToFirst();
+        return;
+    }
+    else  if (event.getCode() == KeyEvent::KEY_END)
+    {
+        gh.animationGoToLast();
+        return;
+    }
     if (event.getChar() == 'm')
     {
         Options::instance().randomMovement = !Options::instance().randomMovement;

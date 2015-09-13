@@ -20,6 +20,7 @@ protected:
     virtual void prepareNewState() override;
     virtual void prepareAnimation() override;
     virtual void createLegend() override;
+    virtual void animationGoToLast() override { animationState = states.size() - 1; }
 private:
     void drawColorScale(const std::vector<ci::Color> &colorScale);
     std::vector<ci::Color> nodeGroupColors;

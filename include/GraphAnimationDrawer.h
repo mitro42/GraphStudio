@@ -24,6 +24,8 @@ public:
     virtual void resume() { paused = false; }
     virtual bool nextState(); // returns true if there are more states to play
     virtual void previousState();
+    virtual void animationGoToFirst() { animationState = 0; }
+    virtual void animationGoToLast() = 0;
 protected:
     virtual void drawAlgorithmState() = 0;
     virtual void drawAlgorithmResult() = 0;
