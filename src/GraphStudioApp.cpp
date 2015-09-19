@@ -37,6 +37,7 @@ private:
 
     void setGraphChanged();
     void algorithmChanged();
+    void algorithmStartNodeChanged();
     void colorSchemeChanged();
 
     bool recording = false;
@@ -167,6 +168,11 @@ void GraphStudioApp::algorithmChanged()
     gh.algorithmChanged();
 }
 
+void GraphStudioApp::algorithmStartNodeChanged()
+{
+    gh.algorithmStartNodeChanged();
+}
+
 void GraphStudioApp::colorSchemeChanged()
 {
     Options::instance().currentColorScheme = colorSchemes[colorSchemeNames[Options::instance().currentColorSchemeIdx]];
@@ -188,7 +194,7 @@ void GraphStudioApp::setup()
 
     params->addSeparator();
     params->addParam("Algorithm", AlgorithmNames, &Options::instance().algorithm).updateFn(std::bind(&GraphStudioApp::algorithmChanged, this));
-    params->addParam<int>("Starting Node", &Options::instance().startNode).min(1).step(1).updateFn(std::bind(&GraphStudioApp::algorithmChanged, this));
+    params->addParam<int>("Starting Node", &Options::instance().startNode).min(1).step(1).updateFn(std::bind(&GraphStudioApp::algorithmStartNodeChanged, this));
     params->addSeparator();
     params->addParam<float>("Force", &Options::instance().force).updateFn(updaterFunction).min(1.0f).max(300.0f).step(1.0f);
     params->addParam<int>("Speed", &Options::instance().speed).updateFn(updaterFunction).min(1).max(300).step(1);
@@ -307,8 +313,8 @@ void GraphStudioApp::loadGraph()
     graphFileName = path.filename().string();
     gh.loadGraph(path.string());
     gh.loadGraphPositions(path.replace_extension("pos").string());
-
-    Options::instance().startNode = 1;
+        
+    gh.algorithmChanged();
     gh.fitToWindow();
 }
 
@@ -319,11 +325,13 @@ void GraphStudioApp::keyDown(KeyEvent event)
     {
         if (!Options::instance().animationPlaying)
         {
+            gh.animationGoToFirst();
             Options::instance().animationPlaying = true;
             Options::instance().animationPaused = false;
+            gh.animationResume();
         }
         else
-        {
+        {            
             Options::instance().animationPaused = !Options::instance().animationPaused;
             if (Options::instance().animationPaused)
             {
@@ -347,18 +355,16 @@ void GraphStudioApp::keyDown(KeyEvent event)
         gh.animationPrevious();
         return;
     }
-    else  if (event.getCode() == KeyEvent::KEY_ESCAPE)
-    {
-        stopRecording();
-        return;
-    }
     else  if (event.getCode() == KeyEvent::KEY_HOME)
     {
         gh.animationGoToFirst();
         return;
     }
-    else  if (event.getCode() == KeyEvent::KEY_END)
+    else  if (event.getCode() == KeyEvent::KEY_END || event.getCode() == KeyEvent::KEY_ESCAPE)
     {
+        stopRecording();
+        Options::instance().animationPlaying = false;
+        Options::instance().animationPaused = false;
         gh.animationGoToLast();
         return;
     }

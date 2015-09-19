@@ -130,7 +130,7 @@ void GraphHandler::addNewEdgeIfNodesSelected()
         g->addEdge(start, end);
         nodeHandlers[start]->clearSelection();
         nodeHandlers[end]->clearSelection();
-        changed = true;
+        setChanged();
     }
 }
 
@@ -205,8 +205,19 @@ void GraphHandler::algorithmChanged()
         graphDrawer = std::make_unique<DijkstraDrawer>(g, nodeHandlers, window);
         break;
     }
+    if (Options::instance().startNode < 1)
+    {
+        Options::instance().startNode = 1;
+    }
+    graphDrawer->prepareAnimation();
+    graphDrawer->animationGoToLast();
+}
+
+void GraphHandler::algorithmStartNodeChanged()
+{
     graphDrawer->prepareAnimation();
 }
+
 void GraphHandler::recreateNodeHandlers()
 {
     std::unique_lock<std::recursive_mutex> guard(updateMutex);
@@ -216,7 +227,7 @@ void GraphHandler::recreateNodeHandlers()
         auto pos = ci::vec2(ci::Rand::randFloat() * window->getWidth(), ci::Rand::randFloat() * window->getHeight());
         nodeHandlers.emplace_back(new GraphNodeHandler(window, *this, pos));
     }
-    changed = true;
+    setChanged();
 }
 
 void GraphHandler::recreateNodeHandlers(const std::vector<ci::vec2> &nodePositions)
@@ -227,7 +238,7 @@ void GraphHandler::recreateNodeHandlers(const std::vector<ci::vec2> &nodePositio
     {
         nodeHandlers.emplace_back(new GraphNodeHandler(window, *this, nodePositions[i]));
     }
-    changed = true;
+    setChanged();
 }
 
 
@@ -314,7 +325,7 @@ void GraphHandler::loadGraphPositions(std::string fileName)
         in >> y;
         nodeHandlers[idx++]->setPos(ci::vec2(x, y));
     }
-    changed = true;
+    setChanged();
 }
 
 
@@ -345,7 +356,7 @@ void GraphHandler::repositionNodes(const std::vector<ci::vec2>& nodePositions)
     {
         nodeHandlers[i]->setPos(nodePositions[i]);
     }
-    changed = true;
+    setChanged();
 }
 
 
@@ -358,7 +369,7 @@ void GraphHandler::pushNodes(ci::vec2 position, float force)
         nodePosition += glm::normalize(forceVect) * (force / glm::length2(forceVect) * 10.0f);
         nh->setPos(nodePosition);
     }
-    changed = true;
+    setChanged();
 }
 
 
@@ -402,7 +413,7 @@ void GraphHandler::mouseDown(ci::app::MouseEvent &event)
         std::unique_lock<std::recursive_mutex> guard(updateMutex);
         nodeHandlers.emplace_back(new GraphNodeHandler(window, *this, event.getPos()));
         g->addNode();
-        changed = true;
+        setChanged();
     }
 
     if (event.isAltDown())
@@ -434,7 +445,7 @@ void GraphHandler::resize(ci::Area newWindowSize)
     graphDrawer->resize(newWindowSize);
 
     windowSize = newWindowSize;
-    changed = true;
+    setChanged();
 }
 
 
@@ -496,7 +507,7 @@ void GraphHandler::generateSpecialGraph(GraphType type)
         std::cout << "GraphHandler::generateSpecialGraph - SKIP\n";
     }
     recreateNodeHandlers(nodePositions);
-    changed = true;
+    setChanged();
     std::cout << "End\n";
 }
 
@@ -514,5 +525,5 @@ void GraphHandler::setRandomEdgeWeights()
             edgePtr->weight = float(dis(gen));
         }
     }
-    changed = true;
+    setChanged();
 }

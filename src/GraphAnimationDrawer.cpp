@@ -7,7 +7,7 @@ void GraphAnimationDrawer::prepareAnimation()
 {
     animationMode = true;
     paused = true;
-    animationState = 0;
+    animationGoToLast();
     framesSpentInState = 0;
     createLegend();
 }
@@ -21,7 +21,12 @@ void GraphAnimationDrawer::drawAnimationStateNumber()
 
 void GraphAnimationDrawer::draw()
 {
-    if (animationState < animationLastState - 1 && !paused)
+    if (animationState == animationLastState - 1)
+    {
+        Options::instance().animationPlaying = false;
+        Options::instance().animationPaused = true;
+    }
+    else if (animationState < animationLastState - 1 && !paused)
     {        
         framesSpentInState++;
         if (framesSpentInState % Options::instance().speed == 0)

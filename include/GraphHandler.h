@@ -23,6 +23,7 @@ public:
     void saveGraphPositions(std::string fileName);
 
     void algorithmChanged();
+    void algorithmStartNodeChanged();
 
     void reorderNodesSquare();
     void reorderNodesGrid(int columns, int rows);

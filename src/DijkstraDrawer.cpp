@@ -26,9 +26,10 @@ void DijkstraDrawer::createLegend()
 
 void DijkstraDrawer::prepareAnimation()
 {
-    GraphAnimationDrawer::prepareAnimation();
     states = graph_algorithm_capture::edgeWeightDijkstraCaptureStates(*g, Options::instance().startNode - 1, -1);
     animationLastState = int(states.size());
+    GraphAnimationDrawer::prepareAnimation();
+    
 }
 
 
