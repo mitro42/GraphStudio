@@ -273,6 +273,7 @@ void GraphStudioApp::prepareRecording()
     Options::instance().animationPlaying = true;
     Options::instance().animationPaused = false;
     gh.animationPrepare();
+    gh.animationGoToFirst();
     gh.animationPause();
 }
 
