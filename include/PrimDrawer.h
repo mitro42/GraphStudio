@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#include "Graph.h"
+#include "mstPrim.h"
 #include "GraphAnimationDrawer.h"
 
 class PrimDrawer: public GraphAnimationDrawer

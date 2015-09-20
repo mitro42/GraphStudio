@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#include "Graph.h"
+#include "mstKruskal.h"
 #include "GraphAnimationDrawer.h"
 
 class KruskalDrawer : public GraphAnimationDrawer

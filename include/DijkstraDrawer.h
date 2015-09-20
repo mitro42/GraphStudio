@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#include "Graph.h"
+#include "shortestPathDijkstra.h"
 #include "GraphAnimationDrawer.h"
 
 class DijkstraDrawer : public GraphAnimationDrawer
