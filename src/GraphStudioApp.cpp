@@ -43,7 +43,8 @@ private:
     bool recording = false;
     void addNewColorScheme();
     void storeColorScheme();
-    void prepareRecording();
+    void createThumbnail();
+    void prepareRecording();    
     void stopRecording();
     void loadSettings();
     void saveSettings();
@@ -277,6 +278,46 @@ void GraphStudioApp::prepareRecording()
     gh.animationPause();
 }
 
+void GraphStudioApp::createThumbnail()
+{
+    bool origFullscreenState = isFullScreen();
+    bool origParamsVisible = params->isVisible();
+
+    Options::instance().animationPlaying = false;
+    Options::instance().animationPaused = true;
+    gh.animationPrepare();
+    gh.animationGoToLast();
+    gh.animationPause();
+
+    params->hide();
+    setFullScreen(false);
+    auto origWindowSize = getWindowSize();
+    setWindowSize(800, 450);
+
+    //ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);
+    auto &graphDrawer = gh.getAnimationDrawer();
+    bool origAnimationStateNumberVisible = graphDrawer.getShowAnimationStateNumber();
+    bool origAnimationStateDescriptionVisible = graphDrawer.getShowAnimationStateDescription();
+    bool origLegendVisible = graphDrawer.getShowLegend();
+    graphDrawer.showAnimationStateNumber(false);
+    graphDrawer.showAnimationStateDescription(false);
+    graphDrawer.showLegend(false);
+
+    gh.draw();
+
+    auto surface = copyWindowSurface();
+    writeImage("thumbnail.png", surface);
+
+    setFullScreen(origFullscreenState);
+    setWindowSize(origWindowSize);
+    graphDrawer.showAnimationStateNumber(origAnimationStateNumberVisible);
+    graphDrawer.showAnimationStateDescription(origAnimationStateDescriptionVisible);
+    graphDrawer.showLegend(origLegendVisible);
+    if (origParamsVisible)
+        params->show();
+}
+
+
 void GraphStudioApp::saveGraph(bool saveAs)
 {
     boost::filesystem::path path;
@@ -391,6 +432,10 @@ void GraphStudioApp::keyDown(KeyEvent event)
     if (event.getChar() == 'f')
     {
         gh.fitToWindow();
+    }
+    if (event.getChar() == 't')
+    {
+        createThumbnail();
     }
     if (event.getChar() == 'r')
     {
