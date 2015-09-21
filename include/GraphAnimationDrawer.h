@@ -26,6 +26,14 @@ public:
     virtual void previousState();
     virtual void animationGoToFirst() { animationState = 0; }
     virtual void animationGoToLast() = 0;
+
+    void showAnimationStateNumber(bool show = true) { animationStateNumberVisible = show; }
+    bool getShowAnimationStateNumber() const { return animationStateNumberVisible; }
+    void showAnimationStateDescription(bool show = true) { animationStateDescriptionVisible = show; }
+    bool getShowAnimationStateDescription() const { return animationStateDescriptionVisible; }
+    void showLegend(bool show = true) { legendVisible = show; }
+    bool getShowLegend() const { return legendVisible; }
+
 protected:
     virtual void drawAlgorithmState() = 0;
     virtual void drawAlgorithmResult() = 0;
@@ -40,6 +48,9 @@ protected:
 private:
     bool animationMode = false;
     bool paused = true;
+    bool animationStateNumberVisible = true;
+    bool animationStateDescriptionVisible = true;
+    bool legendVisible = true;
     int framesSpentInState;
     ci::gl::TextureFontRef stepDescriptionTextureFont;
 };

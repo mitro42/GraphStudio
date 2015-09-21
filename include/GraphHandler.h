@@ -57,6 +57,7 @@ public:
     void setAutomaticEdgeWeightUpdate(bool update) { automaticEdgeWeightUpdate = update; }
     void setRandomEdgeWeights();
     void generateSpecialGraph(GraphType type);
+    GraphAnimationDrawer& getAnimationDrawer() { return *graphDrawer; }
 private:
     enum class Force{
         none = 0,

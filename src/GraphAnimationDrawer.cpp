@@ -14,6 +14,9 @@ void GraphAnimationDrawer::prepareAnimation()
 
 void GraphAnimationDrawer::drawAnimationStateNumber()
 {
+    if (!animationStateNumberVisible)
+        return;
+
     ci::gl::color(ci::ColorA(0.0f, 0.0f, 0.0f, 0.5f));
     std::string stateNumber = std::to_string(animationState + 1) + "/" + std::to_string(animationLastState);
     stepDescriptionTextureFont->drawString(stateNumber, ci::vec2(20.0f, window->getHeight() - 20.0f));
@@ -46,7 +49,7 @@ void GraphAnimationDrawer::draw()
     }
 
     ci::gl::color(ci::Color::white());
-    if (legendTexture = legend.getTexture())
+    if (legendVisible && (legendTexture = legend.getTexture()))
     {
         ci::gl::draw(legendTexture, ci::vec2(float(window->getWidth() - legendTexture->getWidth()), float(window->getHeight() - legendTexture->getHeight())));
     }
@@ -80,6 +83,9 @@ void GraphAnimationDrawer::previousState()
 
 void GraphAnimationDrawer::drawStepDescription(const std::string& description)
 {
+    if (!animationStateDescriptionVisible)
+        return;
+
     ci::gl::color(ci::ColorA(0.0f, 0.0f, 0.0f, 0.7f));
     auto size = stepDescriptionTextureFont->measureString(description);
     stepDescriptionTextureFont->drawString(description, ci::vec2((window->getWidth() - size.x) / 2.0f, size.y * 1.5f));
