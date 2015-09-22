@@ -3,6 +3,8 @@
 #include "GraphAnimationDrawer.h"
 #include "GraphNodeHandler.h"
 
+#include <cinder/Filesystem.h>
+
 class GraphHandler
 {
 public:
@@ -17,10 +19,10 @@ public:
     GraphHandler();
     ~GraphHandler();
     
-    void loadGraph(std::string fileName);
-    void saveGraph(std::string fileName);
-    void loadGraphPositions(std::string fileName);
-    void saveGraphPositions(std::string fileName);
+    void loadGraph(const ci::fs::path& fileName);
+    void saveGraph(const ci::fs::path& fileName);
+    void loadGraphPositions(const ci::fs::path& fileName);
+    void saveGraphPositions(const ci::fs::path& fileName);
 
     void algorithmChanged();
     void algorithmStartNodeChanged();

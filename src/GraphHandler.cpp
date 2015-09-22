@@ -242,10 +242,10 @@ void GraphHandler::recreateNodeHandlers(const std::vector<ci::vec2> &nodePositio
 }
 
 
-void GraphHandler::loadGraph(std::string fileName)
+void GraphHandler::loadGraph(const ci::fs::path &fileName)
 {
     std::unique_lock<std::recursive_mutex> guard(updateMutex);
-    std::ifstream in(fileName);
+    std::ifstream in(fileName.string());
     if (!in.good())
         throw("Cannot open file");
     in >> *g;
@@ -296,9 +296,9 @@ void GraphHandler::loadGraph(std::string fileName)
 }
 
 
-void GraphHandler::saveGraph(std::string fileName)
+void GraphHandler::saveGraph(const ci::fs::path &fileName)
 {
-    std::ofstream out(fileName);
+    std::ofstream out(fileName.string());
     if (!out.good())
     {
         ci::app::console() << "Cannot open graph file: [" << fileName << "]" << std::endl;
@@ -308,10 +308,10 @@ void GraphHandler::saveGraph(std::string fileName)
 }
 
 
-void GraphHandler::loadGraphPositions(std::string fileName)
+void GraphHandler::loadGraphPositions(const ci::fs::path &fileName)
 {
     std::unique_lock<std::recursive_mutex> guard(updateMutex);
-    std::ifstream in(fileName);
+    std::ifstream in(fileName.string());
     if (!in.good())
     {
         ci::app::console() << "Cannot open positions file: [" << fileName << "]" << std::endl;
@@ -329,9 +329,9 @@ void GraphHandler::loadGraphPositions(std::string fileName)
 }
 
 
-void GraphHandler::saveGraphPositions(std::string fileName)
+void GraphHandler::saveGraphPositions(const ci::fs::path &fileName)
 {
-    std::ofstream out(fileName);
+    std::ofstream out(fileName.string());
     if (!out.good())
         throw("Cannot open file");
     for (const auto& node : nodeHandlers)
