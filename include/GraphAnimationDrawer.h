@@ -25,7 +25,7 @@ public:
     virtual bool nextState(); // returns true if there are more states to play
     virtual void previousState();
     virtual void animationGoToFirst() { animationState = 0; }
-    virtual void animationGoToLast() = 0;
+    virtual void animationGoToLast() = 0;    
 
     void showAnimationStateNumber(bool show = true) { animationStateNumberVisible = show; }
     bool getShowAnimationStateNumber() const { return animationStateNumberVisible; }
@@ -33,6 +33,7 @@ public:
     bool getShowAnimationStateDescription() const { return animationStateDescriptionVisible; }
     void showLegend(bool show = true) { legendVisible = show; }
     bool getShowLegend() const { return legendVisible; }
+    int getAnimationStateNumber() const { return animationState; }
 
 protected:
     virtual void drawAlgorithmState() = 0;

@@ -7,6 +7,7 @@
 #include <cinder/app/RendererGl.h>
 #include <cinder/params/Params.h>
 #include <cinder/ImageIo.h>
+#include <cinder/Filesystem.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -33,7 +34,10 @@ private:
     static const std::vector<std::string> extensions;
     std::string graphFileName;
     std::string defaultPath;
+    std::string exportPath;
+    std::string ffmpegPath;
     std::string configFilePath;
+    std::string videoTempDir;
 
     void setGraphChanged();
     void algorithmChanged();
@@ -43,7 +47,7 @@ private:
     bool recording = false;
     void addNewColorScheme();
     void storeColorScheme();
-    void createThumbnail();
+    void createThumbnail(const std::string &folder);
     void prepareRecording();    
     void stopRecording();
     void loadSettings();
@@ -102,6 +106,8 @@ void GraphStudioApp::saveSettings()
 {
     ci::XmlTree configXml("graphStudioSettings", "");
     configXml.push_back(ci::XmlTree("defaultSavePath", defaultPath));
+    configXml.push_back(ci::XmlTree("exportPath", exportPath));
+    configXml.push_back(ci::XmlTree("ffmpegPath", ffmpegPath));
     configXml.push_back(ci::XmlTree("nodeSize", std::to_string(Options::instance().nodeSize)));
     configXml.push_back(ci::XmlTree("edgeWidth", std::to_string(Options::instance().edgeWidth)));
     configXml.push_back(ci::XmlTree("highlightedEdgeWidth", std::to_string(Options::instance().highlighedEdgeWidth)));
@@ -125,9 +131,9 @@ void GraphStudioApp::saveSettings()
 
 void GraphStudioApp::loadSettings()
 {    
-    boost::filesystem::path configFile = boost::filesystem::current_path() / "config.xml";    
+    fs::path configFile = fs::current_path() / "config.xml";    
     configFilePath = configFile.generic_string();
-    if (!boost::filesystem::exists(configFile))
+    if (!fs::exists(configFile))
     { 
         std::cout << "Cannot find config file [" << configFilePath << "]" << std::endl;
         return;
@@ -137,6 +143,8 @@ void GraphStudioApp::loadSettings()
     ci::XmlTree configXml(ci::loadFile(configFilePath));
     ci::XmlTree settings = configXml.getChild("graphStudioSettings");
     defaultPath = settings.getChild("defaultSavePath").getValue();
+    exportPath = settings.getChild("exportPath").getValue();
+    ffmpegPath = settings.getChild("ffmpegPath").getValue();
     Options::instance().nodeSize = settings.getChild("nodeSize").getValue<float>();
     Options::instance().edgeWidth = settings.getChild("edgeWidth").getValue<float>();
     Options::instance().highlighedEdgeWidth = settings.getChild("highlightedEdgeWidth").getValue<float>();
@@ -271,6 +279,9 @@ void GraphStudioApp::prepareRecording()
     recording = true;
     setFullScreen(true);
     params->hide();
+    
+    videoTempDir = (fs::temp_directory_path() / fs::unique_path("GrahStudio_%%%%-%%%%-%%%%-%%%%")).string();
+                
     Options::instance().animationPlaying = true;
     Options::instance().animationPaused = false;
     gh.animationPrepare();
@@ -278,7 +289,7 @@ void GraphStudioApp::prepareRecording()
     gh.animationPause();
 }
 
-void GraphStudioApp::createThumbnail()
+void GraphStudioApp::createThumbnail(const std::string &folder)
 {
     bool origFullscreenState = isFullScreen();
     bool origParamsVisible = params->isVisible();
@@ -306,7 +317,9 @@ void GraphStudioApp::createThumbnail()
     gh.draw();
 
     auto surface = copyWindowSurface();
-    writeImage("thumbnail.png", surface);
+    fs::path fullPath(folder);
+    fullPath /= "thumbnail.png";
+    writeImage(fullPath.c_str(), surface);
 
     setFullScreen(origFullscreenState);
     setWindowSize(origWindowSize);
@@ -320,7 +333,7 @@ void GraphStudioApp::createThumbnail()
 
 void GraphStudioApp::saveGraph(bool saveAs)
 {
-    boost::filesystem::path path;
+    fs::path path;
     if (graphFileName.empty() || saveAs)
     {
         path = getSaveFilePath(defaultPath, extensions);
@@ -337,7 +350,7 @@ void GraphStudioApp::saveGraph(bool saveAs)
     }
     else
     {
-        boost::filesystem::path fullPath = defaultPath;
+        fs::path fullPath = defaultPath;
         fullPath /= graphFileName;
         gh.saveGraph(graphFileName);
         gh.saveGraphPositions(fullPath.replace_extension("pos").generic_string());
@@ -346,7 +359,7 @@ void GraphStudioApp::saveGraph(bool saveAs)
 
 void GraphStudioApp::loadGraph()
 {
-    boost::filesystem::path path = defaultPath;
+    fs::path path = defaultPath;
     path = getOpenFilePath(path / graphFileName, extensions);
     if (path.empty())
         return;
@@ -435,7 +448,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
     }
     if (event.getChar() == 't')
     {
-        createThumbnail();
+        createThumbnail(fs::current_path().string());
     }
     if (event.getChar() == 'r')
     {
@@ -480,26 +493,58 @@ void GraphStudioApp::update()
 void GraphStudioApp::draw()
 {
     if (recording)
-    {        
-        static int imageIdx = 0;
-        imageIdx++;
+    {   
         std::stringstream ss;
-        ss << "anim" << std::setw(4) << std::setfill('0') << imageIdx << ".png";
+        ss << "anim" << std::setw(4) << std::setfill('0') << gh.getAnimationDrawer().getAnimationStateNumber() + 1 << ".png";
         ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);
-        std::cout << "GraphStudioApp::doRecording() " << ss.str() << std::endl;
+        
         gh.draw();
 
         auto surface = copyWindowSurface();
-        writeImage(ss.str(), surface);
+        fs::path fullPath = videoTempDir;
+        fullPath /= ss.str();
+        writeImage(fullPath.string(), surface);
+        std::cout << "GraphStudioApp::doRecording() " << fullPath.string() << std::endl;
         if (!gh.animationNext())
+        {
             stopRecording();
-        return;        
+            std::stringstream command;
+            fs::path animFileBase = videoTempDir;
+            animFileBase /= "anim";
+            fs::path videoFullPath = videoTempDir;
+            std::string graphFileNameNoExtension = fs::path(graphFileName).stem().string();
+            command << ffmpegPath << " -framerate 1/2 -i \"" << animFileBase.string() << "%04d.png\" -c:v libx264" << 
+                " -crf 18 -pix_fmt yuv420p -r 30 " << (videoFullPath / (graphFileNameNoExtension + ".mp4")).string();
+            std::string cmd = command.str();
+            system(command.str().c_str());
+            fs::path fsExportPath = exportPath;
+            createThumbnail(videoTempDir);
+            if (fs::exists(fsExportPath) && fs::is_regular_file(fsExportPath))
+            {
+                std::cerr << "Cannot write to export path [" << fsExportPath.string() << "]" << std::endl;
+                return;
+            }
+            if (!fs::exists(fsExportPath))
+            {
+                fs::create_directory(fsExportPath);
+            }
+            
+            fs::copy_file(videoFullPath / (graphFileNameNoExtension + ".mp4"), fsExportPath / (graphFileNameNoExtension + ".mp4"), fs::copy_option::overwrite_if_exists);
+            fs::copy_file(fs::path(videoTempDir) / "thumbnail.png", fsExportPath / "thumbnail.png", fs::copy_option::overwrite_if_exists);
+            fs::copy_file(fs::path(defaultPath) / (graphFileNameNoExtension + ".graph"), fsExportPath / (graphFileNameNoExtension + ".graph"), fs::copy_option::overwrite_if_exists);
+            fs::copy_file(fs::path(defaultPath) / (graphFileNameNoExtension + ".pos"), fsExportPath / (graphFileNameNoExtension + ".pos"), fs::copy_option::overwrite_if_exists);
+
+            fs::remove_all(fs::path(videoTempDir));
+        }
     }
-    // clear out the window with black
-    gl::clear(Color(0, 0, 0));
-    gh.draw();
-    if (!Options::instance().animationPlaying || Options::instance().animationPaused)
-        params->draw();
+    else
+    {
+        // clear out the window with black
+        gl::clear(Color(0, 0, 0));
+        gh.draw();
+        if (!Options::instance().animationPlaying || Options::instance().animationPaused)
+            params->draw();
+    }
 }
 
 void GraphStudioApp::resize()
