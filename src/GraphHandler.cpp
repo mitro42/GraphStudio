@@ -126,7 +126,7 @@ void GraphHandler::addNewEdgeIfNodesSelected()
         {
             std::swap(start, end);
         }
-        //std::cout << "New edge: " << start << " - " << end << std::endl;
+        //ci::app::console() << "New edge: " << start << " - " << end << std::endl;
         g->addEdge(start, end);
         nodeHandlers[start]->clearSelection();
         nodeHandlers[end]->clearSelection();
@@ -301,7 +301,7 @@ void GraphHandler::saveGraph(std::string fileName)
     std::ofstream out(fileName);
     if (!out.good())
     {
-        std::cout << "Cannot open graph file: [" << fileName << "]" << std::endl;
+        ci::app::console() << "Cannot open graph file: [" << fileName << "]" << std::endl;
         return;
     }
     out << *g;
@@ -314,7 +314,7 @@ void GraphHandler::loadGraphPositions(std::string fileName)
     std::ifstream in(fileName);
     if (!in.good())
     {
-        std::cout << "Cannot open positions file: [" << fileName << "]" << std::endl;
+        ci::app::console() << "Cannot open positions file: [" << fileName << "]" << std::endl;
         return;
     }
         
@@ -489,9 +489,9 @@ void GraphHandler::fitToWindow()
 
 void GraphHandler::generateSpecialGraph(GraphType type)
 {
-    std::cout << "GraphHandler::generateSpecialGraph(" << static_cast<int>(type) << ")\n";
+    ci::app::console() << "GraphHandler::generateSpecialGraph(" << static_cast<int>(type) << ")" << std::endl;
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
-    std::cout << "Start...\n";
+    ci::app::console() << "Start..." << std::endl;
 
     std::vector<ci::vec2> nodePositions;
     switch (type)
@@ -504,11 +504,11 @@ void GraphHandler::generateSpecialGraph(GraphType type)
         break;
     case GraphType::general:
     default:
-        std::cout << "GraphHandler::generateSpecialGraph - SKIP\n";
+        ci::app::console() << "GraphHandler::generateSpecialGraph - SKIP" << std::endl;
     }
     recreateNodeHandlers(nodePositions);
     setChanged();
-    std::cout << "End\n";
+    ci::app::console() << "End" << std::endl;
 }
 
 

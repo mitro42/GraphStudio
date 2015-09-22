@@ -62,7 +62,7 @@ void GraphDrawer::drawEdges()
 {
     if (changed)
     {
-        //std::cout << "Redrawing edges" << std::endl;
+        //ci::app::console() << "Redrawing edges" << std::endl;
         ci::gl::ScopedFramebuffer scpFbEdge(edgeFbo);
         ci::gl::ScopedViewport scpVpEdge(edgeFbo->getSize());
         
@@ -158,7 +158,7 @@ void GraphDrawer::drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &c
 {
     if (changed)
     {
-        //std::cout << "Redrawing labels" << std::endl;
+        //ci::app::console() << "Redrawing labels" << std::endl;
         ci::gl::ScopedFramebuffer scpFbLabel(labelFbo);
         ci::gl::ScopedViewport scpVpLabel(ci::ivec2(0), labelFbo->getSize());
         

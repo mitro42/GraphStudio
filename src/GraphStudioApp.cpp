@@ -135,7 +135,7 @@ void GraphStudioApp::loadSettings()
     configFilePath = configFile.generic_string();
     if (!fs::exists(configFile))
     { 
-        std::cout << "Cannot find config file [" << configFilePath << "]" << std::endl;
+        ci::app::console() << "Cannot find config file [" << configFilePath << "]" << std::endl;
         return;
     }
     configFilePath = configFile.generic_string();
@@ -440,7 +440,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
     if (event.getChar() == 'u')
     {
         gh.toggleAutomaticEdgeWeightUpdate();
-        std::cout << "automaticEdgeWeightUpdate = " << gh.getAutomaticEdgeWeightUpdate() << std::endl;
+        ci::app::console() << "automaticEdgeWeightUpdate = " << gh.getAutomaticEdgeWeightUpdate() << std::endl;
     }
     if (event.getChar() == 'f')
     {
@@ -479,7 +479,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
 
 void GraphStudioApp::mouseDown( MouseEvent event )
 {
-    //std::cout << "GraphStudioApp::mouseDown" << std::endl;
+    //ci::app::console() << "GraphStudioApp::mouseDown" << std::endl;
 }
 
 
@@ -504,7 +504,7 @@ void GraphStudioApp::draw()
         fs::path fullPath = videoTempDir;
         fullPath /= ss.str();
         writeImage(fullPath.string(), surface);
-        std::cout << "GraphStudioApp::doRecording() " << fullPath.string() << std::endl;
+        ci::app::console() << "GraphStudioApp::doRecording() " << fullPath.string() << std::endl;
         if (!gh.animationNext())
         {
             stopRecording();
