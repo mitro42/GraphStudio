@@ -133,14 +133,14 @@ void GraphStudioApp::loadSettings()
 {    
     fs::path configFile = fs::current_path() / "config.xml";    
     configFilePath = configFile.generic_string();
+    defaultPath = ".";// fs::current_path();
+    exportPath = ".";//fs::current_path();
+    ffmpegPath = "";
+
     if (!fs::exists(configFile))
     { 
         ci::app::console() << "Cannot find config file [" << configFilePath << "]" << std::endl;
         ci::app::console() << "Loading defaults" << std::endl;
-
-        defaultPath = ".";// fs::current_path();
-        exportPath = ".";//fs::current_path();
-        ffmpegPath = "";
 
         ColorScheme cs;
         colorSchemes[cs.name] = cs;
@@ -152,25 +152,35 @@ void GraphStudioApp::loadSettings()
 
     ci::XmlTree configXml(ci::loadFile(configFilePath));
     ci::XmlTree settings = configXml.getChild("graphStudioSettings");
-    defaultPath = fs::path(settings.getChild("defaultSavePath").getValue()).native();
-    exportPath = fs::path(settings.getChild("exportPath").getValue()).native();
-    ffmpegPath = fs::path(settings.getChild("ffmpegPath").getValue()).native();
-    Options::instance().nodeSize = settings.getChild("nodeSize").getValue<float>();
-    Options::instance().edgeWidth = settings.getChild("edgeWidth").getValue<float>();
-    Options::instance().highlighedEdgeWidth = settings.getChild("highlightedEdgeWidth").getValue<float>();
-    Options::instance().arrowLength = settings.getChild("arrowLength").getValue<float>();
-    Options::instance().arrowAngle = settings.getChild("arrowAngle").getValue<float>();
-    Options::instance().showEdgeWeights = settings.getChild("showEdgeWeights").getValue<bool>();
-    Options::instance().showNodeWeights = settings.getChild("showNodeWeights").getValue<bool>();
-
-    Options::instance().force = settings.getChild("force").getValue<float>();
-    Options::instance().speed = settings.getChild("speed").getValue<int>();
-    Options::instance().edgeWeightScale = settings.getChild("edgeWeightScale").getValue<int>();
-
-    ci::XmlTree csList = settings.getChild("colorSchemes");
-    for (auto csIt = csList.begin(); csIt != csList.end(); ++csIt)
+    try
     {
-        ColorScheme cs = ColorScheme::fromXml(*csIt);
+        defaultPath = fs::path(settings.getChild("defaultSavePath").getValue()).native();
+        exportPath = fs::path(settings.getChild("exportPath").getValue()).native();
+        ffmpegPath = fs::path(settings.getChild("ffmpegPath").getValue()).native();
+        Options::instance().nodeSize = settings.getChild("nodeSize").getValue<float>();
+        Options::instance().edgeWidth = settings.getChild("edgeWidth").getValue<float>();
+        Options::instance().highlighedEdgeWidth = settings.getChild("highlightedEdgeWidth").getValue<float>();
+        Options::instance().arrowLength = settings.getChild("arrowLength").getValue<float>();
+        Options::instance().arrowAngle = settings.getChild("arrowAngle").getValue<float>();
+        Options::instance().showEdgeWeights = settings.getChild("showEdgeWeights").getValue<bool>();
+        Options::instance().showNodeWeights = settings.getChild("showNodeWeights").getValue<bool>();
+
+        Options::instance().force = settings.getChild("force").getValue<float>();
+        Options::instance().speed = settings.getChild("speed").getValue<int>();
+        Options::instance().edgeWeightScale = settings.getChild("edgeWeightScale").getValue<int>();
+
+        ci::XmlTree csList = settings.getChild("colorSchemes");
+        for (auto csIt = csList.begin(); csIt != csList.end(); ++csIt)
+        {
+            ColorScheme cs = ColorScheme::fromXml(*csIt);
+            colorSchemes[cs.name] = cs;
+            colorSchemeNames.push_back(cs.name);
+        }
+    }
+    catch (ci::XmlTree::ExcChildNotFound &e)
+    {
+        ci::app::console() << "Error while reading config.xml: " << e.what() << std::endl;
+        ColorScheme cs;
         colorSchemes[cs.name] = cs;
         colorSchemeNames.push_back(cs.name);
     }
