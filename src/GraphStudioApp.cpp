@@ -136,7 +136,26 @@ void GraphStudioApp::loadSettings()
     if (!fs::exists(configFile))
     { 
         ci::app::console() << "Cannot find config file [" << configFilePath << "]" << std::endl;
-        //ci::app::console() << "Loading defaults" << std::endl;
+        ci::app::console() << "Loading defaults" << std::endl;
+
+        defaultPath = ".";// fs::current_path();
+        exportPath = ".";//fs::current_path();
+        ffmpegPath = "";
+
+        Options::instance().nodeSize = 10.0f;
+        Options::instance().edgeWidth = 3.0f;
+        Options::instance().highlighedEdgeWidth = 5.0f;
+        Options::instance().arrowLength = 15.0f;
+        Options::instance().arrowAngle = 25.0f;
+        Options::instance().showEdgeWeights = true;
+        Options::instance().showNodeWeights = true;
+        Options::instance().force = 5.0f;
+        Options::instance().speed = 30;
+        Options::instance().edgeWeightScale = 100;
+
+        ColorScheme cs;
+        colorSchemes[cs.name] = cs;
+        colorSchemeNames.push_back(cs.name);
 
         return;
     }
@@ -144,9 +163,9 @@ void GraphStudioApp::loadSettings()
 
     ci::XmlTree configXml(ci::loadFile(configFilePath));
     ci::XmlTree settings = configXml.getChild("graphStudioSettings");
-    defaultPath = settings.getChild("defaultSavePath").getValue();
-    exportPath = settings.getChild("exportPath").getValue();
-    ffmpegPath = settings.getChild("ffmpegPath").getValue();
+    defaultPath = fs::path(settings.getChild("defaultSavePath").getValue()).native();
+    exportPath = fs::path(settings.getChild("exportPath").getValue()).native();
+    ffmpegPath = fs::path(settings.getChild("ffmpegPath").getValue()).native();
     Options::instance().nodeSize = settings.getChild("nodeSize").getValue<float>();
     Options::instance().edgeWidth = settings.getChild("edgeWidth").getValue<float>();
     Options::instance().highlighedEdgeWidth = settings.getChild("highlightedEdgeWidth").getValue<float>();
@@ -338,6 +357,11 @@ void GraphStudioApp::saveGraph(bool saveAs)
     fs::path path;
     if (graphFileName.empty() || saveAs)
     {
+        defaultPath = defaultPath.native();
+        if (!fs::exists(defaultPath))
+        {
+            fs::create_directory(defaultPath);
+        }
         path = getSaveFilePath(defaultPath, extensions);
         if (path.empty())
             return;
@@ -515,6 +539,13 @@ void GraphStudioApp::draw()
             animFileBase /= "anim";
             fs::path videoFullPath = videoTempDir;
             std::string graphFileNameNoExtension = fs::path(graphFileName).stem().string();
+
+            if (!fs::exists(ffmpegPath) || !fs::is_regular_file(ffmpegPath))
+            {
+                console() << "Cannot find ffmpeg.exe executable [ffmpegPath=" << ffmpegPath << "]" << std::endl;
+                return;
+            }
+
             command << ffmpegPath.string() << " -framerate 1/2 -i \"" << animFileBase.string() << "%04d.png\" -c:v libx264" << 
                 " -crf 18 -pix_fmt yuv420p -r 30 " << (videoFullPath / (graphFileNameNoExtension + ".mp4")).string();
             
