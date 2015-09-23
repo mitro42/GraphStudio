@@ -70,6 +70,12 @@ public:
     ColorScheme currentColorScheme;
     int currentColorSchemeIdx;
 
+    float legendEdgeWidth;
+    float legendHighlightedEdgeWidth;
+    float legendArrowLength;
+    float legendArrowAngle;
+    float legendNodeSize;
+
 private:
     Options()
     {
@@ -91,6 +97,12 @@ private:
         startNode = 1;
         minRandomEdgeWeight = 0.0f;
         maxRandomEdgeWeight = 100.0f;
+
+        legendEdgeWidth = edgeWidth;
+        legendHighlightedEdgeWidth = highlighedEdgeWidth;
+        legendArrowLength = arrowLength;
+        legendArrowAngle = arrowAngle;
+        legendNodeSize = nodeSize;
     }
 
 public:

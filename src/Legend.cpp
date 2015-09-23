@@ -53,29 +53,29 @@ void Legend::render()
     float posY = rowHeight / 2;
     for (const auto &element: contents)
     {
-        float width = Options::instance().edgeWidth;
+        float width = Options::instance().legendEdgeWidth;
         switch (element.type)        
         {
         case LegendType::highlightedArrow:
-            width = Options::instance().highlighedEdgeWidth;
+            width = Options::instance().legendHighlightedEdgeWidth;
             // fall trough
         case LegendType::arrow:
-            GraphDrawer::drawArrow(ci::vec2(5.0f, posY), ci::vec2(70.0f, posY), element.color, width);
+            GraphDrawer::drawArrow(ci::vec2(5.0f, posY), ci::vec2(70.0f, posY), element.color, width, Options::instance().legendArrowLength, Options::instance().legendArrowAngle);
             break;
         case LegendType::highlightedEdge:
-            width = Options::instance().highlighedEdgeWidth;
+            width = Options::instance().legendHighlightedEdgeWidth;
             // fall trough
         case LegendType::edge:
             GraphDrawer::drawEdge(ci::vec2(5.0f, posY), ci::vec2(70.0f, posY), element.color, width);
             break;
         case LegendType::node: 
             ci::gl::color(element.color);
-            ci::gl::drawSolidCircle(ci::vec2(40.0f, posY), 10.0f);
+            ci::gl::drawSolidCircle(ci::vec2(40.0f, posY), Options::instance().legendNodeSize);
             break;
         case LegendType::nodes:
             ci::gl::color(element.color);
-            ci::gl::drawSolidCircle(ci::vec2(25.0f, posY), 10.0f);
-            ci::gl::drawSolidCircle(ci::vec2(55.0f, posY), 10.0f);
+            ci::gl::drawSolidCircle(ci::vec2(25.0f, posY), Options::instance().legendNodeSize);
+            ci::gl::drawSolidCircle(ci::vec2(55.0f, posY), Options::instance().legendNodeSize);
             break;
         default:
             break;

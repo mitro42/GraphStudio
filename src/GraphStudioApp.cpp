@@ -23,7 +23,7 @@ public:
     void update() override;
     void draw() override;
     void resize() override;
-    
+
     const ColorScheme &getCurrentColorScheme();
 private:
     ci::params::InterfaceGlRef	params;
@@ -48,7 +48,7 @@ private:
     void addNewColorScheme();
     void storeColorScheme();
     void createThumbnail(const fs::path &folder);
-    void prepareRecording();    
+    void prepareRecording();
     void stopRecording();
     void loadSettings();
     void saveSettings();
@@ -118,6 +118,13 @@ void GraphStudioApp::saveSettings()
     configXml.push_back(ci::XmlTree("force", std::to_string(Options::instance().force)));
     configXml.push_back(ci::XmlTree("speed", std::to_string(Options::instance().speed)));
     configXml.push_back(ci::XmlTree("edgeWeightScale", std::to_string(Options::instance().edgeWeightScale)));
+
+    configXml.push_back(ci::XmlTree("legendEdgeWidth", std::to_string(Options::instance().legendEdgeWidth)));
+    configXml.push_back(ci::XmlTree("legendHighlightedEdgeWidth", std::to_string(Options::instance().legendHighlightedEdgeWidth)));
+    configXml.push_back(ci::XmlTree("legendArrowLength", std::to_string(Options::instance().legendArrowLength)));
+    configXml.push_back(ci::XmlTree("legendArrowAngle", std::to_string(Options::instance().legendArrowAngle)));
+    configXml.push_back(ci::XmlTree("legendNodeSize", std::to_string(Options::instance().legendNodeSize)));
+
     ci::XmlTree csList("colorSchemes", "");
     for (const auto &cs : colorSchemes)
     {
@@ -130,15 +137,15 @@ void GraphStudioApp::saveSettings()
 
 
 void GraphStudioApp::loadSettings()
-{    
-    fs::path configFile = fs::current_path() / "config.xml";    
+{
+    fs::path configFile = fs::current_path() / "config.xml";
     configFilePath = configFile.generic_string();
     defaultPath = ".";// fs::current_path();
     exportPath = ".";//fs::current_path();
     ffmpegPath = "";
 
     if (!fs::exists(configFile))
-    { 
+    {
         ci::app::console() << "Cannot find config file [" << configFilePath << "]" << std::endl;
         ci::app::console() << "Loading defaults" << std::endl;
 
@@ -164,6 +171,12 @@ void GraphStudioApp::loadSettings()
         Options::instance().arrowAngle = settings.getChild("arrowAngle").getValue<float>();
         Options::instance().showEdgeWeights = settings.getChild("showEdgeWeights").getValue<bool>();
         Options::instance().showNodeWeights = settings.getChild("showNodeWeights").getValue<bool>();
+
+        Options::instance().legendEdgeWidth = settings.getChild("legendEdgeWidth").getValue<float>();
+        Options::instance().legendHighlightedEdgeWidth = settings.getChild("legendHighlightedEdgeWidth").getValue<float>();
+        Options::instance().legendArrowLength = settings.getChild("legendArrowLength").getValue<float>();
+        Options::instance().legendArrowAngle = settings.getChild("legendArrowAngle").getValue<float>();
+        Options::instance().legendNodeSize = settings.getChild("legendNodeSize").getValue<float>();
 
         Options::instance().force = settings.getChild("force").getValue<float>();
         Options::instance().speed = settings.getChild("speed").getValue<int>();
@@ -208,7 +221,7 @@ void GraphStudioApp::colorSchemeChanged()
 }
 
 void GraphStudioApp::setup()
-{    
+{
     loadSettings();
     std::function<void()> updaterFunction = std::bind(&GraphStudioApp::setGraphChanged, this);
 
@@ -299,9 +312,9 @@ void GraphStudioApp::prepareRecording()
     recording = true;
     setFullScreen(true);
     params->hide();
-    
+
     videoTempDir = (fs::temp_directory_path() / fs::unique_path("GrahStudio_%%%%-%%%%-%%%%-%%%%")).string();
-                
+
     Options::instance().animationPlaying = true;
     Options::instance().animationPaused = false;
     gh.animationPrepare();
@@ -393,14 +406,14 @@ void GraphStudioApp::loadGraph()
     graphFileName = path.filename().string();
     gh.loadGraph(path.string());
     gh.loadGraphPositions(path.replace_extension("pos").string());
-        
+
     gh.algorithmChanged();
     gh.fitToWindow();
 }
 
 void GraphStudioApp::keyDown(KeyEvent event)
 {
-    
+
     if (event.getCode() == KeyEvent::KEY_SPACE)
     {
         if (!Options::instance().animationPlaying)
@@ -411,7 +424,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
             gh.animationResume();
         }
         else
-        {            
+        {
             Options::instance().animationPaused = !Options::instance().animationPaused;
             if (Options::instance().animationPaused)
             {
@@ -422,7 +435,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
                 gh.animationResume();
             }
         }
-        
+
         return;
     }
     else  if (event.getCode() == KeyEvent::KEY_RIGHT)
@@ -498,11 +511,11 @@ void GraphStudioApp::keyDown(KeyEvent event)
         saveSettings();
         quit();
     }
-    
+
 }
 
 
-void GraphStudioApp::mouseDown( MouseEvent event )
+void GraphStudioApp::mouseDown(MouseEvent event)
 {
     //ci::app::console() << "GraphStudioApp::mouseDown" << std::endl;
 }
@@ -518,11 +531,11 @@ void GraphStudioApp::update()
 void GraphStudioApp::draw()
 {
     if (recording)
-    {   
+    {
         std::stringstream ss;
         ss << "anim" << std::setw(4) << std::setfill('0') << gh.getAnimationDrawer().getAnimationStateNumber() + 1 << ".png";
         ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);
-        
+
         gh.draw();
 
         auto surface = copyWindowSurface();
@@ -545,9 +558,9 @@ void GraphStudioApp::draw()
                 return;
             }
 
-            command << ffmpegPath.string() << " -framerate 1/2 -i \"" << animFileBase.string() << "%04d.png\" -c:v libx264" << 
+            command << ffmpegPath.string() << " -framerate 1/2 -i \"" << animFileBase.string() << "%04d.png\" -c:v libx264" <<
                 " -crf 18 -pix_fmt yuv420p -r 30 " << (videoFullPath / (graphFileNameNoExtension + ".mp4")).string();
-            
+
             console() << "Executing:" << std::endl << command.str() << std::endl;
             system(command.str().c_str());
             fs::path fsExportPath = exportPath;
@@ -561,7 +574,7 @@ void GraphStudioApp::draw()
             {
                 fs::create_directory(fsExportPath);
             }
-            
+
             fs::copy_file(videoFullPath / (graphFileNameNoExtension + ".mp4"), fsExportPath / (graphFileNameNoExtension + ".mp4"), fs::copy_option::overwrite_if_exists);
             fs::copy_file(fs::path(videoTempDir) / "thumbnail.png", fsExportPath / "thumbnail.png", fs::copy_option::overwrite_if_exists);
             fs::copy_file(fs::path(defaultPath) / (graphFileNameNoExtension + ".graph"), fsExportPath / (graphFileNameNoExtension + ".graph"), fs::copy_option::overwrite_if_exists);

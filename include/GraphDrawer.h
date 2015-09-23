@@ -24,6 +24,7 @@ protected:
     void drawEdge(int from, int to, ci::Color color, float width);
 
     static void drawArrow(ci::vec2 from, ci::vec2 to, float headLength, float headAngle);
+    static void drawArrow(ci::vec2 from, ci::vec2 to, ci::Color color, float width, float headLength, float headAngle);
     static void drawArrow(ci::vec2 from, ci::vec2 to, ci::Color color, float width);
     static void drawEdge(ci::vec2 from, ci::vec2 to, ci::Color color, float width);
 

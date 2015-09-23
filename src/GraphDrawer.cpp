@@ -102,6 +102,14 @@ void GraphDrawer::drawArrow(ci::vec2 from, ci::vec2 to, ci::Color color, float w
     drawArrow(from, to, Options::instance().arrowLength, Options::instance().arrowAngle);
 }
 
+
+void GraphDrawer::drawArrow(ci::vec2 from, ci::vec2 to, ci::Color color, float width, float headLength, float headAngle)
+{
+    ci::gl::color(color);
+    ci::gl::lineWidth(width);
+    drawArrow(from, to, headLength, headAngle);
+}
+
 void GraphDrawer::drawEdge(ci::vec2 from, ci::vec2 to, ci::Color color, float width)
 {
     ci::gl::lineWidth(width);
