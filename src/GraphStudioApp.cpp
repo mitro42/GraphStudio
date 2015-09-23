@@ -142,17 +142,6 @@ void GraphStudioApp::loadSettings()
         exportPath = ".";//fs::current_path();
         ffmpegPath = "";
 
-        Options::instance().nodeSize = 10.0f;
-        Options::instance().edgeWidth = 3.0f;
-        Options::instance().highlighedEdgeWidth = 5.0f;
-        Options::instance().arrowLength = 15.0f;
-        Options::instance().arrowAngle = 25.0f;
-        Options::instance().showEdgeWeights = true;
-        Options::instance().showNodeWeights = true;
-        Options::instance().force = 5.0f;
-        Options::instance().speed = 30;
-        Options::instance().edgeWeightScale = 100;
-
         ColorScheme cs;
         colorSchemes[cs.name] = cs;
         colorSchemeNames.push_back(cs.name);
