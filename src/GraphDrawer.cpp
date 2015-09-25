@@ -162,7 +162,7 @@ void GraphDrawer::drawNodes()
     }
 }
 
-void GraphDrawer::drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &colors)
+void GraphDrawer::drawLabels(std::map<const GraphEdge*, ci::ColorA> &colors)
 {
     if (changed)
     {
@@ -227,7 +227,7 @@ void GraphDrawer::drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &c
                     }
                     ci::vec2 offset = -ci::vec2(0.0f, 5.0f + Options::instance().highlighedEdgeWidth); // place edge weight over the edge
                     ci::ColorA c = cs.edgeTextColor;
-                    auto it = colors.find(edgePtr);
+                    auto it = colors.find(edgePtr.get());
                     if (it != colors.end())
                         c = it->second;
                     ci::gl::color(c);

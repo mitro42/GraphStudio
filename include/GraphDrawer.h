@@ -32,7 +32,7 @@ protected:
     void drawEdges();
     void drawHighlightEdges();
     void drawNodes();
-    void drawLabels(std::map<std::shared_ptr<GraphEdge>, ci::ColorA> &colors = std::map<std::shared_ptr<GraphEdge>, ci::ColorA>());
+    void drawLabels(std::map<const GraphEdge*, ci::ColorA> &colors = std::map<const GraphEdge*, ci::ColorA>());
     void drawHighlightNodes();
     void drawColorScale();
 

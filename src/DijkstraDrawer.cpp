@@ -51,14 +51,14 @@ void DijkstraDrawer::drawAlgorithmState()
     const auto &cs = Options::instance().currentColorScheme;
     // Edges -----
     // preparing edge parameters before drawing
-    std::map<std::shared_ptr<GraphEdge>, std::pair<ci::Color, float>> edgeParams;
+    std::map<const GraphEdge*, std::pair<ci::Color, float>> edgeParams;
     // by default edges are drawn with edgeColor and edgeWidth (no highlighting)
     for (int nodeIdx = 0; nodeIdx < g->getNodeCount(); ++nodeIdx)
     {
         auto &node = g->getNode(nodeIdx);
         for (auto edgePtr : node)
         {
-            edgeParams[edgePtr] = std::make_pair(cs.edgeColor, Options::instance().edgeWidth);
+            edgeParams[edgePtr.get()] = std::make_pair(cs.edgeColor, Options::instance().edgeWidth);
         }
     }
 
@@ -113,14 +113,14 @@ void DijkstraDrawer::drawAlgorithmState()
 
     // Labels -----
     // preparing edge label colors
-    std::map<std::shared_ptr<GraphEdge>, ci::ColorA> edgeLabelColors;    
+    std::map<const GraphEdge*, ci::ColorA> edgeLabelColors;    
     for (auto &edgePtr : edgeParams)
     {
         edgeLabelColors[edgePtr.first] = edgePtr.second.first;
     }
     drawLabels(edgeLabelColors);
     
-    drawStepDescription(state.description);    
+    drawStepDescription(state.description);
 }
 
 
