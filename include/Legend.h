@@ -21,7 +21,7 @@ enum class LegendType
 struct LegendItem
 {
     LegendType type;
-    ci::Color color;
+    ci::ColorA color;
     std::string label;
     LegendItem(LegendType type, ci::Color color, const std::string &label) : type(type), color(color), label(label) {}
 };
@@ -40,10 +40,10 @@ public:
         changed = true;
     }
 
-    ci::gl::TextureRef getTexture();
+    ci::gl::TextureRef getTexture(bool forceRerender = false);
 
 private:
-    void render();
+    void render(bool forceRerender = false);
 
     bool changed = true;
 

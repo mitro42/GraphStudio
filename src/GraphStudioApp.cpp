@@ -203,6 +203,7 @@ void GraphStudioApp::loadSettings()
 void GraphStudioApp::setGraphChanged()
 {
     gh.setChanged();
+    gh.getAnimationDrawer().colorSchemeChanged();
 }
 
 void GraphStudioApp::algorithmChanged()
@@ -218,6 +219,7 @@ void GraphStudioApp::algorithmStartNodeChanged()
 void GraphStudioApp::colorSchemeChanged()
 {
     Options::instance().currentColorScheme = colorSchemes[colorSchemeNames[Options::instance().currentColorSchemeIdx]];
+    gh.getAnimationDrawer().colorSchemeChanged();
 }
 
 void GraphStudioApp::setup()
@@ -244,8 +246,8 @@ void GraphStudioApp::setup()
     params->addSeparator();
     params->addText("Colors");
     params->addParam("ColorScheme", colorSchemeNames, &Options::instance().currentColorSchemeIdx).updateFn(std::bind(&GraphStudioApp::colorSchemeChanged, this));
-    params->addParam<ci::Color>("Background", &Options::instance().currentColorScheme.backgroundColor);
-    params->addParam<ci::Color>("Legend Background", &Options::instance().currentColorScheme.legendBackgroundColor);
+    params->addParam<ci::Color>("Background", &Options::instance().currentColorScheme.backgroundColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Legend Background", &Options::instance().currentColorScheme.legendBackgroundColor).updateFn(updaterFunction);
 
     params->addParam<ci::Color>("Node ", &Options::instance().currentColorScheme.nodeColor).updateFn(updaterFunction);
     params->addParam<ci::Color>("Highlighted Node 1", &Options::instance().currentColorScheme.highlightedNodeColor1).updateFn(updaterFunction);

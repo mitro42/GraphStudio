@@ -34,6 +34,12 @@ public:
     void showLegend(bool show = true) { legendVisible = show; }
     bool getShowLegend() const { return legendVisible; }
     int getAnimationStateNumber() const { return animationState; }
+    virtual void colorSchemeChanged()
+    {
+        GraphDrawer::colorSchemeChanged();
+        createLegend();
+        legendTexture = legend.getTexture(true);
+    }
 
 protected:
     virtual void drawAlgorithmState() = 0;
@@ -54,4 +60,5 @@ private:
     bool legendVisible = true;
     int framesSpentInState;
     ci::gl::TextureFontRef stepDescriptionTextureFont;
+    ci::gl::TextureRef legendTexture;
 };

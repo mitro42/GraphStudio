@@ -19,6 +19,7 @@ public:
     void draw();
     void resize(ci::Area newWindowSize);
     void setChanged() { changed = true; }
+    virtual void colorSchemeChanged() { setChanged(); }
 protected:
     struct EdgeDrawParams
     {
@@ -63,7 +64,6 @@ protected:
     const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers;
     std::vector<ci::Color> generateColors(int n);
 
-    ci::gl::TextureRef legendTexture;
     ci::gl::TextureFontRef edgeTextureFont;
     ci::gl::TextureFontRef nodeTextureFont;
 private:

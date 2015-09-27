@@ -8,11 +8,15 @@
 Legend::Legend() : width(0), height(0)
 {    
     format.setSamples(8);
+
     ci::Font font = ci::Font("InputMono Black", 20.0f);
-    textureFont = ci::gl::TextureFont::create(font);
+    ci::gl::TextureFont::Format fontFormat;
+    fontFormat.premultiply(true);    
+    textureFont = ci::gl::TextureFont::create(font, fontFormat);
+    
 };
 
-ci::gl::TextureRef Legend::getTexture()
+ci::gl::TextureRef Legend::getTexture(bool forceRerender)
 { 
     if (!fbo && contents.empty())
     {
@@ -20,14 +24,14 @@ ci::gl::TextureRef Legend::getTexture()
     }
     else
     {        
-        render();
+        render(forceRerender);
         changed = false;
     }
 
     return fbo->getColorTexture(); 
 }
 
-void Legend::render()
+void Legend::render(bool forceRerender)
 {
     ci::vec2 currentSize;
     if (fbo)
@@ -36,13 +40,11 @@ void Legend::render()
     }
     const int rowHeight = 25;
     ci::vec2 requiredSize(350.0f, float(contents.size() * rowHeight));
-    if (requiredSize != currentSize)
-    {
-        fbo = ci::gl::Fbo::create(int(requiredSize.x), int(requiredSize.y), format);
-    }
-    else
+    if (requiredSize == currentSize && !forceRerender)
         return;
     
+    fbo = ci::gl::Fbo::create(int(requiredSize.x), int(requiredSize.y), format);
+
     ci::gl::ScopedFramebuffer fbScp(fbo);
     ci::gl::ScopedViewport scpVp(ci::ivec2(0), fbo->getSize());
     
@@ -81,6 +83,9 @@ void Legend::render()
             break;
         }
 
+        ci::gl::enableAlphaBlending(true);
+
+        ci::gl::color(ci::ColorA(element.color, 1.0f));
         textureFont->drawString(element.label, ci::vec2(80, posY + rowHeight / 4));
 
         posY += rowHeight;
