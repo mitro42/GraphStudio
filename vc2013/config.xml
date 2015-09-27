@@ -19,7 +19,7 @@
 	<legendArrowAngle>25.000000</legendArrowAngle>
 	<legendNodeSize>10.000000</legendNodeSize>
 	<colorSchemes>
-		<colorScheme name="ColorScheme #1">
+		<colorScheme name="Dijkstra 1">
 			<backgroundColor red="255" green="255" blue="255"/>
 			<nodeColor red="66" green="66" blue="66"/>
 			<edgeColor red="0" green="1" blue="0"/>
@@ -27,7 +27,7 @@
 			<highlightedNodeColor1 red="0" green="155" blue="0"/>
 			<highlightedNodeColor2 red="230" green="81" blue="0"/>
 			<highlightedNodeColor3 red="23" green="104" blue="255"/>
-			<highlightedEdgeColor1 red="0" green="155" blue="0"/>
+			<highlightedEdgeColor1 red="67" green="160" blue="71"/>
 			<highlightedEdgeColor2 red="255" green="145" blue="0"/>
 			<highlightedEdgeColor3 red="255" green="145" blue="0"/>
 			<nodeTextColor red="255" green="255" blue="255"/>
@@ -37,17 +37,17 @@
 			<movingNodeColor red="255" green="255" blue="255"/>
 			<addEdgeNodeColor red="255" green="255" blue="0"/>
 		</colorScheme>
-		<colorScheme name="ColorScheme #2">
-			<backgroundColor red="176" green="194" blue="142"/>
-			<nodeColor red="44" green="33" blue="79"/>
-			<edgeColor red="117" green="108" blue="143"/>
-			<darkEdgeColor red="81" green="65" blue="42"/>
-			<highlightedNodeColor1 red="255" green="0" blue="0"/>
-			<highlightedNodeColor2 red="250" green="245" blue="211"/>
-			<highlightedNodeColor3 red="75" green="22" blue="51"/>
-			<highlightedEdgeColor1 red="255" green="0" blue="0"/>
-			<highlightedEdgeColor2 red="92" green="32" blue="66"/>
-			<highlightedEdgeColor3 red="92" green="32" blue="66"/>
+		<colorScheme name="Prim 1">
+			<backgroundColor red="255" green="255" blue="255"/>
+			<nodeColor red="66" green="66" blue="66"/>
+			<edgeColor red="10" green="1" blue="0"/>
+			<darkEdgeColor red="220" green="220" blue="220"/>
+			<highlightedNodeColor1 red="255" green="179" blue="0"/>
+			<highlightedNodeColor2 red="230" green="81" blue="0"/>
+			<highlightedNodeColor3 red="23" green="104" blue="255"/>
+			<highlightedEdgeColor1 red="46" green="125" blue="50"/>
+			<highlightedEdgeColor2 red="255" green="179" blue="0"/>
+			<highlightedEdgeColor3 red="57" green="73" blue="171"/>
 			<nodeTextColor red="255" green="255" blue="255"/>
 			<highlightednodeTextColor red="0" green="0" blue="0"/>
 			<edgeTextColor red="0" green="0" blue="0"/>
@@ -75,3 +75,4 @@
 		</colorScheme>
 	</colorSchemes>
 </graphStudioSettings>
+

@@ -7,38 +7,59 @@ void PrimDrawer::prepareNewState()
 
 }
 
+
 void PrimDrawer::drawAlgorithmState()
 {
+    setChanged();
+    startDrawing();
     if (animationState >= int(states.size()))
         return;
 
-    startDrawing();
+    if (animationState == -1)
+    {
+        if (g->getNodeCount() == 0)
+            return;
+
+        prepareAnimation();
+    }
+
 
     auto state = states[animationState];
-    drawEdges();
     const float highlightedWidth = Options::instance().highlighedEdgeWidth;
     const ColorScheme &cs = Options::instance().currentColorScheme;
+
+    auto edgeParams = createDefaultEdgeParams();
+
     for (const auto& e : state.mst)
     {
-        drawEdge(e.from, e.to, cs.highlightedEdgeColor2, highlightedWidth);
+        edgeParams[e] = EdgeDrawParams(cs.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
+    }
+
+    for (const auto& e : state.nonMst)
+    {
+        edgeParams[e].color = cs.darkEdgeColor;
     }
 
     for (const auto& e : state.edges)
     {
-        drawEdge(e.from, e.to, cs.highlightedEdgeColor3, highlightedWidth);
+        edgeParams[e] = EdgeDrawParams(cs.highlightedEdgeColor3, Options::instance().highlighedEdgeWidth);
     }
 
-    for (const auto& inspectedEdge: state.inspectedEdges)
+    for (const auto& e: state.inspectedEdges)
     {
-        drawEdge(inspectedEdge.from, inspectedEdge.to, cs.highlightedEdgeColor1, highlightedWidth);
+        edgeParams[e] = EdgeDrawParams(cs.highlightedEdgeColor1, Options::instance().highlighedEdgeWidth);
     }
+
+    drawEdges(edgeParams);
 
     for (int nodeIdx = 0; nodeIdx < g->getNodeCount(); ++nodeIdx)
     {
         nodeHandlers[nodeIdx]->draw(state.visited[nodeIdx]);
     }
+   
+    drawLabels(edgeParams);
 
-    drawLabels();
+    drawStepDescription(state.description);
 }
 
 void PrimDrawer::createLegend()
@@ -46,11 +67,11 @@ void PrimDrawer::createLegend()
     legend.clear();
     auto &cs = Options::instance().currentColorScheme;
     legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor2, "MST");
+    legend.add(LegendType::highlightedEdge, cs.darkEdgeColor, "Not in MST");
     legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor1, "Just found");
     legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor3, "Found, not decided");
-    legend.add(LegendType::edge, cs.edgeColor, "Not processed yet");
     legend.add(LegendType::node, cs.highlightedNodeColor1, "Finished");    
-    legend.add(LegendType::node, cs.nodeColor, "Remaining");
+
 }
 
 
