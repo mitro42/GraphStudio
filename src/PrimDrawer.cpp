@@ -25,14 +25,14 @@ void PrimDrawer::drawAlgorithmState()
 
 
     auto state = states[animationState];
-    const float highlightedWidth = Options::instance().highlighedEdgeWidth;
+    const float highlightedWidth = Options::instance().highlightedEdgeWidth;
     const ColorScheme &cs = Options::instance().currentColorScheme;
 
     auto edgeParams = createDefaultEdgeParams();
 
     for (const auto& e : state.mst)
     {
-        edgeParams[e] = EdgeDrawParams(cs.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
+        edgeParams[e] = EdgeDrawParams(cs.highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
     }
 
     for (const auto& e : state.nonMst)
@@ -42,12 +42,12 @@ void PrimDrawer::drawAlgorithmState()
 
     for (const auto& e : state.edges)
     {
-        edgeParams[e] = EdgeDrawParams(cs.highlightedEdgeColor3, Options::instance().highlighedEdgeWidth);
+        edgeParams[e] = EdgeDrawParams(cs.highlightedEdgeColor3, Options::instance().highlightedEdgeWidth);
     }
 
     for (const auto& e: state.inspectedEdges)
     {
-        edgeParams[e] = EdgeDrawParams(cs.highlightedEdgeColor1, Options::instance().highlighedEdgeWidth);
+        edgeParams[e] = EdgeDrawParams(cs.highlightedEdgeColor1, Options::instance().highlightedEdgeWidth);
     }
 
     drawEdges(edgeParams);
@@ -90,7 +90,7 @@ void PrimDrawer::drawAlgorithmResult()
     auto edges = mstPrim(*g, Options::instance().startNode - 1);
     for (const auto &e : edges)
     {
-        drawEdge(e.from, e.to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
+        drawEdge(e.from, e.to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
     }
     drawNodes();
     drawLabels();

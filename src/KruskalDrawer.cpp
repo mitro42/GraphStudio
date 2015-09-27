@@ -16,7 +16,7 @@ void KruskalDrawer::drawAlgorithmState()
     auto state = states[animationState];
     drawEdges();
     const ColorScheme &cs = Options::instance().currentColorScheme;
-    const float highlightedWidth = Options::instance().highlighedEdgeWidth;
+    const float highlightedWidth = Options::instance().highlightedEdgeWidth;
     for (const auto& e : state.mst)
     {
         drawEdge(e.from, e.to, cs.highlightedEdgeColor2, highlightedWidth);
@@ -78,7 +78,7 @@ void KruskalDrawer::drawAlgorithmResult()
     auto edges = mstKruskal(*g);
     for (const auto &e : edges)
     {
-        drawEdge(e.from, e.to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
+        drawEdge(e.from, e.to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
     }
     drawNodes();
     drawLabels();

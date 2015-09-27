@@ -54,7 +54,7 @@ public:
     float arrowAngle;
     int speed;
     float edgeWidth;
-    float highlighedEdgeWidth;
+    float highlightedEdgeWidth;
     float force;
     bool animationPlaying;
     bool animationPaused;
@@ -84,7 +84,7 @@ private:
         arrowAngle = 16.0f;
         speed = 60;
         edgeWidth = 1.5f;
-        highlighedEdgeWidth = 3.0f;
+        highlightedEdgeWidth = 3.0f;
         force = 10.0;
         edgeWeightScale = 100;
         int weightPrecision = 0;
@@ -99,7 +99,7 @@ private:
         maxRandomEdgeWeight = 100.0f;
 
         legendEdgeWidth = edgeWidth;
-        legendHighlightedEdgeWidth = highlighedEdgeWidth;
+        legendHighlightedEdgeWidth = highlightedEdgeWidth;
         legendArrowLength = arrowLength;
         legendArrowAngle = arrowAngle;
         legendNodeSize = nodeSize;

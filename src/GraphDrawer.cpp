@@ -248,7 +248,7 @@ void GraphDrawer::drawLabels(EdgeDrawParamsMap &params)
                     {
                         ci::gl::rotate(glm::half_pi<float>());
                     }
-                    ci::vec2 offset = -ci::vec2(0.0f, 5.0f + Options::instance().highlighedEdgeWidth); // place edge weight over the edge
+                    ci::vec2 offset = -ci::vec2(0.0f, 5.0f + Options::instance().highlightedEdgeWidth); // place edge weight over the edge
                     ci::ColorA c = cs.edgeTextColor;
                     auto it = params.find(edgePtr.get());
                     if (it != params.end())

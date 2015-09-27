@@ -110,7 +110,7 @@ void GraphStudioApp::saveSettings()
     configXml.push_back(ci::XmlTree("ffmpegPath", ffmpegPath.string()));
     configXml.push_back(ci::XmlTree("nodeSize", std::to_string(Options::instance().nodeSize)));
     configXml.push_back(ci::XmlTree("edgeWidth", std::to_string(Options::instance().edgeWidth)));
-    configXml.push_back(ci::XmlTree("highlightedEdgeWidth", std::to_string(Options::instance().highlighedEdgeWidth)));
+    configXml.push_back(ci::XmlTree("highlightedEdgeWidth", std::to_string(Options::instance().highlightedEdgeWidth)));
     configXml.push_back(ci::XmlTree("arrowLength", std::to_string(Options::instance().arrowLength)));
     configXml.push_back(ci::XmlTree("arrowAngle", std::to_string(Options::instance().arrowAngle)));
     configXml.push_back(ci::XmlTree("showEdgeWeights", std::to_string(Options::instance().showEdgeWeights)));
@@ -166,7 +166,7 @@ void GraphStudioApp::loadSettings()
         ffmpegPath = fs::path(settings.getChild("ffmpegPath").getValue()).native();
         Options::instance().nodeSize = settings.getChild("nodeSize").getValue<float>();
         Options::instance().edgeWidth = settings.getChild("edgeWidth").getValue<float>();
-        Options::instance().highlighedEdgeWidth = settings.getChild("highlightedEdgeWidth").getValue<float>();
+        Options::instance().highlightedEdgeWidth = settings.getChild("highlightedEdgeWidth").getValue<float>();
         Options::instance().arrowLength = settings.getChild("arrowLength").getValue<float>();
         Options::instance().arrowAngle = settings.getChild("arrowAngle").getValue<float>();
         Options::instance().showEdgeWeights = settings.getChild("showEdgeWeights").getValue<bool>();
@@ -228,7 +228,7 @@ void GraphStudioApp::setup()
     params = params::InterfaceGl::create("Graph Studio", ci::ivec2(200, 310));
     params->addParam<float>("Node Size", &Options::instance().nodeSize).updateFn(updaterFunction).min(1.0f).max(50.0f).step(1.0f);
     params->addParam<float>("Edge Width", &Options::instance().edgeWidth).updateFn(updaterFunction).min(0.1f).max(10.0f).step(0.1f);
-    params->addParam<float>("Highlighted Edge Width", &Options::instance().highlighedEdgeWidth).updateFn(updaterFunction).min(0.0f).max(10.0f).step(0.1f);
+    params->addParam<float>("Highlighted Edge Width", &Options::instance().highlightedEdgeWidth).updateFn(updaterFunction).min(0.0f).max(10.0f).step(0.1f);
     params->addParam<float>("Arrow Length", &Options::instance().arrowLength).updateFn(updaterFunction).min(1.0f).max(50.0f).step(1.0f);
     params->addParam<float>("Arrow Angle", &Options::instance().arrowAngle).updateFn(updaterFunction).min(0.0f).max(90.0f).step(1.0f);
     params->addParam<bool>("Show Edge Weights", &Options::instance().showEdgeWeights).updateFn(updaterFunction);

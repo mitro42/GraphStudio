@@ -64,12 +64,12 @@ void DijkstraDrawer::drawAlgorithmState()
     {
         if (p.second == nullptr)
             continue;
-        edgeParams[p.second] = EdgeDrawParams(cs.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
+        edgeParams[p.second] = EdgeDrawParams(cs.highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
     }
 
     // and finally the currently inspected edge
     if (state.inspectedEdge != nullptr)
-        edgeParams[state.inspectedEdge] = EdgeDrawParams(cs.highlightedEdgeColor1, Options::instance().highlighedEdgeWidth);
+        edgeParams[state.inspectedEdge] = EdgeDrawParams(cs.highlightedEdgeColor1, Options::instance().highlightedEdgeWidth);
 
     drawEdges(edgeParams);
     
@@ -123,7 +123,7 @@ void DijkstraDrawer::drawAlgorithmResult()
         auto edgePtr = tree[i].second;
         if (edgePtr == nullptr)
             continue;
-        drawEdge(edgePtr->from, edgePtr->to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
+        drawEdge(edgePtr->from, edgePtr->to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
     }
     drawNodes();
     drawLabels();
