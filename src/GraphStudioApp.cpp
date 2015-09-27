@@ -245,6 +245,7 @@ void GraphStudioApp::setup()
     params->addText("Colors");
     params->addParam("ColorScheme", colorSchemeNames, &Options::instance().currentColorSchemeIdx).updateFn(std::bind(&GraphStudioApp::colorSchemeChanged, this));
     params->addParam<ci::Color>("Background", &Options::instance().currentColorScheme.backgroundColor);
+    params->addParam<ci::Color>("Legend Background", &Options::instance().currentColorScheme.legendBackgroundColor);
 
     params->addParam<ci::Color>("Node ", &Options::instance().currentColorScheme.nodeColor).updateFn(updaterFunction);
     params->addParam<ci::Color>("Highlighted Node 1", &Options::instance().currentColorScheme.highlightedNodeColor1).updateFn(updaterFunction);

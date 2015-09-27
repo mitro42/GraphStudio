@@ -36,6 +36,7 @@
 			<highlightedEdgeTextColor red="0" green="0" blue="0"/>
 			<movingNodeColor red="255" green="255" blue="255"/>
 			<addEdgeNodeColor red="255" green="255" blue="0"/>
+			<legendBackgroundColor red="180" green="180" blue="180"/>
 		</colorScheme>
 		<colorScheme name="Prim 1">
 			<backgroundColor red="255" green="255" blue="255"/>
@@ -54,6 +55,7 @@
 			<highlightedEdgeTextColor red="0" green="0" blue="0"/>
 			<movingNodeColor red="255" green="255" blue="255"/>
 			<addEdgeNodeColor red="255" green="255" blue="0"/>
+			<legendBackgroundColor red="180" green="180" blue="180"/>
 		</colorScheme>
 		<colorScheme name="default">
 			<backgroundColor red="176" green="194" blue="142"/>
@@ -72,7 +74,7 @@
 			<highlightedEdgeTextColor red="0" green="0" blue="0"/>
 			<movingNodeColor red="255" green="255" blue="255"/>
 			<addEdgeNodeColor red="255" green="255" blue="0"/>
+					 <legendBackgroundColor red="180" green="180" blue="180"/>
 		</colorScheme>
 	</colorSchemes>
 </graphStudioSettings>
-

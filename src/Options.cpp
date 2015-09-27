@@ -57,6 +57,8 @@ ColorScheme ColorScheme::fromXml(ci::XmlTree &xml)
 
     cs.movingNodeColor = colorFromXml(xml.getChild("movingNodeColor"));
     cs.addEdgeNodeColor = colorFromXml(xml.getChild("addEdgeNodeColor"));
+
+    cs.legendBackgroundColor = colorFromXml(xml.getChild("legendBackgroundColor"));
     return cs;
 }
 
@@ -82,6 +84,8 @@ ci::XmlTree ColorScheme::toXml() const
 
     xml.push_back(colorToXml("movingNodeColor", movingNodeColor));
     xml.push_back(colorToXml("addEdgeNodeColor", addEdgeNodeColor));
+
+    xml.push_back(colorToXml("legendBackgroundColor", legendBackgroundColor));
     return xml;
 }
 

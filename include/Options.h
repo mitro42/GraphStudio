@@ -37,6 +37,8 @@ struct ColorScheme
     ci::Color highlightednodeTextColor;
     ci::Color edgeTextColor;
     ci::Color highlightedEdgeTextColor;
+
+    ci::Color legendBackgroundColor;
     ColorScheme();
     static ColorScheme fromXml(ci::XmlTree &xml);
     ci::XmlTree toXml() const;
