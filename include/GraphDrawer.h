@@ -20,6 +20,22 @@ public:
     void resize(ci::Area newWindowSize);
     void setChanged() { changed = true; }
 protected:
+    struct EdgeDrawParams
+    {
+        ci::Color color;
+        float width;
+        EdgeDrawParams() :
+            color(ci::Color::black()),
+            width(5.0)
+        {}
+
+        EdgeDrawParams(const ci::Color &color, float width) :
+            color(color),
+            width(width)
+        {}
+    };
+
+    typedef std::map<const GraphEdge*, EdgeDrawParams> EdgeDrawParamsMap;
 
     void drawEdge(int from, int to, ci::Color color, float width);
 
@@ -30,11 +46,14 @@ protected:
 
     void startDrawing();
     void drawEdges();
+    void drawEdges(const EdgeDrawParamsMap &edges);
     void drawHighlightEdges();
     void drawNodes();
-    void drawLabels(std::map<const GraphEdge*, ci::ColorA> &colors = std::map<const GraphEdge*, ci::ColorA>());
+    void drawLabels(EdgeDrawParamsMap &params = EdgeDrawParamsMap());
     void drawHighlightNodes();
     void drawColorScale();
+
+    EdgeDrawParamsMap createDefaultEdgeParams() const;
 
     void clearChanged() { changed = false; }
     bool movingNodes() const;

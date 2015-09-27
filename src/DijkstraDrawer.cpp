@@ -51,21 +51,12 @@ void DijkstraDrawer::drawAlgorithmState()
     const auto &cs = Options::instance().currentColorScheme;
     // Edges -----
     // preparing edge parameters before drawing
-    std::map<const GraphEdge*, std::pair<ci::Color, float>> edgeParams;
-    // by default edges are drawn with edgeColor and edgeWidth (no highlighting)
-    for (int nodeIdx = 0; nodeIdx < g->getNodeCount(); ++nodeIdx)
-    {
-        auto &node = g->getNode(nodeIdx);
-        for (auto edgePtr : node)
-        {
-            edgeParams[edgePtr.get()] = std::make_pair(cs.edgeColor, Options::instance().edgeWidth);
-        }
-    }
-
+    auto edgeParams = createDefaultEdgeParams();
+    
     // now the params for all dropped edges are overwritten
     for (auto &edgePtr : state.processedEdges)
     {
-        edgeParams[edgePtr] = std::make_pair(cs.darkEdgeColor, Options::instance().edgeWidth);
+        edgeParams[edgePtr].color = cs.darkEdgeColor;
     }
 
     // overwriting the edges of the current best paths
@@ -73,17 +64,15 @@ void DijkstraDrawer::drawAlgorithmState()
     {
         if (p.second == nullptr)
             continue;
-        edgeParams[p.second] = std::make_pair(cs.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
+        edgeParams[p.second] = EdgeDrawParams(cs.highlightedEdgeColor2, Options::instance().highlighedEdgeWidth);
     }
 
     // and finally the currently inspected edge
     if (state.inspectedEdge != nullptr)
-        edgeParams[state.inspectedEdge] = std::make_pair(cs.highlightedEdgeColor1, Options::instance().highlighedEdgeWidth);
+        edgeParams[state.inspectedEdge] = EdgeDrawParams(cs.highlightedEdgeColor1, Options::instance().highlighedEdgeWidth);
 
-    for (auto &p : edgeParams)
-    {
-        drawEdge(p.first->from, p.first->to, p.second.first, p.second.second);
-    }
+    drawEdges(edgeParams);
+    
 
     // Nodes ---------
     // Preparing open nodes
@@ -111,15 +100,7 @@ void DijkstraDrawer::drawAlgorithmState()
         nodeHandlers[i]->draw(nodeHighlight[i]);
     }
 
-    // Labels -----
-    // preparing edge label colors
-    std::map<const GraphEdge*, ci::ColorA> edgeLabelColors;    
-    for (auto &edgePtr : edgeParams)
-    {
-        edgeLabelColors[edgePtr.first] = edgePtr.second.first;
-    }
-    drawLabels(edgeLabelColors);
-    
+    drawLabels(edgeParams);    
     drawStepDescription(state.description);
 }
 

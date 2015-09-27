@@ -83,6 +83,14 @@ void GraphDrawer::drawEdges()
     ci::gl::draw(edgeFbo->getColorTexture());
 }
 
+void GraphDrawer::drawEdges(const EdgeDrawParamsMap &edges)
+{
+    for (auto &p : edges)
+    {
+        drawEdge(p.first->from, p.first->to, p.second.color, p.second.width);
+    }
+}
+
 void GraphDrawer::drawArrow(ci::vec2 from, ci::vec2 to, float headLength, float headAngle)
 {
     ci::vec2 dir = glm::normalize(to - from);
@@ -162,7 +170,22 @@ void GraphDrawer::drawNodes()
     }
 }
 
-void GraphDrawer::drawLabels(std::map<const GraphEdge*, ci::ColorA> &colors)
+
+GraphDrawer::EdgeDrawParamsMap GraphDrawer::createDefaultEdgeParams() const
+{
+    std::map<const GraphEdge*, EdgeDrawParams> ret;
+    for (const auto &node: *g)
+    {        
+        for (const auto &edgePtr : *node)
+        {
+            ret[edgePtr.get()] = EdgeDrawParams(Options::instance().currentColorScheme.edgeColor, Options::instance().edgeWidth);
+        }
+    }
+    return ret;
+}
+
+
+void GraphDrawer::drawLabels(EdgeDrawParamsMap &params)
 {
     if (changed)
     {
@@ -227,9 +250,9 @@ void GraphDrawer::drawLabels(std::map<const GraphEdge*, ci::ColorA> &colors)
                     }
                     ci::vec2 offset = -ci::vec2(0.0f, 5.0f + Options::instance().highlighedEdgeWidth); // place edge weight over the edge
                     ci::ColorA c = cs.edgeTextColor;
-                    auto it = colors.find(edgePtr.get());
-                    if (it != colors.end())
-                        c = it->second;
+                    auto it = params.find(edgePtr.get());
+                    if (it != params.end())
+                        c = it->second.color;
                     ci::gl::color(c);
                     edgeTextureFont->drawString(labelText, offset);
                     ci::gl::popModelView();
