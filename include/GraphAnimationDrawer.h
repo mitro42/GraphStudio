@@ -51,13 +51,13 @@ protected:
 
     int animationState;
     int animationLastState;
+    bool animationStateDescriptionVisible = true;
+    bool animationStateNumberVisible = true;
+    bool legendVisible = true;
     Legend legend;
 private:
     bool animationMode = false;
     bool paused = true;
-    bool animationStateNumberVisible = true;
-    bool animationStateDescriptionVisible = true;
-    bool legendVisible = true;
     int framesSpentInState;
     ci::gl::TextureFontRef stepDescriptionTextureFont;
     ci::gl::TextureRef legendTexture;

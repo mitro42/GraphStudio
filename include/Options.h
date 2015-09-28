@@ -78,6 +78,8 @@ public:
     float legendArrowAngle;
     float legendNodeSize;
 
+    float infoPanelWidth;
+
 private:
     Options()
     {
@@ -94,7 +96,7 @@ private:
         showNodeWeights = true;
         animationPlaying = false;
         animationPaused = false;
-        algorithm = static_cast<int>(Algorithm::dijkstra);
+        algorithm = static_cast<int>(Algorithm::prim);
         randomMovement = false;
         startNode = 1;
         minRandomEdgeWeight = 0.0f;
@@ -105,6 +107,8 @@ private:
         legendArrowLength = arrowLength;
         legendArrowAngle = arrowAngle;
         legendNodeSize = nodeSize;
+
+        infoPanelWidth = 350.0f;
     }
 
 public:

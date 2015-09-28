@@ -39,7 +39,7 @@ void Legend::render(bool forceRerender)
         currentSize = fbo->getSize();
     }
     const int rowHeight = 25;
-    ci::vec2 requiredSize(350.0f, float(contents.size() * rowHeight));
+    ci::vec2 requiredSize(Options::instance().infoPanelWidth, float(contents.size() * rowHeight));
     if (requiredSize == currentSize && !forceRerender)
         return;
     

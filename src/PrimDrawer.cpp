@@ -24,7 +24,7 @@ void PrimDrawer::drawAlgorithmState()
     }
 
 
-    auto state = states[animationState];
+    auto &state = states[animationState];
     const float highlightedWidth = Options::instance().highlightedEdgeWidth;
     const ColorScheme &cs = Options::instance().currentColorScheme;
 
@@ -58,23 +58,66 @@ void PrimDrawer::drawAlgorithmState()
     }
    
     drawLabels(edgeParams);
-
     drawStepDescription(state.description);
+    drawNextEdges();
 }
 
 void PrimDrawer::createLegend()
 {
+    Options::instance().infoPanelWidth = 300;
     legend.clear();
     auto &cs = Options::instance().currentColorScheme;
     legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor2, "MST");
     legend.add(LegendType::highlightedEdge, cs.darkEdgeColor, "Not in MST");
-    legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor1, "Just found");
-    legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor3, "Found, not decided");
-    legend.add(LegendType::node, cs.highlightedNodeColor1, "Finished");    
-
+    legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor1, "Just found/checked");
+    legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor3, "Undecided");
 }
 
+std::string PrimDrawer::edgeToString(const GraphEdge& edge)
+{
+    std::stringstream ss;
+    ss << std::setw(3) << std::fixed << std::setprecision(Options::instance().weightPrecision)
+        << edge.weight << " (" << std::setw(1) << edge.from + 1 << " - " << std::setw(1) << edge.to + 1 << ")";
+    return ss.str();
+}
 
+void PrimDrawer::drawNextEdges()
+{
+    if (!animationStateDescriptionVisible)
+        return;
+
+    const int lineHeight = 40;
+    int nextEdgeListLength = 10;
+    int baseX = int(window->getWidth() - Options::instance().infoPanelWidth);
+    int baseY = 100;
+    auto &state = states[animationState];
+    edgeTextureFont->drawString("Next edges", ci::vec2(baseX + 30, baseY));
+    auto it = state.edges.begin();        
+    int line = 0;
+    if (state.description.find("Check edge") == 0)
+    {
+        ci::gl::color(Options::instance().currentColorScheme.highlightedEdgeColor1);
+        edgeTextureFont->drawString(edgeToString(*state.inspectedEdges[0]), ci::vec2(baseX, baseY + lineHeight));
+        line++;
+        nextEdgeListLength--;
+    }
+
+    for (int i = 0; i < nextEdgeListLength && it != state.edges.end(); ++i, ++it, ++line)
+    {
+        auto &edge = **it;
+        ci::gl::color(Options::instance().currentColorScheme.edgeColor);
+        if (std::find(begin(state.inspectedEdges), end(state.inspectedEdges), *it) != state.inspectedEdges.end())
+        {
+            ci::gl::color(Options::instance().currentColorScheme.highlightedEdgeColor1);
+        }
+        
+        edgeTextureFont->drawString(edgeToString(edge), ci::vec2(baseX, baseY + (line + 1) * lineHeight));
+    }
+    if (it != state.edges.end())
+    {
+        edgeTextureFont->drawString("     ...", ci::vec2(baseX, baseY + (line + 1) * lineHeight));
+    }
+}
 
 void PrimDrawer::prepareAnimation()
 {

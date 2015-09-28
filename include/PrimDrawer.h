@@ -21,5 +21,8 @@ protected:
     virtual void createLegend() override;
     virtual void animationGoToLast() override { animationState = int(states.size()) - 1; }
 private:
+    void drawNextEdges();
+    std::string edgeToString(const GraphEdge& edge);
+
     std::vector<graph_algorithm_capture::MstPrimState> states;
 };

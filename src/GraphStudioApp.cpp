@@ -125,6 +125,8 @@ void GraphStudioApp::saveSettings()
     configXml.push_back(ci::XmlTree("legendArrowAngle", std::to_string(Options::instance().legendArrowAngle)));
     configXml.push_back(ci::XmlTree("legendNodeSize", std::to_string(Options::instance().legendNodeSize)));
 
+    configXml.push_back(ci::XmlTree("infoPanelWidth", std::to_string(Options::instance().infoPanelWidth)));
+
     ci::XmlTree csList("colorSchemes", "");
     for (const auto &cs : colorSchemes)
     {
@@ -177,6 +179,8 @@ void GraphStudioApp::loadSettings()
         Options::instance().legendArrowLength = settings.getChild("legendArrowLength").getValue<float>();
         Options::instance().legendArrowAngle = settings.getChild("legendArrowAngle").getValue<float>();
         Options::instance().legendNodeSize = settings.getChild("legendNodeSize").getValue<float>();
+
+        Options::instance().infoPanelWidth = settings.getChild("infoPanelWidth").getValue<float>();
 
         Options::instance().force = settings.getChild("force").getValue<float>();
         Options::instance().speed = settings.getChild("speed").getValue<int>();
@@ -579,7 +583,7 @@ void GraphStudioApp::draw()
             }
 
             fs::copy_file(videoFullPath / (graphFileNameNoExtension + ".mp4"), fsExportPath / (graphFileNameNoExtension + ".mp4"), fs::copy_option::overwrite_if_exists);
-            fs::copy_file(fs::path(videoTempDir) / "thumbnail.png", fsExportPath / "thumbnail.png", fs::copy_option::overwrite_if_exists);
+            fs::copy_file(fs::path(videoTempDir) / "thumbnail.png", fsExportPath / (graphFileNameNoExtension + ".png"), fs::copy_option::overwrite_if_exists);
             fs::copy_file(fs::path(defaultPath) / (graphFileNameNoExtension + ".graph"), fsExportPath / (graphFileNameNoExtension + ".graph"), fs::copy_option::overwrite_if_exists);
             fs::copy_file(fs::path(defaultPath) / (graphFileNameNoExtension + ".pos"), fsExportPath / (graphFileNameNoExtension + ".pos"), fs::copy_option::overwrite_if_exists);
 

@@ -470,18 +470,19 @@ void GraphHandler::fitToWindow()
     const float midX = (maxX + minX) / 2;
     const float midY = (maxY + minY) / 2;
 
-    const float marginX = 0.1f;
+    const float marginX = 0.05f;
     const float marginY = 0.1f;
 
     float targetHeight = float(window->getHeight());
     float targetWidth = float(window->getWidth());
 
     targetWidth *= (1 - 2 * marginX);
+    //targetWidth -= Options::instance().infoPanelWidth;
     targetHeight *= (1 - 2 * marginY);
     for (const auto& nh : nodeHandlers)
     {
-        float newX = ((nh->getPos().x) - minX) / boundingRectWidth * window->getWidth() * (1 - 2 * marginX) + window->getWidth() * marginX;
-        float newY = ((nh->getPos().y) - minY) / boundingRectHeight * window->getHeight() * (1 - 2 * marginY) + window->getHeight() * marginY;
+        float newX = ((nh->getPos().x) - minX) / boundingRectWidth * targetWidth + window->getWidth() * marginX;
+        float newY = ((nh->getPos().y) - minY) / boundingRectHeight * targetHeight + window->getHeight() * marginY;
         nh->setPos(ci::vec2(newX, newY));
     }
     setChanged();
