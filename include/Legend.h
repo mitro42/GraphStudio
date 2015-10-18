@@ -15,7 +15,8 @@ enum class LegendType
     edge,
     arrow,
     node,
-    nodes
+    nodes,
+    multiColorEdge
 };
 
 struct LegendItem

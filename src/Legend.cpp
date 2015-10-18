@@ -79,6 +79,17 @@ void Legend::render(bool forceRerender)
             ci::gl::drawSolidCircle(ci::vec2(25.0f, posY), Options::instance().legendNodeSize);
             ci::gl::drawSolidCircle(ci::vec2(55.0f, posY), Options::instance().legendNodeSize);
             break;
+        case LegendType::multiColorEdge:
+        {
+            width = Options::instance().legendHighlightedEdgeWidth;
+            std::vector<ci::Color> colors = { { 0.36f, 0.9f, 0.46f }, { 0.9f, 0.46f, 0.36f },  { 0.56f, 0.9f, 0.36f } };
+            const float segmentLength = 65.0f / colors.size();
+            for (int i = 0; i < colors.size(); ++i)
+            {
+                GraphDrawer::drawEdge(ci::vec2(5.0f + i * segmentLength, posY), ci::vec2(5.0f + (i + 1) * segmentLength, posY), colors[i], width);
+            }
+            break;
+        }
         default:
             break;
         }
