@@ -40,6 +40,25 @@
 			<addEdgeNodeColor red="255" green="255" blue="0"/>
 			<legendBackgroundColor red="180" green="180" blue="180"/>
 		</colorScheme>
+		<colorScheme name="Kruskal 1">
+			<backgroundColor red="255" green="255" blue="255"/>
+			<nodeColor red="66" green="66" blue="66"/>
+			<edgeColor red="10" green="1" blue="0"/>
+			<darkEdgeColor red="220" green="220" blue="220"/>
+			<highlightedNodeColor1 red="255" green="120" blue="0"/>
+			<highlightedNodeColor2 red="230" green="81" blue="0"/>
+			<highlightedNodeColor3 red="23" green="104" blue="255"/>
+			<highlightedEdgeColor1 red="114" green="179" blue="66"/>
+			<highlightedEdgeColor2 red="255" green="120" blue="0"/>
+			<highlightedEdgeColor3 red="57" green="73" blue="171"/>
+			<nodeTextColor red="255" green="255" blue="255"/>
+			<highlightednodeTextColor red="0" green="0" blue="0"/>
+			<edgeTextColor red="0" green="0" blue="0"/>
+			<highlightedEdgeTextColor red="0" green="0" blue="0"/>
+			<movingNodeColor red="255" green="255" blue="255"/>
+			<addEdgeNodeColor red="255" green="255" blue="0"/>
+			<legendBackgroundColor red="110" green="110" blue="111"/>
+		</colorScheme>
 		<colorScheme name="Prim 1">
 			<backgroundColor red="255" green="255" blue="255"/>
 			<nodeColor red="66" green="66" blue="66"/>
@@ -80,3 +99,4 @@
 		</colorScheme>
 	</colorSchemes>
 </graphStudioSettings>
+

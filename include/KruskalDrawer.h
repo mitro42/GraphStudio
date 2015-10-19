@@ -22,6 +22,8 @@ protected:
     virtual void createLegend() override;
     virtual void animationGoToLast() override { animationState = int(states.size()) - 1; }
 private:
+    std::string edgeToString(const GraphEdge& edge) const;
+    void drawNextEdges() const;
     void drawColorScale(const std::vector<ci::Color> &colorScale);
     std::vector<ci::Color> nodeGroupColors;
     std::vector<graph_algorithm_capture::MstKruskalState> states;

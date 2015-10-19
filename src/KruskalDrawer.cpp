@@ -4,46 +4,117 @@
 
 void KruskalDrawer::prepareNewState()
 {
-
 }
+
+
+std::string KruskalDrawer::edgeToString(const GraphEdge& edge) const
+{
+    std::stringstream ss;
+    ss << std::setw(3) << std::fixed << std::setprecision(Options::instance().weightPrecision)
+        << edge.weight << " (" << std::setw(1) << edge.from + 1 << " - " << std::setw(1) << edge.to + 1 << ")";
+    return ss.str();
+}
+
+
+
+void KruskalDrawer::drawNextEdges() const
+{
+    if (!animationStateDescriptionVisible)
+        return;
+
+    const int lineHeight = 40;
+    int nextEdgeListLength = 10;
+    int baseX = int(window->getWidth() - Options::instance().infoPanelWidth);
+    int baseY = 100;
+    auto &state = states[animationState];
+    edgeTextureFont->drawString("Next edges", ci::vec2(baseX + 30, baseY));
+    auto it = state.notProcessed.begin();
+    int line = 0;
+    if (state.description.find("Check edge") == 0 || state.description.find("Joint two") == 0)
+    {
+        ci::gl::color(Options::instance().currentColorScheme.highlightedEdgeColor1);
+        edgeTextureFont->drawString(edgeToString(*state.inspectedEdge), ci::vec2(baseX, baseY + lineHeight));
+        line++;
+        nextEdgeListLength--;
+    }
+
+    for (int i = 0; i < nextEdgeListLength && it != state.notProcessed.end(); ++i, ++it, ++line)
+    {
+        auto &edge = **it;
+        ci::gl::color(Options::instance().currentColorScheme.edgeColor);
+        if (state.inspectedEdge == *it)
+        {
+            ci::gl::color(Options::instance().currentColorScheme.highlightedEdgeColor1);
+        }
+
+        edgeTextureFont->drawString(edgeToString(edge), ci::vec2(baseX, baseY + (line + 1) * lineHeight));
+    }
+    if (it != state.notProcessed.end())
+    {
+        edgeTextureFont->drawString("     ...", ci::vec2(baseX, baseY + (line + 1) * lineHeight));
+    }
+}
+
+
 
 void KruskalDrawer::drawAlgorithmState()
 {
-    if (animationState >= int(states.size()))
-        return;
+    setChanged();
     startDrawing();
 
+    if (animationState >= int(states.size()))
+        return;
+
+    if (animationState == -1)
+    {
+        if (g->getNodeCount() == 0)
+            return;
+
+        prepareAnimation();
+    }
+
     auto state = states[animationState];
-    drawEdges();
+    auto edgeParams = createDefaultEdgeParams();
+
     const ColorScheme &cs = Options::instance().currentColorScheme;
     const float highlightedWidth = Options::instance().highlightedEdgeWidth;
     for (const auto& e : state.mst)
     {
-        drawEdge(e.from, e.to, cs.highlightedEdgeColor2, highlightedWidth);
+        edgeParams[e] = EdgeDrawParams(nodeGroupColors[state.uf.root(e->from)], highlightedWidth);        
     }
 
-    for (const auto& e : state.edges)
+    for (const auto e : state.notProcessed)
     {
-        drawEdge(e.from, e.to, cs.highlightedEdgeColor3, highlightedWidth);
+        edgeParams[e] = EdgeDrawParams(cs.edgeColor, Options::instance().edgeWidth);
     }
 
-    drawEdge(state.inspectedEdge.from, state.inspectedEdge.to, cs.highlightedEdgeColor1, highlightedWidth);
+    for (const auto e : state.notMst)
+    {
+        edgeParams[e] = EdgeDrawParams(cs.darkEdgeColor, Options::instance().edgeWidth);
+    }
+
+    if (state.inspectedEdge != nullptr)
+        edgeParams[state.inspectedEdge] = EdgeDrawParams(cs.highlightedEdgeColor1, highlightedWidth);
+
+    drawEdges(edgeParams);
 
     for (int nodeIdx = 0; nodeIdx < g->getNodeCount(); ++nodeIdx)
     {
         nodeHandlers[nodeIdx]->draw(nodeGroupColors[state.uf.root(nodeIdx)]);
     }
-    
-    drawLabels();
+
+    drawLabels(edgeParams);
+    drawStepDescription(state.description);
+    drawNextEdges();
 }
 
 void KruskalDrawer::createLegend()
 {
     legend.clear();
     auto &cs = Options::instance().currentColorScheme;
-    legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor2, "MST");
-    legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor3, "Maybe in MST");
-    legend.add(LegendType::edge, cs.edgeColor, "Not in MST");
+    legend.add(LegendType::multiColorEdge, cs.edgeColor, "MST");
+    legend.add(LegendType::highlightedEdge, cs.edgeColor, "Not processed");
+    legend.add(LegendType::edge, cs.darkEdgeColor, "Not in MST");
     legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor1, "Inspected");
 }
 
@@ -52,8 +123,11 @@ void KruskalDrawer::prepareAnimation()
     GraphAnimationDrawer::prepareAnimation();
     states = graph_algorithm_capture::mstKruskalCaptureStates(*g);
     animationLastState = int(states.size());
-    nodeGroupColors = generateColors(g->getNodeCount());
-    std::random_shuffle(begin(nodeGroupColors), end(nodeGroupColors));
+    if (nodeGroupColors.size() != g->getNodeCount())
+    {
+        nodeGroupColors = generateColors(g->getNodeCount());
+        std::random_shuffle(begin(nodeGroupColors), end(nodeGroupColors));
+    }
 }
 
 void KruskalDrawer::drawColorScale(const std::vector<ci::Color> &colorScale)
