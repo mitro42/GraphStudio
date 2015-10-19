@@ -71,6 +71,7 @@ public:
     int startNode;
     ColorScheme currentColorScheme;
     int currentColorSchemeIdx;
+    bool autoFitToScreen;
 
     float legendEdgeWidth;
     float legendHighlightedEdgeWidth;
@@ -96,8 +97,9 @@ private:
         showNodeWeights = true;
         animationPlaying = false;
         animationPaused = false;
-        algorithm = static_cast<int>(Algorithm::prim);
+        algorithm = static_cast<int>(Algorithm::kruskal);
         randomMovement = false;
+        autoFitToScreen = true;
         startNode = 1;
         minRandomEdgeWeight = 0.0f;
         maxRandomEdgeWeight = 100.0f;

@@ -13,6 +13,7 @@
 	<force>13.000000</force>
 	<speed>1</speed>
 	<edgeWeightScale>4</edgeWeightScale>
+	<autoFitToScreen>0</autoFitToScreen>
 	<legendEdgeWidth>7.000000</legendEdgeWidth>
 	<legendHighlightedEdgeWidth>7.000000</legendHighlightedEdgeWidth>
 	<legendArrowLength>25.000000</legendArrowLength>
@@ -79,4 +80,3 @@
 		</colorScheme>
 	</colorSchemes>
 </graphStudioSettings>
-

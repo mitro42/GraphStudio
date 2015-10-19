@@ -118,7 +118,8 @@ void GraphStudioApp::saveSettings()
     configXml.push_back(ci::XmlTree("force", std::to_string(Options::instance().force)));
     configXml.push_back(ci::XmlTree("speed", std::to_string(Options::instance().speed)));
     configXml.push_back(ci::XmlTree("edgeWeightScale", std::to_string(Options::instance().edgeWeightScale)));
-
+    configXml.push_back(ci::XmlTree("autoFitToScreen", std::to_string(Options::instance().autoFitToScreen)));
+    
     configXml.push_back(ci::XmlTree("legendEdgeWidth", std::to_string(Options::instance().legendEdgeWidth)));
     configXml.push_back(ci::XmlTree("legendHighlightedEdgeWidth", std::to_string(Options::instance().legendHighlightedEdgeWidth)));
     configXml.push_back(ci::XmlTree("legendArrowLength", std::to_string(Options::instance().legendArrowLength)));
@@ -173,6 +174,7 @@ void GraphStudioApp::loadSettings()
         Options::instance().arrowAngle = settings.getChild("arrowAngle").getValue<float>();
         Options::instance().showEdgeWeights = settings.getChild("showEdgeWeights").getValue<bool>();
         Options::instance().showNodeWeights = settings.getChild("showNodeWeights").getValue<bool>();
+        Options::instance().autoFitToScreen = settings.getChild("autoFitToScreen").getValue<bool>();
 
         Options::instance().legendEdgeWidth = settings.getChild("legendEdgeWidth").getValue<float>();
         Options::instance().legendHighlightedEdgeWidth = settings.getChild("legendHighlightedEdgeWidth").getValue<float>();
@@ -350,9 +352,14 @@ void GraphStudioApp::createThumbnail(const fs::path &folder)
     bool origAnimationStateNumberVisible = graphDrawer.getShowAnimationStateNumber();
     bool origAnimationStateDescriptionVisible = graphDrawer.getShowAnimationStateDescription();
     bool origLegendVisible = graphDrawer.getShowLegend();
+    bool origNodeWeightsVisible = Options::instance().showNodeWeights;
+    bool origEdgeWeightsVisible = Options::instance().showEdgeWeights;
     graphDrawer.showAnimationStateNumber(false);
     graphDrawer.showAnimationStateDescription(false);
     graphDrawer.showLegend(false);
+
+    Options::instance().showNodeWeights = false;
+    Options::instance().showEdgeWeights = false;
 
     gh.draw();
 
@@ -366,6 +373,8 @@ void GraphStudioApp::createThumbnail(const fs::path &folder)
     graphDrawer.showAnimationStateNumber(origAnimationStateNumberVisible);
     graphDrawer.showAnimationStateDescription(origAnimationStateDescriptionVisible);
     graphDrawer.showLegend(origLegendVisible);
+    Options::instance().showNodeWeights = origNodeWeightsVisible;
+    Options::instance().showEdgeWeights = origEdgeWeightsVisible;
     if (origParamsVisible)
         params->show();
 }
@@ -408,14 +417,17 @@ void GraphStudioApp::loadGraph()
     path = getOpenFilePath(path / graphFileName, extensions);
     if (path.empty())
         return;
-
+    
     defaultPath = path.parent_path().generic_string();
     graphFileName = path.filename().string();
     gh.loadGraph(path.string());
     gh.loadGraphPositions(path.replace_extension("pos").string());
 
     gh.algorithmChanged();
-    gh.fitToWindow();
+    if (Options::instance().autoFitToScreen)
+    {
+        gh.fitToWindow();
+    }
 }
 
 void GraphStudioApp::keyDown(KeyEvent event)
