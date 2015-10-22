@@ -141,13 +141,13 @@ void GraphHandler::updateEdgeWeights()
     {
         auto &node = g->getNode(i);
         auto posStart = nodeHandlers[i]->getPos();
-        for (auto &edgePtr: node)
+        for (auto &edge: node)
         {
-            auto neighbor = edgePtr->otherEnd(i);
+            auto neighbor = edge.otherEnd(i);
             auto posEnd = nodeHandlers[neighbor]->getPos();
             auto newWeight = (glm::length(posStart - posEnd)) / 100 * Options::instance().edgeWeightScale;
-            changed |= (edgePtr->weight != newWeight);
-            edgePtr->weight = newWeight;
+            changed |= (edge.weight != newWeight);
+            edge.weight = newWeight;
         }
     }
 }
@@ -521,9 +521,9 @@ void GraphHandler::setRandomEdgeWeights()
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
     for (auto node : *g)
     {
-        for (auto edgePtr : *node)
+        for (auto &edge : node)
         {
-            edgePtr->weight = float(dis(gen));
+            edge.weight = float(dis(gen));
         }
     }
     setChanged();

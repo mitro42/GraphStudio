@@ -73,9 +73,9 @@ void GraphDrawer::drawEdges()
         for (int nodeIdx = 0; nodeIdx < g->getNodeCount(); ++nodeIdx)
         {
             auto &node = g->getNode(nodeIdx);
-            for (auto edgePtr : node)
+            for (auto &edge : node)
             {
-                drawEdge(edgePtr->from, edgePtr->to, Options::instance().currentColorScheme.edgeColor, Options::instance().edgeWidth);
+                drawEdge(edge.from, edge.to, Options::instance().currentColorScheme.edgeColor, Options::instance().edgeWidth);
             }
         }
         ci::gl::popMatrices();
@@ -176,9 +176,9 @@ GraphDrawer::EdgeDrawParamsMap GraphDrawer::createDefaultEdgeParams() const
     std::map<const GraphEdge*, EdgeDrawParams> ret;
     for (const auto &node: *g)
     {        
-        for (const auto &edgePtr : *node)
+        for (const auto &edge : node)
         {
-            ret[edgePtr.get()] = EdgeDrawParams(Options::instance().currentColorScheme.edgeColor, Options::instance().edgeWidth);
+            ret[&edge] = EdgeDrawParams(Options::instance().currentColorScheme.edgeColor, Options::instance().edgeWidth);
         }
     }
     return ret;
@@ -219,14 +219,14 @@ void GraphDrawer::drawLabels(EdgeDrawParamsMap &params)
         {
             for (auto &node : *g)
             {
-                for (auto &edgePtr : *node)
+                for (auto &edge : node)
                 {
                     // writing edge weight
-                    ci::vec2 fromVec = nodeHandlers[edgePtr->from]->getPos();
-                    ci::vec2 toVec = nodeHandlers[edgePtr->to]->getPos();
+                    ci::vec2 fromVec = nodeHandlers[edge.from]->getPos();
+                    ci::vec2 toVec = nodeHandlers[edge.to]->getPos();
 
                     std::stringstream ss;
-                    ss << std::fixed << std::setprecision(Options::instance().weightPrecision) << edgePtr->weight;
+                    ss << std::fixed << std::setprecision(Options::instance().weightPrecision) << edge.weight;
                     std::string labelText = ss.str();
                     ci::vec2 textMid = (fromVec + toVec) / 2.0f;
                     ci::vec2 edgeDir = fromVec - toVec;
@@ -250,7 +250,7 @@ void GraphDrawer::drawLabels(EdgeDrawParamsMap &params)
                     }
                     ci::vec2 offset = -ci::vec2(0.0f, 5.0f + Options::instance().highlightedEdgeWidth); // place edge weight over the edge
                     ci::ColorA c = cs.edgeTextColor;
-                    auto it = params.find(edgePtr.get());
+                    auto it = params.find(&edge);
                     if (it != params.end())
                         c = it->second.color;
                     ci::gl::color(c);

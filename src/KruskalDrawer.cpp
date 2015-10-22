@@ -152,7 +152,7 @@ void KruskalDrawer::drawAlgorithmResult()
     auto edges = mstKruskal(*g);
     for (const auto &e : edges)
     {
-        drawEdge(e.from, e.to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
+        drawEdge(e->from, e->to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
     }
     drawNodes();
     drawLabels();
