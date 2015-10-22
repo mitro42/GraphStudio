@@ -15,7 +15,6 @@ public:
     GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window);
     virtual ~GraphDrawer() = default;
 
-    //void update();
     void draw();
     void resize(ci::Area newWindowSize);
     void setChanged() { changed = true; }
@@ -23,13 +22,9 @@ public:
 protected:
     struct EdgeDrawParams
     {
-        ci::Color color;
-        float width;
-        EdgeDrawParams() :
-            color(ci::Color::black()),
-            width(5.0)
-        {}
-
+        ci::Color color = ci::Color::black();
+        float width = 5.0f;
+        EdgeDrawParams() = default;
         EdgeDrawParams(const ci::Color &color, float width) :
             color(color),
             width(width)
@@ -58,7 +53,7 @@ protected:
 
     void clearChanged() { changed = false; }
     bool movingNodes() const;
-        
+
     ci::app::WindowRef window;
     const std::shared_ptr<Graph> g;
     const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers;
