@@ -2,6 +2,7 @@
 
 #include "GraphHandler.h"
 #include "Options.h"
+#include "generators.h"
 
 #include <cinder/app/App.h>
 #include <cinder/app/RendererGl.h>
@@ -54,6 +55,9 @@ private:
     void saveSettings();
     void saveGraph(bool saveAs);
     void loadGraph();
+
+    GraphGeneratorGrid graphGeneratorGrid;
+    GraphGeneratorTriangleMesh graphGeneratorTriangleMesh;
 
 };
 
@@ -279,18 +283,19 @@ void GraphStudioApp::setup()
     params->addButton("Generate Weights", std::bind(&GraphHandler::setRandomEdgeWeights, &gh));
     params->addSeparator();
     params->addText("Generate Grid");
-    params->addParam<int>("Columns", &GraphParamsGrid::instance().columns).min(1).step(1);
-    params->addParam<int>("Rows", &GraphParamsGrid::instance().rows).min(1).step(1);
-    params->addParam<bool>("Directed", &GraphParamsGrid::instance().directed);
-    params->addParam<bool>("Horizontal Edges", &GraphParamsGrid::instance().horizontal);
-    params->addParam<bool>("Vertical Edges", &GraphParamsGrid::instance().vertical);
-    params->addParam<bool>("Diagonal /", &GraphParamsGrid::instance().upDiagonal);
-    params->addParam<bool>("Diagonal \\", &GraphParamsGrid::instance().downDiagonal);
-    params->addButton("Generate grid", std::bind(&GraphHandler::generateSpecialGraph, &gh, GraphHandler::GraphType::grid));
+    params->addParam<int>("Columns", &graphGeneratorGrid.columns).min(1).step(1);
+    params->addParam<int>("Rows", &graphGeneratorGrid.rows).min(1).step(1);
+    params->addParam<bool>("Directed", &graphGeneratorGrid.directed);
+    params->addParam<bool>("Horizontal Edges", &graphGeneratorGrid.horizontal);
+    params->addParam<bool>("Vertical Edges", &graphGeneratorGrid.vertical);
+    params->addParam<bool>("Diagonal /", &graphGeneratorGrid.upDiagonal);
+    params->addParam<bool>("Diagonal \\", &graphGeneratorGrid.downDiagonal);
+    params->addButton("Generate grid", [&](){gh.generateSpecialGraph(graphGeneratorGrid); });
     params->addText("Generate Triangle Mesh");
-    params->addParam<int>("Triangles", &GraphParamsTriangleMesh::instance().triangles).min(1).step(1);
-    params->addParam<float>("Randomness", &GraphParamsTriangleMesh::instance().randomness).min(0.0f).step(0.1f);
-    params->addButton("Generate tri", std::bind(&GraphHandler::generateSpecialGraph, &gh, GraphHandler::GraphType::triangleMesh));
+    params->addParam<int>("Triangles", &graphGeneratorTriangleMesh.triangles).min(1).step(1);
+    params->addParam<bool>("Directed", &graphGeneratorTriangleMesh.directed);
+    params->addParam<float>("Randomness", &graphGeneratorTriangleMesh.randomness).min(0.0f).step(0.1f);
+    params->addButton("Generate tri", [&](){gh.generateSpecialGraph(graphGeneratorTriangleMesh); });
 
     gh.setup(getWindow());
     colorSchemeChanged();

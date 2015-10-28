@@ -45,74 +45,43 @@ struct ColorScheme
 
 private:
     static ci::Color colorFromXml(ci::XmlTree &xml);
-   static ci::XmlTree colorToXml(const char *name, const ci::Color &c);
+    static ci::XmlTree colorToXml(const char *name, const ci::Color &c);
 };
 
-class Options
+struct Options
 {
-public:
-    float nodeSize;
-    float arrowLength;
-    float arrowAngle;
-    int speed;
-    float edgeWidth;
-    float highlightedEdgeWidth;
-    float force;
-    bool animationPlaying;
-    bool animationPaused;
-    bool randomMovement;
-    bool showEdgeWeights;
-    bool showNodeWeights;
-    int weightPrecision;
-    int edgeWeightScale;
-    float minRandomEdgeWeight;
-    float maxRandomEdgeWeight;
-    int algorithm;
-    int startNode;
+    float nodeSize = 10.0f;
+    float arrowLength = 15.0f;
+    float arrowAngle = 16.0f;
+    int speed = 60;
+    float edgeWidth = 1.5f;
+    float highlightedEdgeWidth = 3.0f;
+    float force = 10.0f;
+    bool animationPlaying = false;
+    bool animationPaused = false;
+    bool randomMovement = false;
+    bool showEdgeWeights = true;
+    bool showNodeWeights = true;
+    int weightPrecision = 0;
+    int edgeWeightScale = 100;
+    float minRandomEdgeWeight = 1.0f;
+    float maxRandomEdgeWeight = 100.0f;
+    int algorithm = static_cast<int>(Algorithm::kruskal);
+    int startNode = 1;
     ColorScheme currentColorScheme;
     int currentColorSchemeIdx;
-    bool autoFitToScreen;
+    bool autoFitToScreen = true;
 
-    float legendEdgeWidth;
-    float legendHighlightedEdgeWidth;
-    float legendArrowLength;
-    float legendArrowAngle;
-    float legendNodeSize;
+    float legendEdgeWidth = edgeWidth;
+    float legendHighlightedEdgeWidth = highlightedEdgeWidth;
+    float legendArrowLength = arrowLength;
+    float legendArrowAngle = arrowAngle;
+    float legendNodeSize = nodeSize;
 
-    float infoPanelWidth;
+    float infoPanelWidth = 350.0f;
 
 private:
-    Options()
-    {
-        nodeSize = 10.0f;
-        arrowLength = 15.0f;
-        arrowAngle = 16.0f;
-        speed = 60;
-        edgeWidth = 1.5f;
-        highlightedEdgeWidth = 3.0f;
-        force = 10.0;
-        edgeWeightScale = 100;
-        int weightPrecision = 0;
-        showEdgeWeights = true;
-        showNodeWeights = true;
-        animationPlaying = false;
-        animationPaused = false;
-        algorithm = static_cast<int>(Algorithm::kruskal);
-        randomMovement = false;
-        autoFitToScreen = true;
-        startNode = 1;
-        minRandomEdgeWeight = 0.0f;
-        maxRandomEdgeWeight = 100.0f;
-
-        legendEdgeWidth = edgeWidth;
-        legendHighlightedEdgeWidth = highlightedEdgeWidth;
-        legendArrowLength = arrowLength;
-        legendArrowAngle = arrowAngle;
-        legendNodeSize = nodeSize;
-
-        infoPanelWidth = 350.0f;
-    }
-
+    Options() = default;
 public:
     ~Options() = default;
 
@@ -124,58 +93,5 @@ public:
 };
 
 
-
-class GraphParamsGrid
-{
-public:
-    int columns;
-    int rows;
-    bool directed;
-    bool horizontal;
-    bool vertical;
-    bool upDiagonal;
-    bool downDiagonal;
-private:
-    GraphParamsGrid()
-    {
-        columns = 3;
-        rows = 3;
-        directed = false;
-        horizontal = true;
-        vertical = true;
-        upDiagonal = true;
-        downDiagonal = true;
-    }
-public:
-    ~GraphParamsGrid() = default;
-
-    static GraphParamsGrid &instance()
-    {
-        static GraphParamsGrid instance;
-        return instance;
-    }
-};
-
-
-class GraphParamsTriangleMesh
-{
-public:
-    int triangles;
-    float randomness;
-private:
-    GraphParamsTriangleMesh()
-    {
-        triangles = 10;
-        randomness = 0.0f;
-    }
-public:
-    ~GraphParamsTriangleMesh() = default;
-
-    static GraphParamsTriangleMesh &instance()
-    {
-        static GraphParamsTriangleMesh instance;
-        return instance;
-    }
-};
 
 #endif // GRAPHSTUDIO_OPTIONS_H

@@ -31,73 +31,74 @@ std::vector<ci::vec2> generateGridPositions(int N, int columns, int rows)
 
 
 
-void generateGrid(const GraphParamsGrid& params, Graph &g, std::vector<ci::vec2> &nodePositions)
+void GraphGeneratorGrid::run(Graph &g, std::vector<ci::vec2> &nodePositions) const
 {
-    g.clear(params.directed);
+    g.clear(directed);
     g.setWeightedEdges(true);
     g.setWeightedNodes(false);
-    for (int i = 0; i < params.rows; i++)
+    for (int i = 0; i < rows; i++)
     {
-        for (int j = 0; j < params.columns; j++)
+        for (int j = 0; j < columns; j++)
         {
             g.addNode();
         }
     }
 
-    if (params.horizontal)
+    if (horizontal)
     {
-        for (int i = 0; i < params.rows; i++)
+        for (int i = 0; i < rows; i++)
         {
-            for (int j = 0; j < params.columns - 1; j++)
+            for (int j = 0; j < columns - 1; j++)
             {
-                int start = i*params.columns + j;
+                int start = i*columns + j;
                 g.addEdge(start, start + 1, 1.0);
             }
         }
     }
 
-    if (params.vertical)
+    if (vertical)
     {
-        for (int i = 0; i < params.rows - 1; i++)
+        for (int i = 0; i < rows - 1; i++)
         {
-            for (int j = 0; j < params.columns; j++)
+            for (int j = 0; j < columns; j++)
             {
-                int start = i*params.columns + j;
-                g.addEdge(start, start + params.columns, 1.0);
+                int start = i*columns + j;
+                g.addEdge(start, start + columns, 1.0);
             }
         }
     }
 
-    if (params.upDiagonal)
+    if (upDiagonal)
     {
-        for (int i = 1; i < params.rows; i++)
+        for (int i = 1; i < rows; i++)
         {
-            for (int j = 0; j < params.columns - 1; j++)
+            for (int j = 0; j < columns - 1; j++)
             {
-                int start = i*params.columns + j;
-                g.addEdge(start, start + 1 - params.columns, 1.0);
+                int start = i*columns + j;
+                g.addEdge(start, start + 1 - columns, 1.0);
             }
         }
     }
 
-    if (params.downDiagonal)
+    if (downDiagonal)
     {
-        for (int i = 0; i < params.rows - 1; i++)
+        for (int i = 0; i < rows - 1; i++)
         {
-            for (int j = 0; j < params.columns - 1; j++)
+            for (int j = 0; j < columns - 1; j++)
             {
-                int start = i*params.columns + j;
-                g.addEdge(start, start + 1 + params.columns);
+                int start = i*columns + j;
+                g.addEdge(start, start + 1 + columns);
             }
         }
     }
 
-    nodePositions = generateGridPositions(params.rows * params.columns, params.columns, params.rows);
+    nodePositions = generateGridPositions(rows * columns, columns, rows);
 }
 
 
-void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::vector<ci::vec2> &nodePositions)
+void GraphGeneratorTriangleMesh::run(Graph &g, std::vector<ci::vec2> &nodePositions) const
 {
+    g.clear(directed);
     struct Edge{
         int from = 0;
         int to = 0;
@@ -108,7 +109,6 @@ void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::
 
     std::vector<Edge> outerEdges;
     ci::randSeed(42);
-    g.clear(true);
     g.setWeightedEdges(true);
     g.setWeightedNodes(false);
     g.addNode();
@@ -119,7 +119,9 @@ void generateTriangleMesh(const GraphParamsTriangleMesh& params, Graph &g, std::
     ci::vec2 centerOffset = ci::Rand::randVec2() * 25.0f;
     nodePositions.push_back(center + centerOffset);
     nodePositions.push_back(center - centerOffset);
-    while (int(nodePositions.size()) < GraphParamsTriangleMesh::instance().triangles+2)
+
+    // TODO find out why triangles without this-> won't compile with VS
+    while (nodePositions.size() < this->triangles+2)
     {
         // select a random edge on perimeter of the mesh
         int edgeIdx = ci::randInt(int32_t(outerEdges.size()));

@@ -488,28 +488,16 @@ void GraphHandler::fitToWindow()
     setChanged();
 }
 
-void GraphHandler::generateSpecialGraph(GraphType type)
+
+void GraphHandler::generateSpecialGraph(const GraphGenerator &generator)
 {
-    ci::app::console() << "GraphHandler::generateSpecialGraph(" << static_cast<int>(type) << ")" << std::endl;
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
-    ci::app::console() << "Start..." << std::endl;
 
     std::vector<ci::vec2> nodePositions;
-    switch (type)
-    {
-    case GraphType::grid:
-        generateGrid(GraphParamsGrid::instance(), *g, nodePositions);
-        break;
-    case GraphType::triangleMesh:
-        generateTriangleMesh(GraphParamsTriangleMesh::instance(), *g, nodePositions);
-        break;
-    case GraphType::general:
-    default:
-        ci::app::console() << "GraphHandler::generateSpecialGraph - SKIP" << std::endl;
-    }
+    generator.run(*g, nodePositions);
+
     recreateNodeHandlers(nodePositions);
     setChanged();
-    ci::app::console() << "End" << std::endl;
 }
 
 

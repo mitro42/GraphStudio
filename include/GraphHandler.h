@@ -3,6 +3,8 @@
 #include "GraphAnimationDrawer.h"
 #include "GraphNodeHandler.h"
 
+struct GraphGenerator;
+
 #include <cinder/Filesystem.h>
 
 class GraphHandler
@@ -58,7 +60,7 @@ public:
     bool getAutomaticEdgeWeightUpdate() const { return automaticEdgeWeightUpdate; }
     void setAutomaticEdgeWeightUpdate(bool update) { automaticEdgeWeightUpdate = update; }
     void setRandomEdgeWeights();
-    void generateSpecialGraph(GraphType type);
+    void generateSpecialGraph(const GraphGenerator& generator);
     GraphAnimationDrawer& getAnimationDrawer() { return *graphDrawer; }
 private:
     enum class Force{
