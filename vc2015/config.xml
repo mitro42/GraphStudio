@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <graphStudioSettings>
-	<defaultSavePath>C:/Work/GraphStudio/graphs</defaultSavePath>
-	<exportPath>C:/Work/GraphStudio/export/</exportPath>
-	<ffmpegPath>C:/Work/ffmpeg/bin/ffmpeg.exe</ffmpegPath>
-	<nodeSize>31.000000</nodeSize>
-	<edgeWidth>10.000000</edgeWidth>
-	<highlightedEdgeWidth>10.000000</highlightedEdgeWidth>
-	<arrowLength>36.000000</arrowLength>
+	<defaultSavePath>C:\Work\GraphStudio\graphs</defaultSavePath>
+	<exportPath>C:\Work\GraphStudio\export\</exportPath>
+	<ffmpegPath>C:\Work\ffmpeg\bin\ffmpeg.exe</ffmpegPath>
+	<nodeSize>14.000000</nodeSize>
+	<edgeWidth>4.000000</edgeWidth>
+	<highlightedEdgeWidth>4.000000</highlightedEdgeWidth>
+	<arrowLength>13.000000</arrowLength>
 	<arrowAngle>34.000000</arrowAngle>
 	<showEdgeWeights>1</showEdgeWeights>
 	<showNodeWeights>1</showNodeWeights>

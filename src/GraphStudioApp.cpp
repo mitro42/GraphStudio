@@ -8,7 +8,7 @@
 #include <cinder/app/RendererGl.h>
 #include <cinder/params/Params.h>
 #include <cinder/ImageIo.h>
-#include <cinder/Filesystem.h>
+
 
 using namespace ci;
 using namespace ci::app;
@@ -49,6 +49,7 @@ private:
     void addNewColorScheme();
     void storeColorScheme();
     void createThumbnail(const fs::path &folder);
+	fs::path createTempDir();
     void prepareRecording();
     void stopRecording();
     void loadSettings();
@@ -320,6 +321,18 @@ void GraphStudioApp::stopRecording()
 }
 
 
+fs::path GraphStudioApp::createTempDir()
+{
+	fs::path ret = fs::temp_directory_path();
+	int counter = 0;
+	while (fs::exists(ret))
+	{
+		std::string candidate = "GrahStudio_" + std::to_string(++counter);
+		ret = fs::temp_directory_path() / candidate;
+	}
+	return ret;
+}
+
 void GraphStudioApp::prepareRecording()
 {
     setFrameRate(30.0f);
@@ -327,7 +340,7 @@ void GraphStudioApp::prepareRecording()
     setFullScreen(true);
     params->hide();
 
-    videoTempDir = (fs::temp_directory_path() / fs::unique_path("GrahStudio_%%%%-%%%%-%%%%-%%%%")).string();
+	videoTempDir = createTempDir();
 
     Options::instance().animationPlaying = true;
     Options::instance().animationPaused = false;
@@ -598,11 +611,11 @@ void GraphStudioApp::draw()
             {
                 fs::create_directory(fsExportPath);
             }
-
-            fs::copy_file(videoFullPath / (graphFileNameNoExtension + ".mp4"), fsExportPath / (graphFileNameNoExtension + ".mp4"), fs::copy_option::overwrite_if_exists);
-            fs::copy_file(fs::path(videoTempDir) / "thumbnail.png", fsExportPath / (graphFileNameNoExtension + ".png"), fs::copy_option::overwrite_if_exists);
-            fs::copy_file(fs::path(defaultPath) / (graphFileNameNoExtension + ".graph"), fsExportPath / (graphFileNameNoExtension + ".graph"), fs::copy_option::overwrite_if_exists);
-            fs::copy_file(fs::path(defaultPath) / (graphFileNameNoExtension + ".pos"), fsExportPath / (graphFileNameNoExtension + ".pos"), fs::copy_option::overwrite_if_exists);
+			using copy_option = std::experimental::filesystem::v1::copy_options;
+            fs::copy_file(videoFullPath / (graphFileNameNoExtension + ".mp4"), fsExportPath / (graphFileNameNoExtension + ".mp4"), copy_option::overwrite_existing);
+            fs::copy_file(fs::path(videoTempDir) / "thumbnail.png", fsExportPath / (graphFileNameNoExtension + ".png"), copy_option::overwrite_existing);
+            fs::copy_file(fs::path(defaultPath) / (graphFileNameNoExtension + ".graph"), fsExportPath / (graphFileNameNoExtension + ".graph"), copy_option::overwrite_existing);
+            fs::copy_file(fs::path(defaultPath) / (graphFileNameNoExtension + ".pos"), fsExportPath / (graphFileNameNoExtension + ".pos"), copy_option::overwrite_existing);
 
             fs::remove_all(fs::path(videoTempDir));
         }

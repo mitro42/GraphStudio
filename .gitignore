@@ -61,3 +61,6 @@ vc2013/GraphStudio.vcxproj.user
 # TabStudio save file
 *.tss
 
+x64
+export
+graphs
