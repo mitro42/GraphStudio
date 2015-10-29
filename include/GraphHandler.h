@@ -59,7 +59,7 @@ public:
     void toggleAutomaticEdgeWeightUpdate() { automaticEdgeWeightUpdate = !automaticEdgeWeightUpdate; if (automaticEdgeWeightUpdate) g->setWeightedEdges(true); }
     bool getAutomaticEdgeWeightUpdate() const { return automaticEdgeWeightUpdate; }
     void setAutomaticEdgeWeightUpdate(bool update) { automaticEdgeWeightUpdate = update; }
-    void setRandomEdgeWeights();
+	void setRandomEdgeWeights(int min, int max);
     void generateSpecialGraph(const GraphGenerator& generator);
     GraphAnimationDrawer& getAnimationDrawer() { return *graphDrawer; }
 private:

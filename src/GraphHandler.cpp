@@ -501,11 +501,12 @@ void GraphHandler::generateSpecialGraph(const GraphGenerator &generator)
 }
 
 
-void GraphHandler::setRandomEdgeWeights()
+void GraphHandler::setRandomEdgeWeights(int min, int max)
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> dis(int(Options::instance().minRandomEdgeWeight), int(Options::instance().maxRandomEdgeWeight));
+	if (max < min) std::swap(max, min);
+    std::uniform_int_distribution<int> dis(min, max);
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
     for (auto node : *g)
     {

@@ -64,8 +64,7 @@ struct Options
     bool showNodeWeights = true;
     int weightPrecision = 0;
     int edgeWeightScale = 100;
-    float minRandomEdgeWeight = 1.0f;
-    float maxRandomEdgeWeight = 100.0f;
+
     int algorithm = static_cast<int>(Algorithm::kruskal);
     int startNode = 1;
     ColorScheme currentColorScheme;
@@ -79,11 +78,6 @@ struct Options
     float legendNodeSize = nodeSize;
 
     float infoPanelWidth = 350.0f;
-
-private:
-    Options() = default;
-public:
-    ~Options() = default;
 
     static Options &instance()
     {

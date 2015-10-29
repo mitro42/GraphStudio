@@ -27,12 +27,19 @@ public:
 
     const ColorScheme &getCurrentColorScheme();
 private:
+    static const std::vector<std::string> extensions;
+
     ci::params::InterfaceGlRef	params;
     std::map<std::string, ColorScheme> colorSchemes;
     std::vector<std::string> colorSchemeNames;
     GraphHandler gh;
 
-    static const std::vector<std::string> extensions;
+	GraphGeneratorGrid graphGeneratorGrid;
+	GraphGeneratorTriangleMesh graphGeneratorTriangleMesh;
+	int minRandomEdgeWeight = 1;
+	int maxRandomEdgeWeight = 100;
+    bool recording = false;
+
     fs::path graphFileName;
     fs::path defaultPath;
     fs::path exportPath;
@@ -45,7 +52,6 @@ private:
     void algorithmStartNodeChanged();
     void colorSchemeChanged();
 
-    bool recording = false;
     void addNewColorScheme();
     void storeColorScheme();
     void createThumbnail(const fs::path &folder);
@@ -56,10 +62,6 @@ private:
     void saveSettings();
     void saveGraph(bool saveAs);
     void loadGraph();
-
-    GraphGeneratorGrid graphGeneratorGrid;
-    GraphGeneratorTriangleMesh graphGeneratorTriangleMesh;
-
 };
 
 const std::vector<std::string> GraphStudioApp::extensions{ "graph", "txt" };
@@ -279,9 +281,9 @@ void GraphStudioApp::setup()
     params->addButton("New", std::bind(&GraphStudioApp::addNewColorScheme, this));
     params->addSeparator();
     params->addText("Random Edge Weights");
-    params->addParam<float>("Min", &Options::instance().minRandomEdgeWeight).updateFn(updaterFunction).min(1.0f).max(1000.0f).step(1.0f);
-    params->addParam<float>("Max", &Options::instance().maxRandomEdgeWeight).updateFn(updaterFunction).min(1.0f).max(1000.0f).step(1.0f);
-    params->addButton("Generate Weights", std::bind(&GraphHandler::setRandomEdgeWeights, &gh));
+    params->addParam<int>("Min", &minRandomEdgeWeight).updateFn(updaterFunction).min(1).max(1000).step(1);
+    params->addParam<int>("Max", &maxRandomEdgeWeight).updateFn(updaterFunction).min(1).max(1000).step(1);
+	params->addButton("Generate Weights", [&](){ gh.setRandomEdgeWeights(minRandomEdgeWeight, maxRandomEdgeWeight); });
     params->addSeparator();
     params->addText("Generate Grid");
     params->addParam<int>("Columns", &graphGeneratorGrid.columns).min(1).step(1);
