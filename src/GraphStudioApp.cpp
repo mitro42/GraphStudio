@@ -39,6 +39,9 @@ private:
 	int minRandomEdgeWeight = 1;
 	int maxRandomEdgeWeight = 100;
     bool recording = false;
+	ColorScheme editedColorScheme;
+	int editedColorSchemeIdx = 0;
+
 
     fs::path graphFileName;
     fs::path defaultPath;
@@ -77,13 +80,13 @@ void GraphStudioApp::prepareSettings(Settings *settings)
 
 const ColorScheme &GraphStudioApp::getCurrentColorScheme()
 {
-    return colorSchemes[colorSchemeNames[Options::instance().currentColorSchemeIdx]];
+    return colorSchemes[colorSchemeNames[editedColorSchemeIdx]];
 }
 
 
 void GraphStudioApp::addNewColorScheme()
 {
-    auto &cs = Options::instance().currentColorScheme;
+    auto &cs = editedColorScheme;
     cs = ColorScheme();
     bool freeNameFound = false;
     int freeNameIdx = 0;
@@ -97,14 +100,14 @@ void GraphStudioApp::addNewColorScheme()
     cs.name = newName;
     colorSchemeNames.push_back(cs.name);
     colorSchemes[cs.name] = cs;
-    Options::instance().currentColorSchemeIdx = int(colorSchemes.size() - 1);
-    params->addParam("ColorScheme", colorSchemeNames, &Options::instance().currentColorSchemeIdx);
+    editedColorSchemeIdx = int(colorSchemes.size() - 1);
+    params->addParam("ColorScheme", colorSchemeNames, &editedColorSchemeIdx);
 }
 
 
 void GraphStudioApp::storeColorScheme()
 {
-    auto &cs = Options::instance().currentColorScheme;
+    auto &cs = editedColorScheme;
     colorSchemes[cs.name] = cs;
 }
 
@@ -215,13 +218,14 @@ void GraphStudioApp::loadSettings()
 
 void GraphStudioApp::setGraphChanged()
 {
-    gh.setChanged();
-    gh.getAnimationDrawer().colorSchemeChanged();
+	gh.getAnimationDrawer().setColorScheme(editedColorScheme);
+    gh.setChanged();    
 }
 
 void GraphStudioApp::algorithmChanged()
 {
     gh.algorithmChanged();
+	colorSchemeChanged();
 }
 
 void GraphStudioApp::algorithmStartNodeChanged()
@@ -231,8 +235,8 @@ void GraphStudioApp::algorithmStartNodeChanged()
 
 void GraphStudioApp::colorSchemeChanged()
 {
-    Options::instance().currentColorScheme = colorSchemes[colorSchemeNames[Options::instance().currentColorSchemeIdx]];
-    gh.getAnimationDrawer().colorSchemeChanged();
+    editedColorScheme = colorSchemes[colorSchemeNames[editedColorSchemeIdx]];
+    gh.getAnimationDrawer().setColorScheme(editedColorScheme);
 }
 
 void GraphStudioApp::setup()
@@ -258,25 +262,25 @@ void GraphStudioApp::setup()
     params->addParam<int>("Edge Weight Scale", &Options::instance().edgeWeightScale).updateFn(updaterFunction).min(1.0f).max(1000.0f).step(1.0f);
     params->addSeparator();
     params->addText("Colors");
-    params->addParam("ColorScheme", colorSchemeNames, &Options::instance().currentColorSchemeIdx).updateFn(std::bind(&GraphStudioApp::colorSchemeChanged, this));
-    params->addParam<ci::Color>("Background", &Options::instance().currentColorScheme.backgroundColor).updateFn(updaterFunction);
-    params->addParam<ci::Color>("Legend Background", &Options::instance().currentColorScheme.legendBackgroundColor).updateFn(updaterFunction);
+    params->addParam("ColorScheme", colorSchemeNames, &editedColorSchemeIdx).updateFn(std::bind(&GraphStudioApp::colorSchemeChanged, this));
+    params->addParam<ci::Color>("Background", &editedColorScheme.backgroundColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Legend Background", &editedColorScheme.legendBackgroundColor).updateFn(updaterFunction);
 
-    params->addParam<ci::Color>("Node ", &Options::instance().currentColorScheme.nodeColor).updateFn(updaterFunction);
-    params->addParam<ci::Color>("Highlighted Node 1", &Options::instance().currentColorScheme.highlightedNodeColor1).updateFn(updaterFunction);
-    params->addParam<ci::Color>("Highlighted Node 2", &Options::instance().currentColorScheme.highlightedNodeColor2).updateFn(updaterFunction);
-    params->addParam<ci::Color>("Highlighted Node 3", &Options::instance().currentColorScheme.highlightedNodeColor3).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Node ", &editedColorScheme.nodeColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Node 1", &editedColorScheme.highlightedNodeColor1).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Node 2", &editedColorScheme.highlightedNodeColor2).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Node 3", &editedColorScheme.highlightedNodeColor3).updateFn(updaterFunction);
 
-    params->addParam<ci::Color>("Edge", &Options::instance().currentColorScheme.edgeColor).updateFn(updaterFunction);
-    params->addParam<ci::Color>("Dark Edge", &Options::instance().currentColorScheme.darkEdgeColor).updateFn(updaterFunction);
-    params->addParam<ci::Color>("Highlighted Edge 1", &Options::instance().currentColorScheme.highlightedEdgeColor1).updateFn(updaterFunction);
-    params->addParam<ci::Color>("Highlighted Edge 2", &Options::instance().currentColorScheme.highlightedEdgeColor2).updateFn(updaterFunction);
-    params->addParam<ci::Color>("Highlighted Edge 3", &Options::instance().currentColorScheme.highlightedEdgeColor3).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Edge", &editedColorScheme.edgeColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Dark Edge", &editedColorScheme.darkEdgeColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Edge 1", &editedColorScheme.highlightedEdgeColor1).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Edge 2", &editedColorScheme.highlightedEdgeColor2).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Edge 3", &editedColorScheme.highlightedEdgeColor3).updateFn(updaterFunction);
 
-    params->addParam<ci::Color>("Node Text", &Options::instance().currentColorScheme.nodeTextColor).updateFn(updaterFunction);
-    params->addParam<ci::Color>("highlightednodeText", &Options::instance().currentColorScheme.highlightednodeTextColor).updateFn(updaterFunction);
-    params->addParam<ci::Color>("Edge Text", &Options::instance().currentColorScheme.edgeTextColor).updateFn(updaterFunction);
-    params->addParam<ci::Color>("Highlighted Edge Text", &Options::instance().currentColorScheme.highlightedEdgeTextColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Node Text", &editedColorScheme.nodeTextColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("highlightednodeText", &editedColorScheme.highlightednodeTextColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Edge Text", &editedColorScheme.edgeTextColor).updateFn(updaterFunction);
+    params->addParam<ci::Color>("Highlighted Edge Text", &editedColorScheme.highlightedEdgeTextColor).updateFn(updaterFunction);
 
     params->addButton("New", std::bind(&GraphStudioApp::addNewColorScheme, this));
     params->addSeparator();
@@ -367,7 +371,7 @@ void GraphStudioApp::createThumbnail(const fs::path &folder)
     auto origWindowSize = getWindowSize();
     setWindowSize(800, 450);
 
-    //ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);
+    //ci::gl::clear(editedColorScheme.backgroundColor);
     auto &graphDrawer = gh.getAnimationDrawer();
     bool origAnimationStateNumberVisible = graphDrawer.getShowAnimationStateNumber();
     bool origAnimationStateDescriptionVisible = graphDrawer.getShowAnimationStateDescription();
@@ -444,6 +448,7 @@ void GraphStudioApp::loadGraph()
     gh.loadGraphPositions(path.replace_extension("pos").string());
 
     gh.algorithmChanged();
+	colorSchemeChanged();
     if (Options::instance().autoFitToScreen)
     {
         gh.fitToWindow();
@@ -573,7 +578,7 @@ void GraphStudioApp::draw()
     {
         std::stringstream ss;
         ss << "anim" << std::setw(4) << std::setfill('0') << gh.getAnimationDrawer().getAnimationStateNumber() + 1 << ".png";
-        ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);
+        ci::gl::clear(editedColorScheme.backgroundColor);
 
         gh.draw();
 

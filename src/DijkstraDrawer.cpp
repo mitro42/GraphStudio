@@ -13,15 +13,15 @@ void DijkstraDrawer::prepareNewState()
 void DijkstraDrawer::createLegend()
 {
     legend.clear();
-    auto &cs = Options::instance().currentColorScheme;
-    legend.add(LegendType::arrow, cs.edgeColor, "Not reached");
-    legend.add(LegendType::highlightedArrow, cs.highlightedEdgeColor1, "Currently inspected");
-    legend.add(LegendType::highlightedArrow, cs.highlightedEdgeColor2, "Minimal paths");
-    legend.add(LegendType::arrow, cs.darkEdgeColor, "Processed and ignored");
-    legend.add(LegendType::node, cs.nodeColor, "Not reached");
-    legend.add(LegendType::node, cs.highlightedNodeColor1, "Currently inspected");
-    legend.add(LegendType::node, cs.highlightedNodeColor2, "Reached but not processed");
-    legend.add(LegendType::node, cs.highlightedNodeColor3, "Finished");
+	legend.setBackgroundColor(getColorScheme().legendBackgroundColor);
+    legend.add(LegendType::arrow, getColorScheme().edgeColor, "Not reached");
+    legend.add(LegendType::highlightedArrow, getColorScheme().highlightedEdgeColor1, "Currently inspected");
+    legend.add(LegendType::highlightedArrow, getColorScheme().highlightedEdgeColor2, "Minimal paths");
+    legend.add(LegendType::arrow, getColorScheme().darkEdgeColor, "Processed and ignored");
+    legend.add(LegendType::node, getColorScheme().nodeColor, "Not reached");
+    legend.add(LegendType::node, getColorScheme().highlightedNodeColor1, "Currently inspected");
+    legend.add(LegendType::node, getColorScheme().highlightedNodeColor2, "Reached but not processed");
+    legend.add(LegendType::node, getColorScheme().highlightedNodeColor3, "Finished");
 }
 
 void DijkstraDrawer::prepareAnimation()
@@ -48,7 +48,7 @@ void DijkstraDrawer::drawAlgorithmState()
     }
 
     auto state = states[animationState];
-    const auto &cs = Options::instance().currentColorScheme;
+	const auto &cs = getColorScheme();
     // Edges -----
     // preparing edge parameters before drawing
     auto edgeParams = createDefaultEdgeParams();

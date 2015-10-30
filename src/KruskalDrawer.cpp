@@ -32,7 +32,7 @@ void KruskalDrawer::drawNextEdges() const
     int line = 0;
     if (state.description.find("Check edge") == 0 || state.description.find("Joint two") == 0)
     {
-        ci::gl::color(Options::instance().currentColorScheme.highlightedEdgeColor1);
+        ci::gl::color(getColorScheme().highlightedEdgeColor1);
         edgeTextureFont->drawString(edgeToString(*state.inspectedEdge), ci::vec2(baseX, baseY + lineHeight));
         line++;
         nextEdgeListLength--;
@@ -41,10 +41,10 @@ void KruskalDrawer::drawNextEdges() const
     for (int i = 0; i < nextEdgeListLength && it != state.notProcessed.end(); ++i, ++it, ++line)
     {
         auto &edge = **it;
-        ci::gl::color(Options::instance().currentColorScheme.edgeColor);
+        ci::gl::color(getColorScheme().edgeColor);
         if (state.inspectedEdge == *it)
         {
-            ci::gl::color(Options::instance().currentColorScheme.highlightedEdgeColor1);
+            ci::gl::color(getColorScheme().highlightedEdgeColor1);
         }
 
         edgeTextureFont->drawString(edgeToString(edge), ci::vec2(baseX, baseY + (line + 1) * lineHeight));
@@ -76,7 +76,7 @@ void KruskalDrawer::drawAlgorithmState()
     auto state = states[animationState];
     auto edgeParams = createDefaultEdgeParams();
 
-    const ColorScheme &cs = Options::instance().currentColorScheme;
+    const ColorScheme &cs = getColorScheme();
     const float highlightedWidth = Options::instance().highlightedEdgeWidth;
     for (const auto& e : state.mst)
     {
@@ -111,7 +111,8 @@ void KruskalDrawer::drawAlgorithmState()
 void KruskalDrawer::createLegend()
 {
     legend.clear();
-    auto &cs = Options::instance().currentColorScheme;
+    auto &cs = getColorScheme();
+	legend.setBackgroundColor(cs.legendBackgroundColor);
     legend.add(LegendType::multiColorEdge, cs.edgeColor, "MST");
     legend.add(LegendType::highlightedEdge, cs.edgeColor, "Not processed");
     legend.add(LegendType::edge, cs.darkEdgeColor, "Not in MST");
@@ -152,7 +153,7 @@ void KruskalDrawer::drawAlgorithmResult()
     auto edges = mstKruskal(*g);
     for (const auto &e : edges)
     {
-        drawEdge(e->from, e->to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
+        drawEdge(e->from, e->to, getColorScheme().highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
     }
     drawNodes();
     drawLabels();

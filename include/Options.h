@@ -67,8 +67,6 @@ struct Options
 
     int algorithm = static_cast<int>(Algorithm::kruskal);
     int startNode = 1;
-    ColorScheme currentColorScheme;
-    int currentColorSchemeIdx;
     bool autoFitToScreen = true;
 
     float legendEdgeWidth = edgeWidth;

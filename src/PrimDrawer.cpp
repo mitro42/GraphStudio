@@ -26,7 +26,7 @@ void PrimDrawer::drawAlgorithmState()
 
     auto &state = states[animationState];
     const float highlightedWidth = Options::instance().highlightedEdgeWidth;
-    const ColorScheme &cs = Options::instance().currentColorScheme;
+    const ColorScheme &cs = getColorScheme();
 
     auto edgeParams = createDefaultEdgeParams();
 
@@ -54,7 +54,7 @@ void PrimDrawer::drawAlgorithmState()
 
     for (int nodeIdx = 0; nodeIdx < g->getNodeCount(); ++nodeIdx)
     {
-        nodeHandlers[nodeIdx]->draw(state.visited[nodeIdx]);
+        nodeHandlers[nodeIdx]->draw(cs, state.visited[nodeIdx]);
     }
    
     drawLabels(edgeParams);
@@ -66,7 +66,8 @@ void PrimDrawer::createLegend()
 {
     Options::instance().infoPanelWidth = 300;
     legend.clear();
-    auto &cs = Options::instance().currentColorScheme;
+    auto &cs = getColorScheme();
+	legend.setBackgroundColor(cs.legendBackgroundColor);
     legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor2, "MST");
     legend.add(LegendType::highlightedEdge, cs.darkEdgeColor, "Not in MST");
     legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor1, "Just found/checked");
@@ -96,7 +97,7 @@ void PrimDrawer::drawNextEdges()
     int line = 0;
     if (state.description.find("Check edge") == 0)
     {
-        ci::gl::color(Options::instance().currentColorScheme.highlightedEdgeColor1);
+        ci::gl::color(getColorScheme().highlightedEdgeColor1);
         edgeTextureFont->drawString(edgeToString(*state.inspectedEdges[0]), ci::vec2(baseX, baseY + lineHeight));
         line++;
         nextEdgeListLength--;
@@ -105,10 +106,10 @@ void PrimDrawer::drawNextEdges()
     for (int i = 0; i < nextEdgeListLength && it != state.edges.end(); ++i, ++it, ++line)
     {
         auto &edge = **it;
-        ci::gl::color(Options::instance().currentColorScheme.edgeColor);
+        ci::gl::color(getColorScheme().edgeColor);
         if (std::find(begin(state.inspectedEdges), end(state.inspectedEdges), *it) != state.inspectedEdges.end())
         {
-            ci::gl::color(Options::instance().currentColorScheme.highlightedEdgeColor1);
+            ci::gl::color(getColorScheme().highlightedEdgeColor1);
         }
         
         edgeTextureFont->drawString(edgeToString(edge), ci::vec2(baseX, baseY + (line + 1) * lineHeight));
@@ -133,7 +134,7 @@ void PrimDrawer::drawAlgorithmResult()
     auto edges = mstPrim(*g, Options::instance().startNode - 1);
     for (const auto &e : edges)
     {
-        drawEdge(e.from, e.to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
+        drawEdge(e.from, e.to, getColorScheme().highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
     }
     drawNodes();
     drawLabels();

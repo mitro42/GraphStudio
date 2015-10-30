@@ -12,6 +12,14 @@ void GraphAnimationDrawer::prepareAnimation()
     createLegend();
 }
 
+void GraphAnimationDrawer::setColorScheme(const ColorScheme & cs)
+{
+	GraphDrawer::setColorScheme(cs);
+	setChanged();
+	createLegend();
+	legendTexture = legend.getTexture(true);
+}
+
 void GraphAnimationDrawer::drawAnimationStateNumber()
 {
     if (!animationStateNumberVisible)

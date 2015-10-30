@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "Graph.h"
 #include "GraphNodeHandler.h"
-
+#include "Options.h"
 #include <memory>
 
 #include <cinder/gl/TextureFont.h>
@@ -18,7 +18,8 @@ public:
     void draw();
     void resize(ci::Area newWindowSize);
     void setChanged() { changed = true; }
-    virtual void colorSchemeChanged() { setChanged(); }
+	inline void setColorScheme(const ColorScheme &cs) { colorScheme = cs; setChanged(); }
+	inline const ColorScheme &getColorScheme() const { return colorScheme; }
 protected:
     struct EdgeDrawParams
     {
@@ -53,6 +54,7 @@ protected:
 
     void clearChanged() { changed = false; }
     bool movingNodes() const;
+	
 
     ci::app::WindowRef window;
     const std::shared_ptr<Graph> g;
@@ -64,7 +66,7 @@ protected:
 private:
     bool changed = true;
     void initFbo();
-    
+	ColorScheme colorScheme;
     ci::gl::FboRef edgeFbo;
     ci::gl::FboRef labelFbo;
 

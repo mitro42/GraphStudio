@@ -29,7 +29,7 @@ void GraphDrawer::initFbo()
 void GraphDrawer::startDrawing()
 {
     ci::gl::enableAlphaBlending();
-    ci::gl::clear(Options::instance().currentColorScheme.backgroundColor);
+    ci::gl::clear(colorScheme.backgroundColor);
 
     nodeFont = ci::Font("InputMono Black", Options::instance().nodeSize * 1.6f);
     edgeFont = nodeFont;
@@ -75,7 +75,7 @@ void GraphDrawer::drawEdges()
             auto &node = g->getNode(nodeIdx);
             for (auto &edge : node)
             {
-                drawEdge(edge.from, edge.to, Options::instance().currentColorScheme.edgeColor, Options::instance().edgeWidth);
+                drawEdge(edge.from, edge.to, colorScheme.edgeColor, Options::instance().edgeWidth);
             }
         }
         ci::gl::popMatrices();
@@ -166,7 +166,7 @@ void GraphDrawer::drawNodes()
 {
     for (auto &nh : nodeHandlers)
     {
-        nh->draw();
+        nh->draw(colorScheme);
     }
 }
 
@@ -178,7 +178,7 @@ GraphDrawer::EdgeDrawParamsMap GraphDrawer::createDefaultEdgeParams() const
     {        
         for (const auto &edge : node)
         {
-            ret[&edge] = EdgeDrawParams(Options::instance().currentColorScheme.edgeColor, Options::instance().edgeWidth);
+            ret[&edge] = EdgeDrawParams(colorScheme.edgeColor, Options::instance().edgeWidth);
         }
     }
     return ret;
@@ -196,16 +196,15 @@ void GraphDrawer::drawLabels(EdgeDrawParamsMap &params)
         
         ci::gl::pushMatrices();
         ci::gl::setMatricesWindow(labelFbo->getSize());
-        ci::gl::clear(ci::ColorA(Options::instance().currentColorScheme.backgroundColor, 0.0f));
+        ci::gl::clear(ci::ColorA(colorScheme.backgroundColor, 0.0f));
 
-        const auto &cs = Options::instance().currentColorScheme;
 
         // Nodes
         if (Options::instance().showNodeWeights)
         {
             for (int i = 0; i < g->getNodeCount(); ++i)
             {
-                ci::gl::color(cs.nodeTextColor);
+                ci::gl::color(colorScheme.nodeTextColor);
                 auto label = std::to_string(i + 1);
                 auto labelOffset = nodeTextureFont->measureString(label) / 2.0f;
                 labelOffset.y *= 0.68f;
@@ -249,7 +248,7 @@ void GraphDrawer::drawLabels(EdgeDrawParamsMap &params)
                         ci::gl::rotate(glm::half_pi<float>());
                     }
                     ci::vec2 offset = -ci::vec2(0.0f, 5.0f + Options::instance().highlightedEdgeWidth); // place edge weight over the edge
-                    ci::ColorA c = cs.edgeTextColor;
+                    ci::ColorA c = colorScheme.edgeTextColor;
                     auto it = params.find(&edge);
                     if (it != params.end())
                         c = it->second.color;

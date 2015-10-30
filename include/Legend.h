@@ -40,7 +40,7 @@ public:
         contents.emplace_back(type, color, label);
         changed = true;
     }
-
+	void setBackgroundColor(const ci::Color &color) { backgroundColor = color; }
     ci::gl::TextureRef getTexture(bool forceRerender = false);
 
 private:
@@ -52,6 +52,7 @@ private:
     int height;    
     ci::gl::Fbo::Format format;
     ci::gl::TextureFontRef textureFont;
+	ci::Color backgroundColor;
 
     std::vector<LegendItem> contents;
     ci::gl::FboRef  fbo;

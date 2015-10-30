@@ -1,6 +1,6 @@
 #pragma once
 #include <cinder/App/MouseEvent.h>
-
+#include "Options.h"
 class GraphHandler;
 
 class GraphNodeHandler
@@ -18,7 +18,7 @@ public:
     void mouseDown(ci::app::MouseEvent &event);
     void mouseUp(ci::app::MouseEvent &event);
     void draw(const ci::Color &color);
-    void draw(bool highlighted = false);
+    void draw(const ColorScheme &cs, bool highlighted = false);
 
     inline void update() 
     { 

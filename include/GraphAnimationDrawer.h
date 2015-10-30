@@ -34,12 +34,7 @@ public:
     void showLegend(bool show = true) { legendVisible = show; }
     bool getShowLegend() const { return legendVisible; }
     int getAnimationStateNumber() const { return animationState; }
-    virtual void colorSchemeChanged()
-    {
-        GraphDrawer::colorSchemeChanged();
-        createLegend();
-        legendTexture = legend.getTexture(true);
-    }
+	virtual void setColorScheme(const ColorScheme &cs);
 
 protected:
     virtual void drawAlgorithmState() = 0;

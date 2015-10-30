@@ -50,7 +50,7 @@ void Legend::render(bool forceRerender)
     
     ci::gl::pushMatrices();
     ci::gl::setMatricesWindow(fbo->getSize());
-    ci::gl::clear(Options::instance().currentColorScheme.legendBackgroundColor);
+    ci::gl::clear(backgroundColor);
     
     float posY = rowHeight / 2;
     for (const auto &element: contents)
