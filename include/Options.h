@@ -56,7 +56,7 @@ struct Options
     int speed = 60;
     float edgeWidth = 1.5f;
     float highlightedEdgeWidth = 3.0f;
-    float force = 10.0f;
+    
     bool animationPlaying = false;
     bool animationPaused = false;
     bool randomMovement = false;

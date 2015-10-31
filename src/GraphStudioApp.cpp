@@ -125,7 +125,6 @@ void GraphStudioApp::saveSettings()
     configXml.push_back(ci::XmlTree("arrowAngle", std::to_string(Options::instance().arrowAngle)));
     configXml.push_back(ci::XmlTree("showEdgeWeights", std::to_string(Options::instance().showEdgeWeights)));
     configXml.push_back(ci::XmlTree("showNodeWeights", std::to_string(Options::instance().showNodeWeights)));
-    configXml.push_back(ci::XmlTree("force", std::to_string(Options::instance().force)));
     configXml.push_back(ci::XmlTree("speed", std::to_string(Options::instance().speed)));
     configXml.push_back(ci::XmlTree("edgeWeightScale", std::to_string(Options::instance().edgeWeightScale)));
     configXml.push_back(ci::XmlTree("autoFitToScreen", std::to_string(Options::instance().autoFitToScreen)));
@@ -194,7 +193,6 @@ void GraphStudioApp::loadSettings()
 
         Options::instance().infoPanelWidth = settings.getChild("infoPanelWidth").getValue<float>();
 
-        Options::instance().force = settings.getChild("force").getValue<float>();
         Options::instance().speed = settings.getChild("speed").getValue<int>();
         Options::instance().edgeWeightScale = settings.getChild("edgeWeightScale").getValue<int>();
 
@@ -257,7 +255,6 @@ void GraphStudioApp::setup()
     params->addParam("Algorithm", AlgorithmNames, &Options::instance().algorithm).updateFn(std::bind(&GraphStudioApp::algorithmChanged, this));
     params->addParam<int>("Starting Node", &Options::instance().startNode).min(1).step(1).updateFn(std::bind(&GraphStudioApp::algorithmStartNodeChanged, this));
     params->addSeparator();
-    params->addParam<float>("Force", &Options::instance().force).updateFn(updaterFunction).min(1.0f).max(300.0f).step(1.0f);
     params->addParam<int>("Speed", &Options::instance().speed).updateFn(updaterFunction).min(1).max(300).step(1);
     params->addParam<int>("Edge Weight Scale", &Options::instance().edgeWeightScale).updateFn(updaterFunction).min(1.0f).max(1000.0f).step(1.0f);
     params->addSeparator();

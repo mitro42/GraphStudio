@@ -27,7 +27,6 @@ void GraphHandler::setup(ci::app::WindowRef _window)
 {
     window = _window;
     cbMouseDown = window->getSignalMouseDown().connect(0, std::bind(&GraphHandler::mouseDown, this, std::placeholders::_1));
-    cbMouseDrag = window->getSignalMouseDrag().connect(0, std::bind(&GraphHandler::mouseDrag, this, std::placeholders::_1));
     cbMouseUp = window->getSignalMouseUp().connect(0, std::bind(&GraphHandler::mouseUp, this, std::placeholders::_1));
 
     windowSize = window->getBounds();    
@@ -372,33 +371,6 @@ void GraphHandler::pushNodes(ci::vec2 position, float force)
     setChanged();
 }
 
-
-void GraphHandler::pushNodes(ci::vec2 position)
-{
-    pushNodes(position, Options::instance().force);
-}
-
-
-void GraphHandler::pullNodes(ci::vec2 position)
-{
-    pushNodes(position, -Options::instance().force);
-}
-
-void GraphHandler::mouseDrag(ci::app::MouseEvent &event)
-{
-    if (forceType != Force::none)
-    {
-        std::unique_lock<std::recursive_mutex> guard(updateMutex);
-        if (forceType == Force::push)
-        {
-            pushNodes(event.getPos());
-        }
-        else if (forceType == Force::pull)
-        {
-            pullNodes(event.getPos());
-        }
-    }
-}
 
 void GraphHandler::mouseUp(ci::app::MouseEvent &event)
 {

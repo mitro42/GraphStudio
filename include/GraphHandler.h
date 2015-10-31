@@ -32,8 +32,6 @@ public:
     void reorderNodesSquare();
     void reorderNodesGrid(int columns, int rows);
     void pushNodes(ci::vec2 position, float force);
-    void pushNodes(ci::vec2 position);
-    void pullNodes(ci::vec2 position);
 
     void setup(ci::app::WindowRef window);
     void update();
@@ -50,7 +48,6 @@ public:
     void animationGoToLast();
 
     void mouseDown(ci::app::MouseEvent &event);
-    void mouseDrag(ci::app::MouseEvent &event);
     void mouseUp(ci::app::MouseEvent &event);
     void resize(ci::Area newWindowSize);
 
