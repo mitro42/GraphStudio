@@ -48,14 +48,18 @@ private:
     static ci::XmlTree colorToXml(const char *name, const ci::Color &c);
 };
 
+struct GraphDrawingSettings
+{
+	float nodeSize = 10.0f;
+	float arrowLength = 15.0f;
+	float arrowAngle = 16.0f;
+	float edgeWidth = 1.5f;
+	float highlightedEdgeWidth = 3.0f;
+};
+
 struct Options
 {
-    float nodeSize = 10.0f;
-    float arrowLength = 15.0f;
-    float arrowAngle = 16.0f;
     int speed = 60;
-    float edgeWidth = 1.5f;
-    float highlightedEdgeWidth = 3.0f;
     
     bool animationPlaying = false;
     bool animationPaused = false;
@@ -68,12 +72,6 @@ struct Options
     int algorithm = static_cast<int>(Algorithm::kruskal);
     int startNode = 1;
     bool autoFitToScreen = true;
-
-    float legendEdgeWidth = edgeWidth;
-    float legendHighlightedEdgeWidth = highlightedEdgeWidth;
-    float legendArrowLength = arrowLength;
-    float legendArrowAngle = arrowAngle;
-    float legendNodeSize = nodeSize;
 
     float infoPanelWidth = 350.0f;
 

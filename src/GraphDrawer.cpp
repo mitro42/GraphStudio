@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <numeric>
 
+GraphDrawingSettings GraphDrawer::settings;
+
 GraphDrawer::GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window) :
     g(graph),
     nodeHandlers(nodeHandlers),
@@ -31,7 +33,7 @@ void GraphDrawer::startDrawing()
     ci::gl::enableAlphaBlending();
     ci::gl::clear(colorScheme.backgroundColor);
 
-    nodeFont = ci::Font("InputMono Black", Options::instance().nodeSize * 1.6f);
+    nodeFont = ci::Font("InputMono Black", settings.nodeSize * 1.6f);
     edgeFont = nodeFont;
     nodeTextureFont = ci::gl::TextureFont::create(nodeFont);
     edgeTextureFont = nodeTextureFont;
@@ -75,7 +77,7 @@ void GraphDrawer::drawEdges()
             auto &node = g->getNode(nodeIdx);
             for (auto &edge : node)
             {
-                drawEdge(edge.from, edge.to, colorScheme.edgeColor, Options::instance().edgeWidth);
+                drawEdge(edge.from, edge.to, colorScheme.edgeColor, settings.edgeWidth);
             }
         }
         ci::gl::popMatrices();
@@ -107,7 +109,7 @@ void GraphDrawer::drawArrow(ci::vec2 from, ci::vec2 to, ci::Color color, float w
 {
     ci::gl::color(color);
     ci::gl::lineWidth(width);
-    drawArrow(from, to, Options::instance().arrowLength, Options::instance().arrowAngle);
+    drawArrow(from, to, settings.arrowLength, settings.arrowAngle);
 }
 
 
@@ -139,8 +141,8 @@ void GraphDrawer::drawEdge(int from, int to, ci::Color color, float width)
     if (g->isDirected())
     {
         ci::vec2 dir = toVec - fromVec;        
-        drawArrow(fromVec, toVec - Options::instance().nodeSize * glm::normalize(dir),
-            Options::instance().arrowLength, Options::instance().arrowAngle);
+        drawArrow(fromVec, toVec - settings.nodeSize * glm::normalize(dir),
+            settings.arrowLength, settings.arrowAngle);
     }
     else
     {
@@ -178,7 +180,7 @@ GraphDrawer::EdgeDrawParamsMap GraphDrawer::createDefaultEdgeParams() const
     {        
         for (const auto &edge : node)
         {
-            ret[&edge] = EdgeDrawParams(colorScheme.edgeColor, Options::instance().edgeWidth);
+            ret[&edge] = EdgeDrawParams(colorScheme.edgeColor, settings.edgeWidth);
         }
     }
     return ret;
@@ -247,7 +249,7 @@ void GraphDrawer::drawLabels(EdgeDrawParamsMap &params)
                     {
                         ci::gl::rotate(glm::half_pi<float>());
                     }
-                    ci::vec2 offset = -ci::vec2(0.0f, 5.0f + Options::instance().highlightedEdgeWidth); // place edge weight over the edge
+                    ci::vec2 offset = -ci::vec2(0.0f, 5.0f + settings.highlightedEdgeWidth); // place edge weight over the edge
                     ci::ColorA c = colorScheme.edgeTextColor;
                     auto it = params.find(&edge);
                     if (it != params.end())

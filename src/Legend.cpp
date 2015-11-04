@@ -12,8 +12,7 @@ Legend::Legend() : width(0), height(0)
     ci::Font font = ci::Font("InputMono Black", 20.0f);
     ci::gl::TextureFont::Format fontFormat;
     fontFormat.premultiply(true);    
-    textureFont = ci::gl::TextureFont::create(font, fontFormat);
-    
+    textureFont = ci::gl::TextureFont::create(font, fontFormat);    
 };
 
 ci::gl::TextureRef Legend::getTexture(bool forceRerender)
@@ -55,33 +54,33 @@ void Legend::render(bool forceRerender)
     float posY = rowHeight / 2;
     for (const auto &element: contents)
     {
-        float width = Options::instance().legendEdgeWidth;
+        float width = settings.edgeWidth;
         switch (element.type)        
         {
         case LegendType::highlightedArrow:
-            width = Options::instance().legendHighlightedEdgeWidth;
+            width = settings.highlightedEdgeWidth;
             // fall trough
         case LegendType::arrow:
-            GraphDrawer::drawArrow(ci::vec2(5.0f, posY), ci::vec2(70.0f, posY), element.color, width, Options::instance().legendArrowLength, Options::instance().legendArrowAngle);
+            GraphDrawer::drawArrow(ci::vec2(5.0f, posY), ci::vec2(70.0f, posY), element.color, width, settings.arrowLength, settings.arrowAngle);
             break;
         case LegendType::highlightedEdge:
-            width = Options::instance().legendHighlightedEdgeWidth;
+            width = settings.highlightedEdgeWidth;
             // fall trough
         case LegendType::edge:
             GraphDrawer::drawEdge(ci::vec2(5.0f, posY), ci::vec2(70.0f, posY), element.color, width);
             break;
         case LegendType::node: 
             ci::gl::color(element.color);
-            ci::gl::drawSolidCircle(ci::vec2(40.0f, posY), Options::instance().legendNodeSize);
+            ci::gl::drawSolidCircle(ci::vec2(40.0f, posY), settings.nodeSize);
             break;
         case LegendType::nodes:
             ci::gl::color(element.color);
-            ci::gl::drawSolidCircle(ci::vec2(25.0f, posY), Options::instance().legendNodeSize);
-            ci::gl::drawSolidCircle(ci::vec2(55.0f, posY), Options::instance().legendNodeSize);
+            ci::gl::drawSolidCircle(ci::vec2(25.0f, posY), settings.nodeSize);
+            ci::gl::drawSolidCircle(ci::vec2(55.0f, posY), settings.nodeSize);
             break;
         case LegendType::multiColorEdge:
         {
-            width = Options::instance().legendHighlightedEdgeWidth;
+            width = settings.highlightedEdgeWidth;
             std::vector<ci::Color> colors = { { 0.36f, 0.9f, 0.46f }, { 0.9f, 0.46f, 0.36f },  { 0.56f, 0.9f, 0.36f } };
             const float segmentLength = 65.0f / colors.size();
             for (int i = 0; i < colors.size(); ++i)

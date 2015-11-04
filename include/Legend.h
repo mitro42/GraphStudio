@@ -30,7 +30,7 @@ struct LegendItem
 class Legend
 {
 public:
-    Legend();
+	Legend();
     ~Legend() = default;
 
     void clear() { contents.clear(); }
@@ -41,6 +41,7 @@ public:
         changed = true;
     }
 	void setBackgroundColor(const ci::Color &color) { backgroundColor = color; }
+	void setDrawingSettings(const GraphDrawingSettings &s) { settings = s; }
     ci::gl::TextureRef getTexture(bool forceRerender = false);
 
 private:
@@ -56,4 +57,5 @@ private:
 
     std::vector<LegendItem> contents;
     ci::gl::FboRef  fbo;
+	GraphDrawingSettings settings;
 };

@@ -35,7 +35,11 @@ public:
     bool getShowLegend() const { return legendVisible; }
     int getAnimationStateNumber() const { return animationState; }
 	virtual void setColorScheme(const ColorScheme &cs);
-
+	virtual void setDrawingSettings(const GraphDrawingSettings &settings)
+	{
+		GraphDrawer::setDrawingSettings(settings); 
+		legend.setDrawingSettings(settings);
+	}
 protected:
     virtual void drawAlgorithmState() = 0;
     virtual void drawAlgorithmResult() = 0;

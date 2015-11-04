@@ -16,7 +16,6 @@ GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, GraphHandler &grap
     speed(0.0f),
     selection(Selection::none)
 {
-    float half = Options::instance().nodeSize / 2;
     cbMouseDown = window->getSignalMouseDown().connect(2, std::bind(&GraphNodeHandler::mouseDown, this, std::placeholders::_1));
     cbMouseUp = window->getSignalMouseUp().connect(2, std::bind(&GraphNodeHandler::mouseUp, this, std::placeholders::_1));
     cbMouseDrag = window->getSignalMouseDrag().connect(2, std::bind(&GraphNodeHandler::mouseDrag, this, std::placeholders::_1));
@@ -37,7 +36,7 @@ void GraphNodeHandler::mouseDrag(ci::app::MouseEvent &event)
 
 void GraphNodeHandler::mouseDown(ci::app::MouseEvent &event)
 {
-    if (glm::length(position - ci::vec2(event.getPos())) < Options::instance().nodeSize)
+    if (glm::length(position - ci::vec2(event.getPos())) < size)
     {
         if (event.isAltDown() && !Options::instance().animationPlaying)
         {
@@ -81,7 +80,7 @@ void GraphNodeHandler::mouseUp(ci::app::MouseEvent &event)
 void GraphNodeHandler::draw(const ci::Color &color)
 {
     ci::gl::color(color);
-    ci::gl::drawSolidCircle(position, Options::instance().nodeSize);
+    ci::gl::drawSolidCircle(position, size);
 }
 
 

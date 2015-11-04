@@ -41,7 +41,8 @@ private:
     bool recording = false;
 	ColorScheme editedColorScheme;
 	int editedColorSchemeIdx = 0;
-
+	GraphDrawingSettings graphSettings;
+	GraphDrawingSettings legendSettings;
 
     fs::path graphFileName;
     fs::path defaultPath;
@@ -118,22 +119,22 @@ void GraphStudioApp::saveSettings()
     configXml.push_back(ci::XmlTree("defaultSavePath", defaultPath.string()));
     configXml.push_back(ci::XmlTree("exportPath", exportPath.string()));
     configXml.push_back(ci::XmlTree("ffmpegPath", ffmpegPath.string()));
-    configXml.push_back(ci::XmlTree("nodeSize", std::to_string(Options::instance().nodeSize)));
-    configXml.push_back(ci::XmlTree("edgeWidth", std::to_string(Options::instance().edgeWidth)));
-    configXml.push_back(ci::XmlTree("highlightedEdgeWidth", std::to_string(Options::instance().highlightedEdgeWidth)));
-    configXml.push_back(ci::XmlTree("arrowLength", std::to_string(Options::instance().arrowLength)));
-    configXml.push_back(ci::XmlTree("arrowAngle", std::to_string(Options::instance().arrowAngle)));
+    configXml.push_back(ci::XmlTree("nodeSize", std::to_string(graphSettings.nodeSize)));
+    configXml.push_back(ci::XmlTree("edgeWidth", std::to_string(graphSettings.edgeWidth)));
+    configXml.push_back(ci::XmlTree("highlightedEdgeWidth", std::to_string(graphSettings.highlightedEdgeWidth)));
+    configXml.push_back(ci::XmlTree("arrowLength", std::to_string(graphSettings.arrowLength)));
+    configXml.push_back(ci::XmlTree("arrowAngle", std::to_string(graphSettings.arrowAngle)));
     configXml.push_back(ci::XmlTree("showEdgeWeights", std::to_string(Options::instance().showEdgeWeights)));
     configXml.push_back(ci::XmlTree("showNodeWeights", std::to_string(Options::instance().showNodeWeights)));
     configXml.push_back(ci::XmlTree("speed", std::to_string(Options::instance().speed)));
     configXml.push_back(ci::XmlTree("edgeWeightScale", std::to_string(Options::instance().edgeWeightScale)));
     configXml.push_back(ci::XmlTree("autoFitToScreen", std::to_string(Options::instance().autoFitToScreen)));
     
-    configXml.push_back(ci::XmlTree("legendEdgeWidth", std::to_string(Options::instance().legendEdgeWidth)));
-    configXml.push_back(ci::XmlTree("legendHighlightedEdgeWidth", std::to_string(Options::instance().legendHighlightedEdgeWidth)));
-    configXml.push_back(ci::XmlTree("legendArrowLength", std::to_string(Options::instance().legendArrowLength)));
-    configXml.push_back(ci::XmlTree("legendArrowAngle", std::to_string(Options::instance().legendArrowAngle)));
-    configXml.push_back(ci::XmlTree("legendNodeSize", std::to_string(Options::instance().legendNodeSize)));
+    configXml.push_back(ci::XmlTree("legendEdgeWidth", std::to_string(legendSettings.edgeWidth)));
+    configXml.push_back(ci::XmlTree("legendHighlightedEdgeWidth", std::to_string(legendSettings.highlightedEdgeWidth)));
+    configXml.push_back(ci::XmlTree("legendArrowLength", std::to_string(legendSettings.arrowLength)));
+    configXml.push_back(ci::XmlTree("legendArrowAngle", std::to_string(legendSettings.arrowAngle)));
+    configXml.push_back(ci::XmlTree("legendNodeSize", std::to_string(legendSettings.nodeSize)));
 
     configXml.push_back(ci::XmlTree("infoPanelWidth", std::to_string(Options::instance().infoPanelWidth)));
 
@@ -176,20 +177,20 @@ void GraphStudioApp::loadSettings()
         defaultPath = fs::path(settings.getChild("defaultSavePath").getValue()).native();
         exportPath = fs::path(settings.getChild("exportPath").getValue()).native();
         ffmpegPath = fs::path(settings.getChild("ffmpegPath").getValue()).native();
-        Options::instance().nodeSize = settings.getChild("nodeSize").getValue<float>();
-        Options::instance().edgeWidth = settings.getChild("edgeWidth").getValue<float>();
-        Options::instance().highlightedEdgeWidth = settings.getChild("highlightedEdgeWidth").getValue<float>();
-        Options::instance().arrowLength = settings.getChild("arrowLength").getValue<float>();
-        Options::instance().arrowAngle = settings.getChild("arrowAngle").getValue<float>();
+        graphSettings.nodeSize = settings.getChild("nodeSize").getValue<float>();
+        graphSettings.edgeWidth = settings.getChild("edgeWidth").getValue<float>();
+        graphSettings.highlightedEdgeWidth = settings.getChild("highlightedEdgeWidth").getValue<float>();
+        graphSettings.arrowLength = settings.getChild("arrowLength").getValue<float>();
+        graphSettings.arrowAngle = settings.getChild("arrowAngle").getValue<float>();
         Options::instance().showEdgeWeights = settings.getChild("showEdgeWeights").getValue<bool>();
         Options::instance().showNodeWeights = settings.getChild("showNodeWeights").getValue<bool>();
         Options::instance().autoFitToScreen = settings.getChild("autoFitToScreen").getValue<bool>();
 
-        Options::instance().legendEdgeWidth = settings.getChild("legendEdgeWidth").getValue<float>();
-        Options::instance().legendHighlightedEdgeWidth = settings.getChild("legendHighlightedEdgeWidth").getValue<float>();
-        Options::instance().legendArrowLength = settings.getChild("legendArrowLength").getValue<float>();
-        Options::instance().legendArrowAngle = settings.getChild("legendArrowAngle").getValue<float>();
-        Options::instance().legendNodeSize = settings.getChild("legendNodeSize").getValue<float>();
+        legendSettings.edgeWidth = settings.getChild("legendEdgeWidth").getValue<float>();
+        legendSettings.highlightedEdgeWidth = settings.getChild("legendHighlightedEdgeWidth").getValue<float>();
+        legendSettings.arrowLength = settings.getChild("legendArrowLength").getValue<float>();
+        legendSettings.arrowAngle = settings.getChild("legendArrowAngle").getValue<float>();
+        legendSettings.nodeSize = settings.getChild("legendNodeSize").getValue<float>();
 
         Options::instance().infoPanelWidth = settings.getChild("infoPanelWidth").getValue<float>();
 
@@ -217,7 +218,8 @@ void GraphStudioApp::loadSettings()
 void GraphStudioApp::setGraphChanged()
 {
 	gh.getAnimationDrawer().setColorScheme(editedColorScheme);
-    gh.setChanged();    
+	gh.getAnimationDrawer().setDrawingSettings(graphSettings);    
+	GraphNodeHandler::setSize(graphSettings.nodeSize);
 }
 
 void GraphStudioApp::algorithmChanged()
@@ -243,11 +245,11 @@ void GraphStudioApp::setup()
     std::function<void()> updaterFunction = std::bind(&GraphStudioApp::setGraphChanged, this);
 
     params = params::InterfaceGl::create("Graph Studio", ci::ivec2(200, 310));
-    params->addParam<float>("Node Size", &Options::instance().nodeSize).updateFn(updaterFunction).min(1.0f).max(50.0f).step(1.0f);
-    params->addParam<float>("Edge Width", &Options::instance().edgeWidth).updateFn(updaterFunction).min(0.1f).max(10.0f).step(0.1f);
-    params->addParam<float>("Highlighted Edge Width", &Options::instance().highlightedEdgeWidth).updateFn(updaterFunction).min(0.0f).max(10.0f).step(0.1f);
-    params->addParam<float>("Arrow Length", &Options::instance().arrowLength).updateFn(updaterFunction).min(1.0f).max(50.0f).step(1.0f);
-    params->addParam<float>("Arrow Angle", &Options::instance().arrowAngle).updateFn(updaterFunction).min(0.0f).max(90.0f).step(1.0f);
+    params->addParam<float>("Node Size", &graphSettings.nodeSize).updateFn(updaterFunction).min(1.0f).max(50.0f).step(1.0f);
+    params->addParam<float>("Edge Width", &graphSettings.edgeWidth).updateFn(updaterFunction).min(0.1f).max(10.0f).step(0.1f);
+    params->addParam<float>("Highlighted Edge Width", &graphSettings.highlightedEdgeWidth).updateFn(updaterFunction).min(0.0f).max(10.0f).step(0.1f);
+    params->addParam<float>("Arrow Length", &graphSettings.arrowLength).updateFn(updaterFunction).min(1.0f).max(50.0f).step(1.0f);
+    params->addParam<float>("Arrow Angle", &graphSettings.arrowAngle).updateFn(updaterFunction).min(0.0f).max(90.0f).step(1.0f);
     params->addParam<bool>("Show Edge Weights", &Options::instance().showEdgeWeights).updateFn(updaterFunction);
     params->addParam<bool>("Show Node Weights", &Options::instance().showNodeWeights).updateFn(updaterFunction);
 
@@ -304,6 +306,7 @@ void GraphStudioApp::setup()
     gh.setup(getWindow());
     colorSchemeChanged();
     algorithmChanged();
+	setGraphChanged();
 }
 
 GraphStudioApp::~GraphStudioApp()

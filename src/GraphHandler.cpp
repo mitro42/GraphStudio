@@ -12,6 +12,7 @@
 
 #include <cinder/Perlin.h>
 #include <cinder/Rand.h>
+float GraphNodeHandler::size;
 
 GraphHandler::GraphHandler() : forceType(Force::none)
 {

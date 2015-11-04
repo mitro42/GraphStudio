@@ -64,12 +64,12 @@ void DijkstraDrawer::drawAlgorithmState()
     {
         if (p.second == nullptr)
             continue;
-        edgeParams[p.second] = EdgeDrawParams(cs.highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
+        edgeParams[p.second] = EdgeDrawParams(cs.highlightedEdgeColor2, getDrawingSettings().highlightedEdgeWidth);
     }
 
     // and finally the currently inspected edge
     if (state.inspectedEdge != nullptr)
-        edgeParams[state.inspectedEdge] = EdgeDrawParams(cs.highlightedEdgeColor1, Options::instance().highlightedEdgeWidth);
+        edgeParams[state.inspectedEdge] = EdgeDrawParams(cs.highlightedEdgeColor1, getDrawingSettings().highlightedEdgeWidth);
 
     drawEdges(edgeParams);
     

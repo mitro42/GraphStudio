@@ -20,6 +20,8 @@ public:
     void setChanged() { changed = true; }
 	inline void setColorScheme(const ColorScheme &cs) { colorScheme = cs; setChanged(); }
 	inline const ColorScheme &getColorScheme() const { return colorScheme; }
+	virtual void setDrawingSettings(const GraphDrawingSettings &sett) { settings = sett; setChanged(); }
+	inline const GraphDrawingSettings &getDrawingSettings() const { return settings; }
 protected:
     struct EdgeDrawParams
     {
@@ -66,13 +68,14 @@ protected:
 private:
     bool changed = true;
     void initFbo();
+    ci::TextBox getStateTextbox(const std::vector<std::string> &lines);
+
 	ColorScheme colorScheme;
     ci::gl::FboRef edgeFbo;
     ci::gl::FboRef labelFbo;
 
     ci::Font edgeFont;
     ci::Font nodeFont;
-    
-    ci::TextBox getStateTextbox(const std::vector<std::string> &lines);
+	static GraphDrawingSettings settings;
 };
 

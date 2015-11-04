@@ -77,7 +77,7 @@ void KruskalDrawer::drawAlgorithmState()
     auto edgeParams = createDefaultEdgeParams();
 
     const ColorScheme &cs = getColorScheme();
-    const float highlightedWidth = Options::instance().highlightedEdgeWidth;
+    const float highlightedWidth = getDrawingSettings().highlightedEdgeWidth;
     for (const auto& e : state.mst)
     {
         edgeParams[e] = EdgeDrawParams(nodeGroupColors[state.uf.root(e->from)], highlightedWidth);        
@@ -85,12 +85,12 @@ void KruskalDrawer::drawAlgorithmState()
 
     for (const auto e : state.notProcessed)
     {
-        edgeParams[e] = EdgeDrawParams(cs.edgeColor, Options::instance().edgeWidth);
+        edgeParams[e] = EdgeDrawParams(cs.edgeColor, getDrawingSettings().edgeWidth);
     }
 
     for (const auto e : state.notMst)
     {
-        edgeParams[e] = EdgeDrawParams(cs.darkEdgeColor, Options::instance().edgeWidth);
+        edgeParams[e] = EdgeDrawParams(cs.darkEdgeColor, getDrawingSettings().edgeWidth);
     }
 
     if (state.inspectedEdge != nullptr)
@@ -153,7 +153,7 @@ void KruskalDrawer::drawAlgorithmResult()
     auto edges = mstKruskal(*g);
     for (const auto &e : edges)
     {
-        drawEdge(e->from, e->to, getColorScheme().highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
+        drawEdge(e->from, e->to, getColorScheme().highlightedEdgeColor2, getDrawingSettings().highlightedEdgeWidth);
     }
     drawNodes();
     drawLabels();
