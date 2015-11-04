@@ -26,7 +26,7 @@ public:
     void loadGraphPositions(const ci::fs::path& fileName);
     void saveGraphPositions(const ci::fs::path& fileName);
 
-    void algorithmChanged();
+    void algorithmChanged(Algorithm newAlgorithm);
     void algorithmStartNodeChanged();
 
     void reorderNodesSquare();

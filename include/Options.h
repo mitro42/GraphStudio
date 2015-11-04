@@ -66,8 +66,7 @@ struct Options
 
     int weightPrecision = 0;
     int edgeWeightScale = 100;
-
-    int algorithm = static_cast<int>(Algorithm::kruskal);
+    
     int startNode = 1;
     bool autoFitToScreen = true;
 

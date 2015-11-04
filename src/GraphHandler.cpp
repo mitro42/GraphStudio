@@ -177,10 +177,10 @@ void GraphHandler::update()
 }
 
 
-void GraphHandler::algorithmChanged()
+void GraphHandler::algorithmChanged(Algorithm newAlgorithm)
 {
     Options::instance().animationPlaying = false;
-    switch (Algorithm(Options::instance().algorithm))
+    switch (newAlgorithm)
     {
     default:
     case Algorithm::none:

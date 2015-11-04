@@ -41,6 +41,7 @@ private:
 	bool showEdgeWeights = true;
 	bool showNodeWeights = true;
 	bool randomMovement = false;
+	int algorithm = static_cast<int>(Algorithm::kruskal);
 	ColorScheme editedColorScheme;
 	GraphDrawingSettings graphSettings;
 	GraphDrawingSettings legendSettings;
@@ -230,7 +231,7 @@ void GraphStudioApp::setGraphChanged()
 
 void GraphStudioApp::algorithmChanged()
 {
-    gh.algorithmChanged();
+    gh.algorithmChanged(Algorithm(algorithm));
 	colorSchemeChanged();
 }
 
@@ -260,7 +261,7 @@ void GraphStudioApp::setup()
     params->addParam<bool>("Show Node Weights", &showNodeWeights).updateFn(updaterFunction);
 
     params->addSeparator();
-    params->addParam("Algorithm", AlgorithmNames, &Options::instance().algorithm).updateFn(std::bind(&GraphStudioApp::algorithmChanged, this));
+    params->addParam("Algorithm", AlgorithmNames, &algorithm).updateFn(std::bind(&GraphStudioApp::algorithmChanged, this));
     params->addParam<int>("Starting Node", &Options::instance().startNode).min(1).step(1).updateFn(std::bind(&GraphStudioApp::algorithmStartNodeChanged, this));
     params->addSeparator();
     params->addParam<int>("Speed", &Options::instance().speed).updateFn(updaterFunction).min(1).max(300).step(1);
@@ -451,7 +452,7 @@ void GraphStudioApp::loadGraph()
     gh.loadGraph(path.string());
     gh.loadGraphPositions(path.replace_extension("pos").string());
 
-    gh.algorithmChanged();
+    gh.algorithmChanged(Algorithm(algorithm));
 	colorSchemeChanged();
     if (Options::instance().autoFitToScreen)
     {
