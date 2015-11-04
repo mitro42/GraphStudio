@@ -202,7 +202,7 @@ void GraphDrawer::drawLabels(EdgeDrawParamsMap &params)
 
 
         // Nodes
-        if (Options::instance().showNodeWeights)
+        if (showNodeWeights)
         {
             for (int i = 0; i < g->getNodeCount(); ++i)
             {
@@ -216,7 +216,7 @@ void GraphDrawer::drawLabels(EdgeDrawParamsMap &params)
         }
 
         // Edges
-        if (Options::instance().showEdgeWeights && g->hasWeightedEdges())
+        if (showEdgeWeights && g->hasWeightedEdges())
         {
             for (auto &node : *g)
             {

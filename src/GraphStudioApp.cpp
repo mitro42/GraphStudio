@@ -34,15 +34,17 @@ private:
     std::vector<std::string> colorSchemeNames;
     GraphHandler gh;
 
-	GraphGeneratorGrid graphGeneratorGrid;
-	GraphGeneratorTriangleMesh graphGeneratorTriangleMesh;
 	int minRandomEdgeWeight = 1;
 	int maxRandomEdgeWeight = 100;
     bool recording = false;
-	ColorScheme editedColorScheme;
 	int editedColorSchemeIdx = 0;
+	bool showEdgeWeights = true;
+	bool showNodeWeights = true;
+	ColorScheme editedColorScheme;
 	GraphDrawingSettings graphSettings;
 	GraphDrawingSettings legendSettings;
+	GraphGeneratorGrid graphGeneratorGrid;
+	GraphGeneratorTriangleMesh graphGeneratorTriangleMesh;
 
     fs::path graphFileName;
     fs::path defaultPath;
@@ -124,8 +126,8 @@ void GraphStudioApp::saveSettings()
     configXml.push_back(ci::XmlTree("highlightedEdgeWidth", std::to_string(graphSettings.highlightedEdgeWidth)));
     configXml.push_back(ci::XmlTree("arrowLength", std::to_string(graphSettings.arrowLength)));
     configXml.push_back(ci::XmlTree("arrowAngle", std::to_string(graphSettings.arrowAngle)));
-    configXml.push_back(ci::XmlTree("showEdgeWeights", std::to_string(Options::instance().showEdgeWeights)));
-    configXml.push_back(ci::XmlTree("showNodeWeights", std::to_string(Options::instance().showNodeWeights)));
+    configXml.push_back(ci::XmlTree("showEdgeWeights", std::to_string(showEdgeWeights)));
+    configXml.push_back(ci::XmlTree("showNodeWeights", std::to_string(showNodeWeights)));
     configXml.push_back(ci::XmlTree("speed", std::to_string(Options::instance().speed)));
     configXml.push_back(ci::XmlTree("edgeWeightScale", std::to_string(Options::instance().edgeWeightScale)));
     configXml.push_back(ci::XmlTree("autoFitToScreen", std::to_string(Options::instance().autoFitToScreen)));
@@ -182,8 +184,8 @@ void GraphStudioApp::loadSettings()
         graphSettings.highlightedEdgeWidth = settings.getChild("highlightedEdgeWidth").getValue<float>();
         graphSettings.arrowLength = settings.getChild("arrowLength").getValue<float>();
         graphSettings.arrowAngle = settings.getChild("arrowAngle").getValue<float>();
-        Options::instance().showEdgeWeights = settings.getChild("showEdgeWeights").getValue<bool>();
-        Options::instance().showNodeWeights = settings.getChild("showNodeWeights").getValue<bool>();
+        showEdgeWeights = settings.getChild("showEdgeWeights").getValue<bool>();
+        showNodeWeights = settings.getChild("showNodeWeights").getValue<bool>();
         Options::instance().autoFitToScreen = settings.getChild("autoFitToScreen").getValue<bool>();
 
         legendSettings.edgeWidth = settings.getChild("legendEdgeWidth").getValue<float>();
@@ -217,8 +219,11 @@ void GraphStudioApp::loadSettings()
 
 void GraphStudioApp::setGraphChanged()
 {
-	gh.getAnimationDrawer().setColorScheme(editedColorScheme);
-	gh.getAnimationDrawer().setDrawingSettings(graphSettings);    
+	auto &drawer = gh.getAnimationDrawer();
+	drawer.setColorScheme(editedColorScheme);
+	drawer.setDrawingSettings(graphSettings);
+	drawer.setShowEdgeWeights(showEdgeWeights);
+	drawer.setShowNodeWeights(showNodeWeights);
 	GraphNodeHandler::setSize(graphSettings.nodeSize);
 }
 
@@ -250,8 +255,8 @@ void GraphStudioApp::setup()
     params->addParam<float>("Highlighted Edge Width", &graphSettings.highlightedEdgeWidth).updateFn(updaterFunction).min(0.0f).max(10.0f).step(0.1f);
     params->addParam<float>("Arrow Length", &graphSettings.arrowLength).updateFn(updaterFunction).min(1.0f).max(50.0f).step(1.0f);
     params->addParam<float>("Arrow Angle", &graphSettings.arrowAngle).updateFn(updaterFunction).min(0.0f).max(90.0f).step(1.0f);
-    params->addParam<bool>("Show Edge Weights", &Options::instance().showEdgeWeights).updateFn(updaterFunction);
-    params->addParam<bool>("Show Node Weights", &Options::instance().showNodeWeights).updateFn(updaterFunction);
+    params->addParam<bool>("Show Edge Weights", &showEdgeWeights).updateFn(updaterFunction);
+    params->addParam<bool>("Show Node Weights", &showNodeWeights).updateFn(updaterFunction);
 
     params->addSeparator();
     params->addParam("Algorithm", AlgorithmNames, &Options::instance().algorithm).updateFn(std::bind(&GraphStudioApp::algorithmChanged, this));
@@ -376,15 +381,12 @@ void GraphStudioApp::createThumbnail(const fs::path &folder)
     bool origAnimationStateNumberVisible = graphDrawer.getShowAnimationStateNumber();
     bool origAnimationStateDescriptionVisible = graphDrawer.getShowAnimationStateDescription();
     bool origLegendVisible = graphDrawer.getShowLegend();
-    bool origNodeWeightsVisible = Options::instance().showNodeWeights;
-    bool origEdgeWeightsVisible = Options::instance().showEdgeWeights;
     graphDrawer.showAnimationStateNumber(false);
     graphDrawer.showAnimationStateDescription(false);
     graphDrawer.showLegend(false);
 
-    Options::instance().showNodeWeights = false;
-    Options::instance().showEdgeWeights = false;
-
+	gh.getAnimationDrawer().setShowEdgeWeights(false);
+	gh.getAnimationDrawer().setShowNodeWeights(false);
     gh.draw();
 
     auto surface = copyWindowSurface();
@@ -397,8 +399,9 @@ void GraphStudioApp::createThumbnail(const fs::path &folder)
     graphDrawer.showAnimationStateNumber(origAnimationStateNumberVisible);
     graphDrawer.showAnimationStateDescription(origAnimationStateDescriptionVisible);
     graphDrawer.showLegend(origLegendVisible);
-    Options::instance().showNodeWeights = origNodeWeightsVisible;
-    Options::instance().showEdgeWeights = origEdgeWeightsVisible;
+
+	gh.getAnimationDrawer().setShowEdgeWeights(showEdgeWeights);
+	gh.getAnimationDrawer().setShowNodeWeights(showNodeWeights);
     if (origParamsVisible)
         params->show();
 }

@@ -20,8 +20,15 @@ public:
     void setChanged() { changed = true; }
 	inline void setColorScheme(const ColorScheme &cs) { colorScheme = cs; setChanged(); }
 	inline const ColorScheme &getColorScheme() const { return colorScheme; }
+
 	virtual void setDrawingSettings(const GraphDrawingSettings &sett) { settings = sett; setChanged(); }
 	inline const GraphDrawingSettings &getDrawingSettings() const { return settings; }
+
+	inline bool getShowEdgeWeights() const { return showEdgeWeights; }
+	inline void setShowEdgeWeights(bool show) { showEdgeWeights = show; setChanged(); }
+
+	inline bool getShowNodeWeights() const { return showNodeWeights; }
+	inline void setShowNodeWeights(bool show) { showNodeWeights = show; setChanged(); }
 protected:
     struct EdgeDrawParams
     {
@@ -66,7 +73,11 @@ protected:
     ci::gl::TextureFontRef edgeTextureFont;
     ci::gl::TextureFontRef nodeTextureFont;
 private:
+	static GraphDrawingSettings settings;
+
     bool changed = true;
+	bool showEdgeWeights = true;
+	bool showNodeWeights = true;
     void initFbo();
     ci::TextBox getStateTextbox(const std::vector<std::string> &lines);
 
@@ -76,6 +87,5 @@ private:
 
     ci::Font edgeFont;
     ci::Font nodeFont;
-	static GraphDrawingSettings settings;
 };
 

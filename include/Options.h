@@ -64,8 +64,7 @@ struct Options
     bool animationPlaying = false;
     bool animationPaused = false;
     bool randomMovement = false;
-    bool showEdgeWeights = true;
-    bool showNodeWeights = true;
+
     int weightPrecision = 0;
     int edgeWeightScale = 100;
 
