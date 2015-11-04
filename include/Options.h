@@ -62,8 +62,7 @@ struct Options
     int speed = 60;
     
     bool animationPlaying = false;
-    bool animationPaused = false;
-    bool randomMovement = false;
+    bool animationPaused = false;    
 
     int weightPrecision = 0;
     int edgeWeightScale = 100;

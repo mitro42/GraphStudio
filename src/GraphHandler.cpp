@@ -14,15 +14,6 @@
 #include <cinder/Rand.h>
 float GraphNodeHandler::size;
 
-GraphHandler::GraphHandler() : forceType(Force::none)
-{
-}
-
-
-GraphHandler::~GraphHandler()
-{
-}
-
 
 void GraphHandler::setup(ci::app::WindowRef _window)
 {
@@ -161,7 +152,7 @@ void GraphHandler::update()
         addNewEdgeIfNodesSelected();
     }
 
-    if (Options::instance().randomMovement)
+    if (randomMovement)
     {
         for (auto& nh : nodeHandlers)
         {
@@ -375,7 +366,6 @@ void GraphHandler::pushNodes(ci::vec2 position, float force)
 
 void GraphHandler::mouseUp(ci::app::MouseEvent &event)
 {
-    forceType = Force::none;
     //event.setHandled(true);
 }
 
@@ -387,18 +377,6 @@ void GraphHandler::mouseDown(ci::app::MouseEvent &event)
         nodeHandlers.emplace_back(new GraphNodeHandler(window, *this, event.getPos()));
         g->addNode();
         setChanged();
-    }
-
-    if (event.isAltDown())
-    {
-        if (event.isLeftDown())
-        {
-            forceType = Force::push;
-        }
-        else if (event.isRightDown())
-        {
-            forceType = Force::pull;
-        }
     }
 
     event.setHandled(true);

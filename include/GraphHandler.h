@@ -18,8 +18,8 @@ public:
     };
 
 public:
-    GraphHandler();
-    ~GraphHandler();
+	GraphHandler() = default;
+	~GraphHandler() = default;
     
     void loadGraph(const ci::fs::path& fileName);
     void saveGraph(const ci::fs::path& fileName);
@@ -59,13 +59,10 @@ public:
 	void setRandomEdgeWeights(int min, int max);
     void generateSpecialGraph(const GraphGenerator& generator);
     GraphAnimationDrawer& getAnimationDrawer() { return *graphDrawer; }
+
+	inline void startRandomMovement() { randomMovement = true; }
+	inline void stopRandomMovement() { randomMovement = false; }
 private:
-    enum class Force{
-        none = 0,
-        push = 1,
-        pull = 2
-    };
-    
     ci::app::WindowRef window;
     ci::signals::ScopedConnection	cbMouseDown;
     ci::signals::ScopedConnection	cbMouseDrag;
@@ -80,7 +77,7 @@ private:
 
     bool automaticEdgeWeightUpdate = false;
     bool changed = true;
-    Force forceType;
+	bool randomMovement;
 
     void repositionNodes(const std::vector<ci::vec2>& nodePositions);
     void recreateNodeHandlers();

@@ -46,7 +46,7 @@ public:
     inline void setSpeed(float sp) { speed = sp; }
 
     inline uint32_t getSelectedInFrame() const { return selectedInFrame; }
-	static inline void setSize(float s) { size = s; }
+	static inline void setSize(float s) { size = s; }	
 private:
     static const float margin;
 	static float size;
@@ -59,6 +59,7 @@ private:
     const ci::vec2 originalPosition;
     float direction;
     float speed;
+	
     Selection selection;
     uint32_t selectedInFrame;
 };

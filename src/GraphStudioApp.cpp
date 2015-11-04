@@ -40,6 +40,7 @@ private:
 	int editedColorSchemeIdx = 0;
 	bool showEdgeWeights = true;
 	bool showNodeWeights = true;
+	bool randomMovement = false;
 	ColorScheme editedColorScheme;
 	GraphDrawingSettings graphSettings;
 	GraphDrawingSettings legendSettings;
@@ -510,9 +511,16 @@ void GraphStudioApp::keyDown(KeyEvent event)
     }
     if (event.getChar() == 'm')
     {
-        Options::instance().randomMovement = !Options::instance().randomMovement;
-        if (Options::instance().randomMovement)
-            Options::instance().animationPlaying = false;
+        randomMovement = !randomMovement;
+		if (randomMovement)
+		{
+			Options::instance().animationPlaying = false;
+			gh.startRandomMovement();
+		}
+		else
+		{
+			gh.stopRandomMovement();
+		}
     }
     if (event.getChar() == 's')
     {
