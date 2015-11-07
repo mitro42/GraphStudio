@@ -72,8 +72,7 @@ struct Options
     int weightPrecision = 0;
     int edgeWeightScale = 100;
     
-    int startNode = 1;
-    bool autoFitToScreen = true;
+    int startNode = 1;    
 
     float infoPanelWidth = 350.0f;
 

@@ -56,6 +56,7 @@ private:
 	bool showEdgeWeights = true;
 	bool showNodeWeights = true;
 	bool randomMovement = false;
+	bool autoFitToScreen = true;
 	int algorithm = static_cast<int>(Algorithm::kruskal);
 	ColorScheme editedColorScheme;
 	GraphDrawingSettings graphSettings;
@@ -133,7 +134,7 @@ void GraphStudioApp::saveSettings()
     configXml.push_back(ci::XmlTree("showNodeWeights", std::to_string(showNodeWeights)));
     configXml.push_back(ci::XmlTree("speed", std::to_string(Options::instance().speed)));
     configXml.push_back(ci::XmlTree("edgeWeightScale", std::to_string(Options::instance().edgeWeightScale)));
-    configXml.push_back(ci::XmlTree("autoFitToScreen", std::to_string(Options::instance().autoFitToScreen)));
+    configXml.push_back(ci::XmlTree("autoFitToScreen", std::to_string(autoFitToScreen)));
     
     configXml.push_back(ci::XmlTree("legendEdgeWidth", std::to_string(legendSettings.edgeWidth)));
     configXml.push_back(ci::XmlTree("legendHighlightedEdgeWidth", std::to_string(legendSettings.highlightedEdgeWidth)));
@@ -189,7 +190,7 @@ void GraphStudioApp::loadSettings()
         graphSettings.arrowAngle = settings.getChild("arrowAngle").getValue<float>();
         showEdgeWeights = settings.getChild("showEdgeWeights").getValue<bool>();
         showNodeWeights = settings.getChild("showNodeWeights").getValue<bool>();
-        Options::instance().autoFitToScreen = settings.getChild("autoFitToScreen").getValue<bool>();
+        autoFitToScreen = settings.getChild("autoFitToScreen").getValue<bool>();
 
         legendSettings.edgeWidth = settings.getChild("legendEdgeWidth").getValue<float>();
         legendSettings.highlightedEdgeWidth = settings.getChild("legendHighlightedEdgeWidth").getValue<float>();
@@ -450,7 +451,7 @@ void GraphStudioApp::loadGraph()
 
     gh.algorithmChanged(Algorithm(algorithm));
 	colorSchemeChanged();
-    if (Options::instance().autoFitToScreen)
+    if (autoFitToScreen)
     {
         gh.fitToWindow();
     }
