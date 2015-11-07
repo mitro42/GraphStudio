@@ -226,25 +226,34 @@ void GraphHandler::algorithmStartNodeChanged()
     graphDrawer->prepareAnimation();
 }
 
+void GraphHandler::addNodeHandler(ci::vec2 pos)
+{	
+	nodePositions.push_back(std::make_unique<ci::vec2>(pos));
+	nodeHandlers.push_back(std::make_unique<GraphNodeHandler>(window, nodePositions.back().get()));
+}
+
 void GraphHandler::recreateNodeHandlers()
 {
     std::unique_lock<std::recursive_mutex> guard(updateMutex);
     nodeHandlers.clear();
     for (const auto &node : *g)
     {
-        auto pos = ci::vec2(ci::Rand::randFloat() * window->getWidth(), ci::Rand::randFloat() * window->getHeight());
-        nodeHandlers.emplace_back(new GraphNodeHandler(window, pos));
+		auto newPos = ci::vec2(ci::Rand::randFloat() * window->getWidth(), ci::Rand::randFloat() * window->getHeight());
+		addNodeHandler(newPos);
     }
     setChanged();
 }
 
-void GraphHandler::recreateNodeHandlers(const std::vector<ci::vec2> &nodePositions)
+
+
+
+void GraphHandler::recreateNodeHandlers(const std::vector<ci::vec2> &newNodePositions)
 {
     std::unique_lock<std::recursive_mutex> guard(updateMutex);
     nodeHandlers.clear();
     for (int i = 0; i < g->getNodeCount(); ++i)
     {
-        nodeHandlers.emplace_back(new GraphNodeHandler(window, nodePositions[i]));
+		addNodeHandler(newNodePositions[i]);
     }
     setChanged();
 }
@@ -331,7 +340,7 @@ void GraphHandler::loadGraphPositions(const ci::fs::path &fileName)
     while (in >> x && idx < int(nodeHandlers.size()))
     {
         in >> y;
-        nodeHandlers[idx++]->setPos(ci::vec2(x, y));
+		*nodePositions[idx++] = ci::vec2{ x, y };
     }
     setChanged();
 }
@@ -358,24 +367,11 @@ void GraphHandler::reorderNodesSquare()
 }
 
 
-void GraphHandler::repositionNodes(const std::vector<ci::vec2>& nodePositions)
+void GraphHandler::repositionNodes(const std::vector<ci::vec2>& newNodePositions)
 {
     for (int i = 0; i < g->getNodeCount(); ++i)
     {
-        nodeHandlers[i]->setPos(nodePositions[i]);
-    }
-    setChanged();
-}
-
-
-void GraphHandler::pushNodes(ci::vec2 position, float force)
-{
-    for (auto &nh : nodeHandlers)
-    {
-        auto nodePosition = nh->getPos();
-        auto forceVect = (position - nodePosition);
-        nodePosition += glm::normalize(forceVect) * (force / glm::length2(forceVect) * 10.0f);
-        nh->setPos(nodePosition);
+		*nodePositions[i] = newNodePositions[i];
     }
     setChanged();
 }
@@ -391,7 +387,7 @@ void GraphHandler::mouseDown(ci::app::MouseEvent &event)
     if (event.isControlDown())
     {
         std::unique_lock<std::recursive_mutex> guard(updateMutex);
-        nodeHandlers.emplace_back(new GraphNodeHandler(window, event.getPos()));
+		addNodeHandler(event.getPos());
         g->addNode();
         setChanged();
     }
@@ -404,10 +400,9 @@ void GraphHandler::resize(ci::Area newWindowSize)
     float xScale = float(newWindowSize.getWidth()) / windowSize.getWidth();
     float yScale = float(newWindowSize.getHeight()) / windowSize.getHeight();
     
-    for (auto &nh : nodeHandlers)
-    {
-        auto pos = nh->getPos();
-        nh->setPos(ci::vec2(pos.x * xScale, pos.y * yScale));
+    for (auto &nodePos : nodePositions)
+    {        
+        *nodePos = (ci::vec2(nodePos->x * xScale, nodePos->y * yScale));
     }
 
     graphDrawer->resize(newWindowSize);
@@ -446,11 +441,11 @@ void GraphHandler::fitToWindow()
 
     targetWidth *= (1 - 2 * marginX);
     targetHeight *= (1 - 2 * marginY);
-    for (const auto& nh : nodeHandlers)
+    for (auto &nodePos : nodePositions)
     {
-        float newX = ((nh->getPos().x) - minX) / boundingRectWidth * targetWidth + window->getWidth() * marginX;
-        float newY = ((nh->getPos().y) - minY) / boundingRectHeight * targetHeight + window->getHeight() * marginY;
-        nh->setPos(ci::vec2(newX, newY));
+        float newX = (nodePos->x - minX) / boundingRectWidth * targetWidth + window->getWidth() * marginX;
+        float newY = (nodePos->y - minY) / boundingRectHeight * targetHeight + window->getHeight() * marginY;
+        *nodePos = ci::vec2(newX, newY);
     }
     setChanged();
 }

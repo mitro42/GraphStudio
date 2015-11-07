@@ -3,10 +3,10 @@
 
 const float GraphNodeHandler::margin = 10.0f;
 
-GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, ci::vec2 pos) : 
+GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, gsl::not_null<ci::vec2*> pos): 
     window(window), 
     position(pos), 
-    originalPosition(pos), 
+    originalPosition(*pos), 
     direction(0.0f),
     speed(0.0f),
     selection(Selection::none)
@@ -34,7 +34,7 @@ void GraphNodeHandler::mouseDrag(ci::app::MouseEvent &event)
 {
     if (selection == Selection::move)
     {
-        position = event.getPos();
+        *position = event.getPos();
 		changed = true;
     }
     event.setHandled(selection == Selection::move);
@@ -43,7 +43,7 @@ void GraphNodeHandler::mouseDrag(ci::app::MouseEvent &event)
 
 void GraphNodeHandler::mouseDown(ci::app::MouseEvent &event)
 {
-    if (glm::length(position - ci::vec2(event.getPos())) < size)
+    if (glm::length(*position - ci::vec2(event.getPos())) < size)
     {
         if (event.isAltDown())
         {
@@ -87,7 +87,7 @@ void GraphNodeHandler::mouseUp(ci::app::MouseEvent &event)
 void GraphNodeHandler::draw(const ci::Color &color)
 {
     ci::gl::color(color);
-    ci::gl::drawSolidCircle(position, size);
+    ci::gl::drawSolidCircle(*position, size);
 }
 
 

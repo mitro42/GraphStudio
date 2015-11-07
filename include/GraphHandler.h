@@ -23,7 +23,6 @@ public:
 
     void reorderNodesSquare();
     void reorderNodesGrid(int columns, int rows);
-    void pushNodes(ci::vec2 position, float force);
 
     void setup(ci::app::WindowRef window);
     void update();
@@ -58,13 +57,14 @@ public:
 	void connectMouseEvents();
 	void disconnectMouseEvents();
 private:
-	void repositionNodes(const std::vector<ci::vec2>& nodePositions);
+	void repositionNodes(const std::vector<ci::vec2>& newNodePositions);
 	void recreateNodeHandlers();
-	void recreateNodeHandlers(const std::vector<ci::vec2> &nodePositions);
+	void recreateNodeHandlers(const std::vector<ci::vec2> &newNodePositions);
 	void addNewEdgeIfNodesSelected();
 	void updateEdgeWeights();
 	bool nodeHandlersChanged();
 	void clearChanged();
+	void addNodeHandler(ci::vec2 pos);
 
     ci::app::WindowRef window;
     ci::signals::ScopedConnection	cbMouseDown;
@@ -75,6 +75,7 @@ private:
     std::recursive_mutex updateMutex;
 
     std::shared_ptr<Graph> g;
+	std::vector<std::unique_ptr<ci::vec2>> nodePositions;
     std::vector<std::unique_ptr<GraphNodeHandler>> nodeHandlers;
     std::unique_ptr<GraphAnimationDrawer> graphDrawer;
 
