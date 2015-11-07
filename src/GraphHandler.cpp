@@ -18,12 +18,32 @@ float GraphNodeHandler::size;
 void GraphHandler::setup(ci::app::WindowRef _window)
 {
     window = _window;
-    cbMouseDown = window->getSignalMouseDown().connect(0, std::bind(&GraphHandler::mouseDown, this, std::placeholders::_1));
-    cbMouseUp = window->getSignalMouseUp().connect(0, std::bind(&GraphHandler::mouseUp, this, std::placeholders::_1));
-
+	connectMouseEvents();
     windowSize = window->getBounds();    
     g = std::make_shared<Graph>(true);
     graphDrawer = std::make_unique<NoAlgorithmDrawer>(g, nodeHandlers, window);
+}
+
+
+void GraphHandler::connectMouseEvents()
+{
+	cbMouseDown = window->getSignalMouseDown().connect(0, std::bind(&GraphHandler::mouseDown, this, std::placeholders::_1));
+	cbMouseUp = window->getSignalMouseUp().connect(0, std::bind(&GraphHandler::mouseUp, this, std::placeholders::_1));
+	for (auto &nh : nodeHandlers)
+	{
+		nh->connectMouseEvents();
+	}
+}
+
+
+void GraphHandler::disconnectMouseEvents()
+{
+	cbMouseDown.disconnect();
+	cbMouseUp.disconnect();
+	for (auto &nh : nodeHandlers)
+	{
+		nh->disconnectMouseEvents();
+	}
 }
 
 
@@ -42,52 +62,37 @@ void GraphHandler::draw()
 
 void GraphHandler::animationPrepare()
 {
-    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
-    if (animationDrawer)
-        animationDrawer->prepareAnimation();
+	graphDrawer->prepareAnimation();
 }
 
 void GraphHandler::animationPause()
 {
-    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
-    if (animationDrawer)
-        animationDrawer->pause();
+	graphDrawer->pause();
 }
 
 void GraphHandler::animationResume()
 {
-    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
-    if (animationDrawer)
-        animationDrawer->resume();
+	graphDrawer->resume();
 }
 
 bool GraphHandler::animationNext()
 {
-    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
-    if (animationDrawer)
-        return animationDrawer->nextState();
-    return false;
+    return graphDrawer->nextState();
 }
 
 void GraphHandler::animationPrevious()
 {
-    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
-    if (animationDrawer)
-        animationDrawer->previousState();
+	graphDrawer->previousState();
 }
 
 void GraphHandler::animationGoToFirst()
 {
-    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
-    if (animationDrawer)
-        animationDrawer->animationGoToFirst();
+	graphDrawer->animationGoToFirst();
 }
 
 void GraphHandler::animationGoToLast()
 {
-    GraphAnimationDrawer* animationDrawer = dynamic_cast<GraphAnimationDrawer*>(graphDrawer.get());
-    if (animationDrawer)
-        animationDrawer->animationGoToLast();
+	graphDrawer->animationGoToLast();
 }
 
 
@@ -147,10 +152,7 @@ void GraphHandler::update()
 {
     static ci::Perlin perlin;
     std::unique_lock<std::recursive_mutex> guard(updateMutex);  
-    if(!Options::instance().animationPlaying)
-    {
-        addNewEdgeIfNodesSelected();
-    }
+    addNewEdgeIfNodesSelected();
 
     if (randomMovement)
     {
@@ -168,18 +170,15 @@ void GraphHandler::update()
         setChanged();
     }
     
-    if (automaticEdgeWeightUpdate && !Options::instance().animationPlaying)
+    if (automaticEdgeWeightUpdate)
     {
         updateEdgeWeights();
     }
-
-
 }
 
 
 void GraphHandler::algorithmChanged(Algorithm newAlgorithm)
 {
-    Options::instance().animationPlaying = false;
     switch (newAlgorithm)
     {
     default:
@@ -371,7 +370,7 @@ void GraphHandler::mouseUp(ci::app::MouseEvent &event)
 
 void GraphHandler::mouseDown(ci::app::MouseEvent &event)
 {
-    if (event.isControlDown() && !Options::instance().animationPlaying)
+    if (event.isControlDown())
     {
         std::unique_lock<std::recursive_mutex> guard(updateMutex);
         nodeHandlers.emplace_back(new GraphNodeHandler(window, *this, event.getPos()));
@@ -428,7 +427,6 @@ void GraphHandler::fitToWindow()
     float targetWidth = float(window->getWidth());
 
     targetWidth *= (1 - 2 * marginX);
-    //targetWidth -= Options::instance().infoPanelWidth;
     targetHeight *= (1 - 2 * marginY);
     for (const auto& nh : nodeHandlers)
     {

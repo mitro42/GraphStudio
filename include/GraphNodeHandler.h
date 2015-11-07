@@ -47,6 +47,9 @@ public:
 
     inline uint32_t getSelectedInFrame() const { return selectedInFrame; }
 	static inline void setSize(float s) { size = s; }	
+
+	void connectMouseEvents();
+	void disconnectMouseEvents();
 private:
     static const float margin;
 	static float size;

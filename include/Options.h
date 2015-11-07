@@ -16,6 +16,14 @@ enum class Algorithm {
     kruskal
 };
 
+enum class AnimationPlayingState
+{
+	stop,
+	play,
+	pause,
+	recording
+};
+
 struct ColorScheme
 {
     std::string name;
@@ -61,9 +69,6 @@ struct Options
 {
     int speed = 60;
     
-    bool animationPlaying = false;
-    bool animationPaused = false;    
-
     int weightPrecision = 0;
     int edgeWeightScale = 100;
     

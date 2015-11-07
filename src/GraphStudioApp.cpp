@@ -27,6 +27,22 @@ public:
 
     const ColorScheme &getCurrentColorScheme();
 private:
+	void setGraphChanged();
+	void algorithmChanged();
+	void algorithmStartNodeChanged();
+	void colorSchemeChanged();
+
+	void addNewColorScheme();
+	void storeColorScheme();
+	void createThumbnail(const fs::path &folder);
+	fs::path createTempDir();
+	void prepareRecording();
+	void stopRecording();
+	void loadSettings();
+	void saveSettings();
+	void saveGraph(bool saveAs);
+	void loadGraph();
+
     static const std::vector<std::string> extensions;
 
     ci::params::InterfaceGlRef	params;
@@ -36,7 +52,6 @@ private:
 
 	int minRandomEdgeWeight = 1;
 	int maxRandomEdgeWeight = 100;
-    bool recording = false;
 	int editedColorSchemeIdx = 0;
 	bool showEdgeWeights = true;
 	bool showNodeWeights = true;
@@ -47,6 +62,7 @@ private:
 	GraphDrawingSettings legendSettings;
 	GraphGeneratorGrid graphGeneratorGrid;
 	GraphGeneratorTriangleMesh graphGeneratorTriangleMesh;
+	AnimationPlayingState playingState = AnimationPlayingState::stop;
 
     fs::path graphFileName;
     fs::path defaultPath;
@@ -55,21 +71,6 @@ private:
     fs::path configFilePath;
     fs::path videoTempDir;
 
-    void setGraphChanged();
-    void algorithmChanged();
-    void algorithmStartNodeChanged();
-    void colorSchemeChanged();
-
-    void addNewColorScheme();
-    void storeColorScheme();
-    void createThumbnail(const fs::path &folder);
-	fs::path createTempDir();
-    void prepareRecording();
-    void stopRecording();
-    void loadSettings();
-    void saveSettings();
-    void saveGraph(bool saveAs);
-    void loadGraph();
 };
 
 const std::vector<std::string> GraphStudioApp::extensions{ "graph", "txt" };
@@ -323,9 +324,7 @@ GraphStudioApp::~GraphStudioApp()
 
 void GraphStudioApp::stopRecording()
 {
-    recording = false;
-    Options::instance().animationPlaying = false;
-    Options::instance().animationPaused = true;
+	playingState = AnimationPlayingState::stop;
     gh.animationPause();
     setFullScreen(false);
     //showCursor();
@@ -349,14 +348,12 @@ fs::path GraphStudioApp::createTempDir()
 void GraphStudioApp::prepareRecording()
 {
     setFrameRate(30.0f);
-    recording = true;
+	playingState = AnimationPlayingState::recording;
     setFullScreen(true);
     params->hide();
 
 	videoTempDir = createTempDir();
-
-    Options::instance().animationPlaying = true;
-    Options::instance().animationPaused = false;
+	playingState = AnimationPlayingState::play;
     gh.animationPrepare();
     gh.animationGoToFirst();
     gh.animationPause();
@@ -367,8 +364,7 @@ void GraphStudioApp::createThumbnail(const fs::path &folder)
     bool origFullscreenState = isFullScreen();
     bool origParamsVisible = params->isVisible();
 
-    Options::instance().animationPlaying = false;
-    Options::instance().animationPaused = true;
+	playingState = AnimationPlayingState::stop;
     gh.animationPrepare();
     gh.animationGoToLast();
     gh.animationPause();
@@ -463,28 +459,29 @@ void GraphStudioApp::loadGraph()
 void GraphStudioApp::keyDown(KeyEvent event)
 {
 
-    if (event.getCode() == KeyEvent::KEY_SPACE)
-    {
-        if (!Options::instance().animationPlaying)
-        {
-            gh.animationGoToFirst();
-            Options::instance().animationPlaying = true;
-            Options::instance().animationPaused = false;
-            gh.animationResume();
+	if (event.getCode() == KeyEvent::KEY_SPACE)
+	{
+		switch (playingState)
+		{
+		default:
+			break;
+		case AnimationPlayingState::stop:
+			playingState = AnimationPlayingState::play;
+			gh.disconnectMouseEvents();
+			gh.animationGoToFirst();
+			gh.animationResume();
+			break;
+		case AnimationPlayingState::play:
+			playingState = AnimationPlayingState::pause;
+			gh.connectMouseEvents();
+			gh.animationPause();
+			break;
+		case AnimationPlayingState::pause:
+			playingState = AnimationPlayingState::play;
+			gh.disconnectMouseEvents();
+            gh.animationResume();            
+			break;
         }
-        else
-        {
-            Options::instance().animationPaused = !Options::instance().animationPaused;
-            if (Options::instance().animationPaused)
-            {
-                gh.animationPause();
-            }
-            else
-            {
-                gh.animationResume();
-            }
-        }
-
         return;
     }
     else  if (event.getCode() == KeyEvent::KEY_RIGHT)
@@ -505,9 +502,9 @@ void GraphStudioApp::keyDown(KeyEvent event)
     else  if (event.getCode() == KeyEvent::KEY_END || event.getCode() == KeyEvent::KEY_ESCAPE)
     {
         stopRecording();
-        Options::instance().animationPlaying = false;
-        Options::instance().animationPaused = false;
+		playingState = AnimationPlayingState::stop;
         gh.animationGoToLast();
+		gh.connectMouseEvents();
         return;
     }
     if (event.getChar() == 'm')
@@ -515,7 +512,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
         randomMovement = !randomMovement;
 		if (randomMovement)
 		{
-			Options::instance().animationPlaying = false;
+			playingState = AnimationPlayingState::stop;
 			gh.startRandomMovement();
 		}
 		else
@@ -548,7 +545,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
     {
         if (event.isControlDown())
         {
-            if (recording)
+            if (playingState == AnimationPlayingState::recording)
             {
                 stopRecording();
                 return;
@@ -586,7 +583,7 @@ void GraphStudioApp::update()
 
 void GraphStudioApp::draw()
 {
-    if (recording)
+    if (playingState == AnimationPlayingState::recording)
     {
         std::stringstream ss;
         ss << "anim" << std::setw(4) << std::setfill('0') << gh.getAnimationDrawer().getAnimationStateNumber() + 1 << ".png";
@@ -644,8 +641,12 @@ void GraphStudioApp::draw()
         // clear out the window with black
         gl::clear(Color(0, 0, 0));
         gh.draw();
-        if (!Options::instance().animationPlaying || Options::instance().animationPaused)
+        if (playingState != AnimationPlayingState::play)
             params->draw();
+		if (gh.getAnimationDrawer().isAnimationFinished())
+		{
+			playingState = AnimationPlayingState::stop;
+		}
     }
 }
 

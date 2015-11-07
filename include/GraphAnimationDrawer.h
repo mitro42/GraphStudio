@@ -40,6 +40,7 @@ public:
 		GraphDrawer::setDrawingSettings(settings); 
 		legend.setDrawingSettings(settings);
 	}
+	bool isAnimationFinished();
 protected:
     virtual void drawAlgorithmState() = 0;
     virtual void drawAlgorithmResult() = 0;

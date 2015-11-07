@@ -10,14 +10,6 @@ struct GraphGenerator;
 class GraphHandler
 {
 public:
-    enum class GraphType
-    {
-        general = 0,
-        grid,
-        triangleMesh
-    };
-
-public:
 	GraphHandler() = default;
 	~GraphHandler() = default;
     
@@ -62,7 +54,16 @@ public:
 
 	inline void startRandomMovement() { randomMovement = true; }
 	inline void stopRandomMovement() { randomMovement = false; }
+
+	void connectMouseEvents();
+	void disconnectMouseEvents();
 private:
+	void repositionNodes(const std::vector<ci::vec2>& nodePositions);
+	void recreateNodeHandlers();
+	void recreateNodeHandlers(const std::vector<ci::vec2> &nodePositions);
+	void addNewEdgeIfNodesSelected();
+	void updateEdgeWeights();
+
     ci::app::WindowRef window;
     ci::signals::ScopedConnection	cbMouseDown;
     ci::signals::ScopedConnection	cbMouseDrag;
@@ -79,10 +80,6 @@ private:
     bool changed = true;
 	bool randomMovement;
 
-    void repositionNodes(const std::vector<ci::vec2>& nodePositions);
-    void recreateNodeHandlers();
-    void recreateNodeHandlers(const std::vector<ci::vec2> &nodePositions);
-    void addNewEdgeIfNodesSelected();
-    void updateEdgeWeights();
+
 };
 

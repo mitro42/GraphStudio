@@ -16,9 +16,21 @@ GraphNodeHandler::GraphNodeHandler(ci::app::WindowRef window, GraphHandler &grap
     speed(0.0f),
     selection(Selection::none)
 {
-    cbMouseDown = window->getSignalMouseDown().connect(2, std::bind(&GraphNodeHandler::mouseDown, this, std::placeholders::_1));
-    cbMouseUp = window->getSignalMouseUp().connect(2, std::bind(&GraphNodeHandler::mouseUp, this, std::placeholders::_1));
-    cbMouseDrag = window->getSignalMouseDrag().connect(2, std::bind(&GraphNodeHandler::mouseDrag, this, std::placeholders::_1));
+	connectMouseEvents();
+}
+
+void GraphNodeHandler::connectMouseEvents()
+{
+	cbMouseDown = window->getSignalMouseDown().connect(2, std::bind(&GraphNodeHandler::mouseDown, this, std::placeholders::_1));
+	cbMouseUp = window->getSignalMouseUp().connect(2, std::bind(&GraphNodeHandler::mouseUp, this, std::placeholders::_1));
+	cbMouseDrag = window->getSignalMouseDrag().connect(2, std::bind(&GraphNodeHandler::mouseDrag, this, std::placeholders::_1));
+}
+
+void GraphNodeHandler::disconnectMouseEvents()
+{
+	cbMouseDown.disconnect();
+	cbMouseUp.disconnect();
+	cbMouseDrag.disconnect();
 }
 
 
@@ -38,7 +50,7 @@ void GraphNodeHandler::mouseDown(ci::app::MouseEvent &event)
 {
     if (glm::length(position - ci::vec2(event.getPos())) < size)
     {
-        if (event.isAltDown() && !Options::instance().animationPlaying)
+        if (event.isAltDown())
         {
             if (selection == Selection::addEdge)
             {

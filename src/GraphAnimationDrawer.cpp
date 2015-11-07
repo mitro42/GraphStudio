@@ -30,14 +30,14 @@ void GraphAnimationDrawer::drawAnimationStateNumber()
     stepDescriptionTextureFont->drawString(stateNumber, ci::vec2(20.0f, window->getHeight() - 20.0f));
 }
 
+bool GraphAnimationDrawer::isAnimationFinished()
+{
+	return animationState == animationLastState - 1;
+}
+
 void GraphAnimationDrawer::draw()
 {
-    if (animationState == animationLastState - 1)
-    {
-        Options::instance().animationPlaying = false;
-        Options::instance().animationPaused = true;
-    }
-    else if (animationState < animationLastState - 1 && !paused)
+    if (animationState < animationLastState - 1 && !paused)
     {        
         framesSpentInState++;
         if (framesSpentInState % Options::instance().speed == 0)
