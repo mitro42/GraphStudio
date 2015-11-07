@@ -46,17 +46,35 @@ void GraphHandler::disconnectMouseEvents()
 	}
 }
 
+bool GraphHandler::nodeHandlersChanged()
+{
+	bool ret = false;
+	for (auto &nh : nodeHandlers)
+	{
+		ret |= nh->isChanged();
+	}
+	return ret;
+}
+
+void GraphHandler::clearChanged()
+{
+	changed = false;
+	for (auto &nh : nodeHandlers)
+	{
+		nh->clearChanged();
+	}
+}
 
 void GraphHandler::draw()
 {
     std::unique_lock<std::recursive_mutex> guard(updateMutex, std::defer_lock);
     if (!guard.try_lock())
         return;
-    if (changed)
+    if (nodeHandlersChanged() || changed)
         graphDrawer->setChanged();
 
     graphDrawer->draw();
-    changed = false;
+	clearChanged();
 }
 
 
@@ -215,7 +233,7 @@ void GraphHandler::recreateNodeHandlers()
     for (const auto &node : *g)
     {
         auto pos = ci::vec2(ci::Rand::randFloat() * window->getWidth(), ci::Rand::randFloat() * window->getHeight());
-        nodeHandlers.emplace_back(new GraphNodeHandler(window, *this, pos));
+        nodeHandlers.emplace_back(new GraphNodeHandler(window, pos));
     }
     setChanged();
 }
@@ -226,7 +244,7 @@ void GraphHandler::recreateNodeHandlers(const std::vector<ci::vec2> &nodePositio
     nodeHandlers.clear();
     for (int i = 0; i < g->getNodeCount(); ++i)
     {
-        nodeHandlers.emplace_back(new GraphNodeHandler(window, *this, nodePositions[i]));
+        nodeHandlers.emplace_back(new GraphNodeHandler(window, nodePositions[i]));
     }
     setChanged();
 }
@@ -373,7 +391,7 @@ void GraphHandler::mouseDown(ci::app::MouseEvent &event)
     if (event.isControlDown())
     {
         std::unique_lock<std::recursive_mutex> guard(updateMutex);
-        nodeHandlers.emplace_back(new GraphNodeHandler(window, *this, event.getPos()));
+        nodeHandlers.emplace_back(new GraphNodeHandler(window, event.getPos()));
         g->addNode();
         setChanged();
     }

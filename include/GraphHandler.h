@@ -63,6 +63,8 @@ private:
 	void recreateNodeHandlers(const std::vector<ci::vec2> &nodePositions);
 	void addNewEdgeIfNodesSelected();
 	void updateEdgeWeights();
+	bool nodeHandlersChanged();
+	void clearChanged();
 
     ci::app::WindowRef window;
     ci::signals::ScopedConnection	cbMouseDown;

@@ -12,7 +12,7 @@ public:
         addEdge
     };
 
-    GraphNodeHandler(ci::app::WindowRef window, GraphHandler &graphHandler, ci::vec2 pos);
+    GraphNodeHandler(ci::app::WindowRef window, ci::vec2 pos);
     
     void mouseDrag(ci::app::MouseEvent &event);
     void mouseDown(ci::app::MouseEvent &event);
@@ -50,6 +50,8 @@ public:
 
 	void connectMouseEvents();
 	void disconnectMouseEvents();
+	void clearChanged() { changed = false; }
+	bool isChanged() const{ return changed; }
 private:
     static const float margin;
 	static float size;
@@ -57,9 +59,9 @@ private:
     ci::signals::ScopedConnection cbMouseDown;
     ci::signals::ScopedConnection cbMouseUp;
     ci::app::WindowRef window;
-    GraphHandler &graphHandler;
     ci::vec2 position;
     const ci::vec2 originalPosition;
+	bool changed = false;
     float direction;
     float speed;
 	
