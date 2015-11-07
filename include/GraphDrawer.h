@@ -12,7 +12,7 @@ class GraphDrawer
 {
 public:
     friend class Legend;
-    GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window);
+    GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::Area windowSize);
     virtual ~GraphDrawer() = default;
 
     void draw();
@@ -64,8 +64,7 @@ protected:
     void clearChanged() { changed = false; }
     bool movingNodes() const;
 	
-
-    ci::app::WindowRef window;
+	ci::Area windowSize;
     const std::shared_ptr<Graph> g;
     const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers;
     std::vector<ci::Color> generateColors(int n);
@@ -78,7 +77,7 @@ private:
     bool changed = true;
 	bool showEdgeWeights = true;
 	bool showNodeWeights = true;
-    void initFbo();
+    void initFbo(ci::Area newWindowSize);
     ci::TextBox getStateTextbox(const std::vector<std::string> &lines);
 
 	ColorScheme colorScheme;

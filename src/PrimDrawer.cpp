@@ -89,7 +89,7 @@ void PrimDrawer::drawNextEdges()
 
     const int lineHeight = 40;
     int nextEdgeListLength = 10;
-    int baseX = int(window->getWidth() - Options::instance().infoPanelWidth);
+    int baseX = int(windowSize.getWidth() - Options::instance().infoPanelWidth);
     int baseY = 100;
     auto &state = states[animationState];
     edgeTextureFont->drawString("Next edges", ci::vec2(baseX + 30, baseY));

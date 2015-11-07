@@ -7,8 +7,8 @@
 class GraphAnimationDrawer : public GraphDrawer
 {
 public:
-    GraphAnimationDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window) : 
-        GraphDrawer(graph, nodeHandlers, window), 
+    GraphAnimationDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::Area windowSize) : 
+        GraphDrawer(graph, nodeHandlers, windowSize), 
         animationState(-1), 
         animationLastState(-1)
     {

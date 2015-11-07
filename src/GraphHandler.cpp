@@ -21,7 +21,7 @@ void GraphHandler::setup(ci::app::WindowRef _window)
 	connectMouseEvents();
     windowSize = window->getBounds();    
     g = std::make_shared<Graph>(true);
-    graphDrawer = std::make_unique<NoAlgorithmDrawer>(g, nodeHandlers, window);
+    graphDrawer = std::make_unique<NoAlgorithmDrawer>(g, nodeHandlers, windowSize);
 }
 
 
@@ -201,16 +201,16 @@ void GraphHandler::algorithmChanged(Algorithm newAlgorithm)
     {
     default:
     case Algorithm::none:
-        graphDrawer = std::make_unique<NoAlgorithmDrawer>(g, nodeHandlers, window);
+        graphDrawer = std::make_unique<NoAlgorithmDrawer>(g, nodeHandlers, windowSize);
         break;
     case Algorithm::prim:
-        graphDrawer = std::make_unique<PrimDrawer>(g, nodeHandlers, window);
+        graphDrawer = std::make_unique<PrimDrawer>(g, nodeHandlers, windowSize);
         break;
     case Algorithm::kruskal:
-        graphDrawer = std::make_unique<KruskalDrawer>(g, nodeHandlers, window);
+        graphDrawer = std::make_unique<KruskalDrawer>(g, nodeHandlers, windowSize);
         break;
     case Algorithm::dijkstra:
-        graphDrawer = std::make_unique<DijkstraDrawer>(g, nodeHandlers, window);
+        graphDrawer = std::make_unique<DijkstraDrawer>(g, nodeHandlers, windowSize);
         break;
     }
     if (Options::instance().startNode < 1)

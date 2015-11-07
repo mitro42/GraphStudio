@@ -24,7 +24,7 @@ void KruskalDrawer::drawNextEdges() const
 
     const int lineHeight = 40;
     int nextEdgeListLength = 10;
-    int baseX = int(window->getWidth() - Options::instance().infoPanelWidth);
+    int baseX = int(windowSize.getWidth() - Options::instance().infoPanelWidth);
     int baseY = 100;
     auto &state = states[animationState];
     edgeTextureFont->drawString("Next edges", ci::vec2(baseX + 30, baseY));
@@ -135,8 +135,8 @@ void KruskalDrawer::drawColorScale(const std::vector<ci::Color> &colorScale)
 {
     if (g->getNodeCount() != 0 && !colorScale.empty())
     {
-        const auto wHeight = float(window->getHeight());
-        const auto size = float(window->getWidth()) / g->getNodeCount();
+        const auto wHeight = float(windowSize.getHeight());
+        const auto size = float(windowSize.getWidth()) / g->getNodeCount();
         for (int i = 0; i < g->getNodeCount(); ++i)
         {
             ci::gl::color(colorScale[i]);

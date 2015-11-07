@@ -7,8 +7,8 @@
 class NoAlgorithmDrawer : public GraphAnimationDrawer
 {
 public:
-    NoAlgorithmDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window) : 
-        GraphAnimationDrawer(graph, nodeHandlers, window)
+    NoAlgorithmDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::Area windowSize) :
+        GraphAnimationDrawer(graph, nodeHandlers, windowSize)
     {
     }
 

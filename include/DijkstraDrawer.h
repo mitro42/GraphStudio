@@ -7,8 +7,8 @@
 class DijkstraDrawer : public GraphAnimationDrawer
 {
 public:
-    DijkstraDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window) :
-        GraphAnimationDrawer(graph, nodeHandlers, window)
+    DijkstraDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::Area windowSize) :
+        GraphAnimationDrawer(graph, nodeHandlers, windowSize)
     {
     }
 

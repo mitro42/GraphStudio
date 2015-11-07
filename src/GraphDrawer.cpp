@@ -7,25 +7,26 @@
 
 GraphDrawingSettings GraphDrawer::settings;
 
-GraphDrawer::GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::app::WindowRef window) :
+GraphDrawer::GraphDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::Area windowSize) :
     g(graph),
     nodeHandlers(nodeHandlers),
-    window(window)
+	windowSize(windowSize)
 {
-    initFbo();
+    initFbo(windowSize);
 }
 
 void GraphDrawer::resize(ci::Area newWindowSize)
 {
-    initFbo();
+	windowSize = newWindowSize;
+    initFbo(newWindowSize);
 }
 
-void GraphDrawer::initFbo()
+void GraphDrawer::initFbo(ci::Area newWindowSize)
 {
     auto format = ci::gl::Fbo::Format().samples(8);    
     
-    edgeFbo = ci::gl::Fbo::create(window->getWidth(), window->getHeight(), format);
-    labelFbo = ci::gl::Fbo::create(window->getWidth(), window->getHeight(), format);
+    edgeFbo = ci::gl::Fbo::create(newWindowSize.getWidth(), newWindowSize.getHeight(), format);
+    labelFbo = ci::gl::Fbo::create(newWindowSize.getWidth(), newWindowSize.getHeight(), format);
 }
 
 void GraphDrawer::startDrawing()
