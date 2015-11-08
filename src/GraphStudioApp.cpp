@@ -58,6 +58,8 @@ private:
 	bool randomMovement = false;
 	bool autoFitToScreen = true;
 	int algorithm = static_cast<int>(Algorithm::kruskal);
+	int edgeWeightScale = 100;
+	bool autoEdgeWightUpdate = false;
 	ColorScheme editedColorScheme;
 	GraphDrawingSettings graphSettings;
 	GraphDrawingSettings legendSettings;
@@ -133,7 +135,7 @@ void GraphStudioApp::saveSettings()
     configXml.push_back(ci::XmlTree("showEdgeWeights", std::to_string(showEdgeWeights)));
     configXml.push_back(ci::XmlTree("showNodeWeights", std::to_string(showNodeWeights)));
     configXml.push_back(ci::XmlTree("speed", std::to_string(Options::instance().speed)));
-    configXml.push_back(ci::XmlTree("edgeWeightScale", std::to_string(Options::instance().edgeWeightScale)));
+    configXml.push_back(ci::XmlTree("edgeWeightScale", std::to_string(edgeWeightScale)));
     configXml.push_back(ci::XmlTree("autoFitToScreen", std::to_string(autoFitToScreen)));
     
     configXml.push_back(ci::XmlTree("legendEdgeWidth", std::to_string(legendSettings.edgeWidth)));
@@ -201,7 +203,7 @@ void GraphStudioApp::loadSettings()
         Options::instance().infoPanelWidth = settings.getChild("infoPanelWidth").getValue<float>();
 
         Options::instance().speed = settings.getChild("speed").getValue<int>();
-        Options::instance().edgeWeightScale = settings.getChild("edgeWeightScale").getValue<int>();
+        edgeWeightScale = settings.getChild("edgeWeightScale").getValue<int>();
 
         ci::XmlTree csList = settings.getChild("colorSchemes");
         for (auto csIt = csList.begin(); csIt != csList.end(); ++csIt)
@@ -267,7 +269,7 @@ void GraphStudioApp::setup()
     params->addParam<int>("Starting Node", &Options::instance().startNode).min(1).step(1).updateFn(std::bind(&GraphStudioApp::algorithmStartNodeChanged, this));
     params->addSeparator();
     params->addParam<int>("Speed", &Options::instance().speed).updateFn(updaterFunction).min(1).max(300).step(1);
-    params->addParam<int>("Edge Weight Scale", &Options::instance().edgeWeightScale).updateFn(updaterFunction).min(1.0f).max(1000.0f).step(1.0f);
+    params->addParam<int>("Edge Weight Scale", &edgeWeightScale).updateFn(updaterFunction).min(1.0f).max(1000.0f).step(1.0f);
     params->addSeparator();
     params->addText("Colors");
     params->addParam("ColorScheme", colorSchemeNames, &editedColorSchemeIdx).updateFn(std::bind(&GraphStudioApp::colorSchemeChanged, this));
@@ -531,8 +533,7 @@ void GraphStudioApp::keyDown(KeyEvent event)
     }
     if (event.getChar() == 'u')
     {
-        gh.toggleAutomaticEdgeWeightUpdate();
-        ci::app::console() << "automaticEdgeWeightUpdate = " << gh.getAutomaticEdgeWeightUpdate() << std::endl;
+		autoEdgeWightUpdate = !autoEdgeWightUpdate;
     }
     if (event.getChar() == 'f')
     {
@@ -577,6 +578,8 @@ void GraphStudioApp::mouseDown(MouseEvent event)
 
 void GraphStudioApp::update()
 {
+	if (autoEdgeWightUpdate)
+		gh.setEdgeWeightsFromLengths(edgeWeightScale / 100.0);
     gh.update();
     storeColorScheme();
 }

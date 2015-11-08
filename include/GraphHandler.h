@@ -44,9 +44,6 @@ public:
 
     void fitToWindow();
 
-    void toggleAutomaticEdgeWeightUpdate() { automaticEdgeWeightUpdate = !automaticEdgeWeightUpdate; if (automaticEdgeWeightUpdate) g->setWeightedEdges(true); }
-    bool getAutomaticEdgeWeightUpdate() const { return automaticEdgeWeightUpdate; }
-    void setAutomaticEdgeWeightUpdate(bool update) { automaticEdgeWeightUpdate = update; }
 	void setRandomEdgeWeights(int min, int max);
     void generateSpecialGraph(const GraphGenerator& generator);
     GraphAnimationDrawer& getAnimationDrawer() { return *graphDrawer; }
@@ -54,14 +51,14 @@ public:
 	inline void startRandomMovement() { randomMovement = true; }
 	inline void stopRandomMovement() { randomMovement = false; }
 
+	void setEdgeWeightsFromLengths(double scale);
 	void connectMouseEvents();
 	void disconnectMouseEvents();
 private:
 	void repositionNodes(const std::vector<ci::vec2>& newNodePositions);
 	void recreateNodeHandlers();
 	void recreateNodeHandlers(const std::vector<ci::vec2> &newNodePositions);
-	void addNewEdgeIfNodesSelected();
-	void updateEdgeWeights();
+	void addNewEdgeIfNodesSelected();	
 	bool nodeHandlersChanged();
 	void clearChanged();
 	void addNodeHandler(ci::vec2 pos);
@@ -79,7 +76,6 @@ private:
     std::vector<std::unique_ptr<GraphNodeHandler>> nodeHandlers;
     std::unique_ptr<GraphAnimationDrawer> graphDrawer;
 
-    bool automaticEdgeWeightUpdate = false;
     bool changed = true;
 	bool randomMovement;
 

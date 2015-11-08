@@ -148,7 +148,7 @@ void GraphHandler::addNewEdgeIfNodesSelected()
     }
 }
 
-void GraphHandler::updateEdgeWeights()
+void GraphHandler::setEdgeWeightsFromLengths(double scale)
 {    
     std::unique_lock<std::recursive_mutex> guard(updateMutex);
     for (int i = 0; i < g->getNodeCount(); ++i)
@@ -159,7 +159,7 @@ void GraphHandler::updateEdgeWeights()
         {
             auto neighbor = edge.otherEnd(i);
             auto posEnd = nodeHandlers[neighbor]->getPos();
-            auto newWeight = (glm::length(posStart - posEnd)) / 100 * Options::instance().edgeWeightScale;
+            auto newWeight = (glm::length(posStart - posEnd)) * scale;
             changed |= (edge.weight != newWeight);
             edge.weight = newWeight;
         }
@@ -186,11 +186,6 @@ void GraphHandler::update()
             nh->update();
         }
         setChanged();
-    }
-    
-    if (automaticEdgeWeightUpdate)
-    {
-        updateEdgeWeights();
     }
 }
 

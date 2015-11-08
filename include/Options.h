@@ -67,13 +67,9 @@ struct GraphDrawingSettings
 
 struct Options
 {
-    int speed = 60;
-    
-    int weightPrecision = 0;
-    int edgeWeightScale = 100;
-    
+    int speed = 60;    
+    int weightPrecision = 0;      
     int startNode = 1;    
-
     float infoPanelWidth = 350.0f;
 
     static Options &instance()
