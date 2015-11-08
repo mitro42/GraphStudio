@@ -10,8 +10,7 @@
 	<arrowAngle>34.000000</arrowAngle>
 	<showEdgeWeights>1</showEdgeWeights>
 	<showNodeWeights>1</showNodeWeights>
-	<force>13.000000</force>
-	<speed>1</speed>
+	<framesPerState>60</framesPerState>
 	<edgeWeightScale>4</edgeWeightScale>
 	<autoFitToScreen>0</autoFitToScreen>
 	<legendEdgeWidth>7.000000</legendEdgeWidth>
@@ -99,4 +98,3 @@
 		</colorScheme>
 	</colorSchemes>
 </graphStudioSettings>
-

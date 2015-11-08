@@ -77,8 +77,6 @@ private:
     std::unique_ptr<GraphAnimationDrawer> graphDrawer;
 
     bool changed = true;
-	bool randomMovement;
-
-
+	bool randomMovement = false;
 };
 

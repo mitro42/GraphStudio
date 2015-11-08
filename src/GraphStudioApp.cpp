@@ -60,6 +60,7 @@ private:
 	int algorithm = static_cast<int>(Algorithm::kruskal);
 	int edgeWeightScale = 100;
 	bool autoEdgeWightUpdate = false;
+	int framesPerState = 60;
 	ColorScheme editedColorScheme;
 	GraphDrawingSettings graphSettings;
 	GraphDrawingSettings legendSettings;
@@ -134,7 +135,7 @@ void GraphStudioApp::saveSettings()
     configXml.push_back(ci::XmlTree("arrowAngle", std::to_string(graphSettings.arrowAngle)));
     configXml.push_back(ci::XmlTree("showEdgeWeights", std::to_string(showEdgeWeights)));
     configXml.push_back(ci::XmlTree("showNodeWeights", std::to_string(showNodeWeights)));
-    configXml.push_back(ci::XmlTree("speed", std::to_string(Options::instance().speed)));
+    configXml.push_back(ci::XmlTree("framesPerState", std::to_string(framesPerState)));
     configXml.push_back(ci::XmlTree("edgeWeightScale", std::to_string(edgeWeightScale)));
     configXml.push_back(ci::XmlTree("autoFitToScreen", std::to_string(autoFitToScreen)));
     
@@ -202,7 +203,7 @@ void GraphStudioApp::loadSettings()
 
         Options::instance().infoPanelWidth = settings.getChild("infoPanelWidth").getValue<float>();
 
-        Options::instance().speed = settings.getChild("speed").getValue<int>();
+		framesPerState = settings.getChild("framesPerState").getValue<int>();
         edgeWeightScale = settings.getChild("edgeWeightScale").getValue<int>();
 
         ci::XmlTree csList = settings.getChild("colorSchemes");
@@ -268,7 +269,7 @@ void GraphStudioApp::setup()
     params->addParam("Algorithm", AlgorithmNames, &algorithm).updateFn(std::bind(&GraphStudioApp::algorithmChanged, this));
     params->addParam<int>("Starting Node", &Options::instance().startNode).min(1).step(1).updateFn(std::bind(&GraphStudioApp::algorithmStartNodeChanged, this));
     params->addSeparator();
-    params->addParam<int>("Speed", &Options::instance().speed).updateFn(updaterFunction).min(1).max(300).step(1);
+	params->addParam<int>("Frames Per State", &framesPerState).updateFn([&]() {gh.getAnimationDrawer().setFramesPerState(framesPerState); }).min(1).max(300).step(1);
     params->addParam<int>("Edge Weight Scale", &edgeWeightScale).updateFn(updaterFunction).min(1.0f).max(1000.0f).step(1.0f);
     params->addSeparator();
     params->addText("Colors");
@@ -315,6 +316,7 @@ void GraphStudioApp::setup()
     params->addButton("Generate tri", [&](){gh.generateSpecialGraph(graphGeneratorTriangleMesh); });
 
     gh.setup(getWindow());
+	gh.getAnimationDrawer().setFramesPerState(framesPerState);
     colorSchemeChanged();
     algorithmChanged();
 	setGraphChanged();
@@ -452,6 +454,7 @@ void GraphStudioApp::loadGraph()
     gh.loadGraphPositions(path.replace_extension("pos").string());
 
     gh.algorithmChanged(Algorithm(algorithm));
+	gh.getAnimationDrawer().setFramesPerState(framesPerState);
 	colorSchemeChanged();
     if (autoFitToScreen)
     {

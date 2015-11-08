@@ -10,7 +10,7 @@ void KruskalDrawer::prepareNewState()
 std::string KruskalDrawer::edgeToString(const GraphEdge& edge) const
 {
     std::stringstream ss;
-    ss << std::setw(3) << std::fixed << std::setprecision(Options::instance().weightPrecision)
+    ss << std::setw(3) << std::fixed << std::setprecision(getWeightPrecision())
         << edge.weight << " (" << std::setw(1) << edge.from + 1 << " - " << std::setw(1) << edge.to + 1 << ")";
     return ss.str();
 }

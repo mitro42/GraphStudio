@@ -40,7 +40,7 @@ void GraphAnimationDrawer::draw()
     if (animationState < animationLastState - 1 && !paused)
     {        
         framesSpentInState++;
-        if (framesSpentInState % Options::instance().speed == 0)
+        if (framesSpentInState % framesPerState == 0)
         {
             prepareNewState();
             animationState++;

@@ -228,7 +228,7 @@ void GraphDrawer::drawLabels(EdgeDrawParamsMap &params)
                     ci::vec2 toVec = nodeHandlers[edge.to]->getPos();
 
                     std::stringstream ss;
-                    ss << std::fixed << std::setprecision(Options::instance().weightPrecision) << edge.weight;
+                    ss << std::fixed << std::setprecision(weightPrecision) << edge.weight;
                     std::string labelText = ss.str();
                     ci::vec2 textMid = (fromVec + toVec) / 2.0f;
                     ci::vec2 edgeDir = fromVec - toVec;

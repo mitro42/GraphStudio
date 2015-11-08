@@ -29,6 +29,9 @@ public:
 
 	inline bool getShowNodeWeights() const { return showNodeWeights; }
 	inline void setShowNodeWeights(bool show) { showNodeWeights = show; setChanged(); }
+
+	inline int getWeightPrecision() const { return weightPrecision; }
+	inline void setWeightPrecision(int precision) { weightPrecision = precision; }
 protected:
     struct EdgeDrawParams
     {
@@ -86,5 +89,6 @@ private:
 
     ci::Font edgeFont;
     ci::Font nodeFont;
+	int weightPrecision = 0; // number of decimal digits when displaying weights
 };
 

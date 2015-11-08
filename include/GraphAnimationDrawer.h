@@ -33,6 +33,8 @@ public:
     bool getShowAnimationStateDescription() const { return animationStateDescriptionVisible; }
     void showLegend(bool show = true) { legendVisible = show; }
     bool getShowLegend() const { return legendVisible; }
+	int getFramesPerState() const { return framesPerState; }
+	void setFramesPerState(int frames) { framesPerState = frames; }
     int getAnimationStateNumber() const { return animationState; }
 	virtual void setColorScheme(const ColorScheme &cs);
 	virtual void setDrawingSettings(const GraphDrawingSettings &settings)
@@ -49,8 +51,8 @@ protected:
     virtual void drawAnimationStateNumber();
     virtual void drawStepDescription(const std::string& description);
 
-    int animationState;
-    int animationLastState;
+	int animationState = -1;
+	int animationLastState = -1;
     bool animationStateDescriptionVisible = true;
     bool animationStateNumberVisible = true;
     bool legendVisible = true;
@@ -58,7 +60,8 @@ protected:
 private:
     bool animationMode = false;
     bool paused = true;
-    int framesSpentInState;
+	int framesSpentInState = 0;
+	int framesPerState = 60;
     ci::gl::TextureFontRef stepDescriptionTextureFont;
     ci::gl::TextureRef legendTexture;
 };
