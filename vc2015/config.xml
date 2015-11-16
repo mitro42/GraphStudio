@@ -18,7 +18,6 @@
 	<legendArrowLength>25.000000</legendArrowLength>
 	<legendArrowAngle>25.000000</legendArrowAngle>
 	<legendNodeSize>10.000000</legendNodeSize>
-	<infoPanelWidth>300.000000</infoPanelWidth>
 	<colorSchemes>
 		<colorScheme name="Dijkstra 1">
 			<backgroundColor red="255" green="255" blue="255"/>
@@ -98,3 +97,4 @@
 		</colorScheme>
 	</colorSchemes>
 </graphStudioSettings>
+

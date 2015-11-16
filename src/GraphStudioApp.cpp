@@ -145,8 +145,6 @@ void GraphStudioApp::saveSettings()
     configXml.push_back(ci::XmlTree("legendArrowAngle", std::to_string(legendSettings.arrowAngle)));
     configXml.push_back(ci::XmlTree("legendNodeSize", std::to_string(legendSettings.nodeSize)));
 
-    configXml.push_back(ci::XmlTree("infoPanelWidth", std::to_string(Options::instance().infoPanelWidth)));
-
     ci::XmlTree csList("colorSchemes", "");
     for (const auto &cs : colorSchemes)
     {
@@ -200,8 +198,6 @@ void GraphStudioApp::loadSettings()
         legendSettings.arrowLength = settings.getChild("legendArrowLength").getValue<float>();
         legendSettings.arrowAngle = settings.getChild("legendArrowAngle").getValue<float>();
         legendSettings.nodeSize = settings.getChild("legendNodeSize").getValue<float>();
-
-        Options::instance().infoPanelWidth = settings.getChild("infoPanelWidth").getValue<float>();
 
 		framesPerState = settings.getChild("framesPerState").getValue<int>();
         edgeWeightScale = settings.getChild("edgeWeightScale").getValue<int>();

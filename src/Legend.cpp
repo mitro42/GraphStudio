@@ -5,7 +5,7 @@
 
 #include <cinder/gl/Fbo.h>
 
-Legend::Legend() : width(0), height(0)
+Legend::Legend(int width) : width(width), height(0)
 {    
     format.setSamples(8);
 
@@ -38,7 +38,7 @@ void Legend::render(bool forceRerender)
         currentSize = fbo->getSize();
     }
     const int rowHeight = 25;
-    ci::vec2 requiredSize(Options::instance().infoPanelWidth, float(contents.size() * rowHeight));
+    ci::vec2 requiredSize(width, float(contents.size() * rowHeight));
     if (requiredSize == currentSize && !forceRerender)
         return;
     
@@ -54,20 +54,20 @@ void Legend::render(bool forceRerender)
     float posY = rowHeight / 2;
     for (const auto &element: contents)
     {
-        float width = settings.edgeWidth;
+        float edgeWidth = settings.edgeWidth;
         switch (element.type)        
         {
         case LegendType::highlightedArrow:
-            width = settings.highlightedEdgeWidth;
+			edgeWidth = settings.highlightedEdgeWidth;
             // fall trough
         case LegendType::arrow:
-            GraphDrawer::drawArrow(ci::vec2(5.0f, posY), ci::vec2(70.0f, posY), element.color, width, settings.arrowLength, settings.arrowAngle);
+            GraphDrawer::drawArrow(ci::vec2(5.0f, posY), ci::vec2(70.0f, posY), element.color, edgeWidth, settings.arrowLength, settings.arrowAngle);
             break;
         case LegendType::highlightedEdge:
-            width = settings.highlightedEdgeWidth;
+			edgeWidth = settings.highlightedEdgeWidth;
             // fall trough
         case LegendType::edge:
-            GraphDrawer::drawEdge(ci::vec2(5.0f, posY), ci::vec2(70.0f, posY), element.color, width);
+            GraphDrawer::drawEdge(ci::vec2(5.0f, posY), ci::vec2(70.0f, posY), element.color, edgeWidth);
             break;
         case LegendType::node: 
             ci::gl::color(element.color);
@@ -80,12 +80,12 @@ void Legend::render(bool forceRerender)
             break;
         case LegendType::multiColorEdge:
         {
-            width = settings.highlightedEdgeWidth;
+			edgeWidth = settings.highlightedEdgeWidth;
             std::vector<ci::Color> colors = { { 0.36f, 0.9f, 0.46f }, { 0.9f, 0.46f, 0.36f },  { 0.56f, 0.9f, 0.36f } };
             const float segmentLength = 65.0f / colors.size();
             for (int i = 0; i < colors.size(); ++i)
             {
-                GraphDrawer::drawEdge(ci::vec2(5.0f + i * segmentLength, posY), ci::vec2(5.0f + (i + 1) * segmentLength, posY), colors[i], width);
+                GraphDrawer::drawEdge(ci::vec2(5.0f + i * segmentLength, posY), ci::vec2(5.0f + (i + 1) * segmentLength, posY), colors[i], edgeWidth);
             }
             break;
         }

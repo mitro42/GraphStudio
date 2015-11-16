@@ -2,6 +2,8 @@
 #include "KruskalDrawer.h"
 #include "Options.h"
 
+const int KruskalDrawer::infoPanelWidth;
+
 void KruskalDrawer::prepareNewState()
 {
 }
@@ -24,7 +26,7 @@ void KruskalDrawer::drawNextEdges() const
 
     const int lineHeight = 40;
     int nextEdgeListLength = 10;
-    int baseX = int(windowSize.getWidth() - Options::instance().infoPanelWidth);
+    int baseX = int(windowSize.getWidth() - infoPanelWidth);
     int baseY = 100;
     auto &state = states[animationState];
     edgeTextureFont->drawString("Next edges", ci::vec2(baseX + 30, baseY));

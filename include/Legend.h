@@ -30,7 +30,7 @@ struct LegendItem
 class Legend
 {
 public:
-	Legend();
+	Legend(int width);
     ~Legend() = default;
 
     void clear() { contents.clear(); }

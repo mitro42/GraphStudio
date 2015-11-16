@@ -7,10 +7,11 @@
 class GraphAnimationDrawer : public GraphDrawer
 {
 public:
-    GraphAnimationDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::Area windowSize) : 
+    GraphAnimationDrawer(std::shared_ptr<Graph> graph, const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers, ci::Area windowSize, int infoPanelWidth = 350) : 
         GraphDrawer(graph, nodeHandlers, windowSize), 
         animationState(-1), 
-        animationLastState(-1)
+        animationLastState(-1),
+		legend(infoPanelWidth)
     {
         ci::Font stepFont = ci::Font("InputMono Black", 36);
         stepDescriptionTextureFont = ci::gl::TextureFont::create(stepFont);

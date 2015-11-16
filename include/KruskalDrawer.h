@@ -22,6 +22,7 @@ protected:
     virtual void createLegend() override;
     virtual void animationGoToLast() override { animationState = int(states.size()) - 1; }
 private:
+	static const int infoPanelWidth = 350;
     std::string edgeToString(const GraphEdge& edge) const;
     void drawNextEdges() const;
     void drawColorScale(const std::vector<ci::Color> &colorScale);

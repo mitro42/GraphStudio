@@ -67,8 +67,7 @@ struct GraphDrawingSettings
 
 struct Options
 {
-    int startNode = 1;    
-    float infoPanelWidth = 350.0f;
+    int startNode = 1;        
 
     static Options &instance()
     {
