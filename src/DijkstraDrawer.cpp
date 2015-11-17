@@ -24,12 +24,11 @@ void DijkstraDrawer::createLegend()
     legend.add(LegendType::node, getColorScheme().highlightedNodeColor3, "Finished");
 }
 
-void DijkstraDrawer::prepareAnimation()
+void DijkstraDrawer::prepareAnimation(int startNode)
 {
-    states = graph_algorithm_capture::edgeWeightDijkstraCaptureStates(*g, Options::instance().startNode - 1, -1);
+    states = graph_algorithm_capture::edgeWeightDijkstraCaptureStates(*g, startNode - 1, -1);
     animationLastState = int(states.size());
-    GraphAnimationDrawer::prepareAnimation();
-    
+    GraphAnimationDrawer::prepareAnimation(startNode);    
 }
 
 
@@ -39,13 +38,8 @@ void DijkstraDrawer::drawAlgorithmState()
     if (animationState >= int(states.size()))
         return;
 
-    if (animationState == -1)
-    {
-        if (g->getNodeCount() == 0)
-            return;
-
-        prepareAnimation();
-    }
+	if (animationState == -1)
+		return;
 
     auto state = states[animationState];
 	const auto &cs = getColorScheme();
@@ -105,27 +99,27 @@ void DijkstraDrawer::drawAlgorithmState()
 }
 
 
-void DijkstraDrawer::drawAlgorithmResult()
-{    
-    if (states.empty())
-    {
-        prepareAnimation();
-    }
-
-    animationState = int(states.size() - 1);
-    drawAlgorithmState();
-    /*
-    startDrawing();
-    drawEdges();
-    auto tree = edgeWeightDijkstra(*g, Options::instance().startNode - 1, -1);
-    for (int i = 0; i < int(tree.size()); ++i)
-    {
-        auto edgePtr = tree[i].second;
-        if (edgePtr == nullptr)
-            continue;
-        drawEdge(edgePtr->from, edgePtr->to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
-    }
-    drawNodes();
-    drawLabels();
-    */
-}
+//void DijkstraDrawer::drawAlgorithmResult()
+//{    
+//    if (states.empty())
+//    {
+//        prepareAnimation();
+//    }
+//
+//    animationState = int(states.size() - 1);
+//    drawAlgorithmState();
+//    /*
+//    startDrawing();
+//    drawEdges();
+//    auto tree = edgeWeightDijkstra(*g, Options::instance().startNode - 1, -1);
+//    for (int i = 0; i < int(tree.size()); ++i)
+//    {
+//        auto edgePtr = tree[i].second;
+//        if (edgePtr == nullptr)
+//            continue;
+//        drawEdge(edgePtr->from, edgePtr->to, Options::instance().currentColorScheme.highlightedEdgeColor2, Options::instance().highlightedEdgeWidth);
+//    }
+//    drawNodes();
+//    drawLabels();
+//    */
+//}

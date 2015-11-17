@@ -17,9 +17,9 @@ public:
 protected:
     virtual void draw() override { GraphDrawer::draw(); }
     virtual void drawAlgorithmState() override {}
-    virtual void drawAlgorithmResult() override { GraphDrawer::draw(); }
+    //virtual void drawAlgorithmResult(int startNode) override { GraphDrawer::draw(); }
     virtual void prepareNewState() override {}
-    virtual void prepareAnimation() override {}
+    virtual void prepareAnimation(int startNode) override {}
     virtual void createLegend() override {}
     virtual void animationGoToLast() override {}
 private:

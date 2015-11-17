@@ -68,12 +68,7 @@ void KruskalDrawer::drawAlgorithmState()
         return;
 
     if (animationState == -1)
-    {
-        if (g->getNodeCount() == 0)
-            return;
-
-        prepareAnimation();
-    }
+		return;
 
     auto state = states[animationState];
     auto edgeParams = createDefaultEdgeParams();
@@ -121,9 +116,9 @@ void KruskalDrawer::createLegend()
     legend.add(LegendType::highlightedEdge, cs.highlightedEdgeColor1, "Inspected");
 }
 
-void KruskalDrawer::prepareAnimation()
+void KruskalDrawer::prepareAnimation(int startNode)
 {
-    GraphAnimationDrawer::prepareAnimation();
+    GraphAnimationDrawer::prepareAnimation(startNode);
     states = graph_algorithm_capture::mstKruskalCaptureStates(*g);
     animationLastState = int(states.size());
     if (nodeGroupColors.size() != g->getNodeCount())
@@ -148,15 +143,15 @@ void KruskalDrawer::drawColorScale(const std::vector<ci::Color> &colorScale)
 }
 
 
-void KruskalDrawer::drawAlgorithmResult()
-{
-    startDrawing();
-    drawEdges();
-    auto edges = mstKruskal(*g);
-    for (const auto &e : edges)
-    {
-        drawEdge(e->from, e->to, getColorScheme().highlightedEdgeColor2, getDrawingSettings().highlightedEdgeWidth);
-    }
-    drawNodes();
-    drawLabels();
-}
+//void KruskalDrawer::drawAlgorithmResult(int startNode)
+//{
+//    startDrawing();
+//    drawEdges();
+//    auto edges = mstKruskal(*g);
+//    for (const auto &e : edges)
+//    {
+//        drawEdge(e->from, e->to, getColorScheme().highlightedEdgeColor2, getDrawingSettings().highlightedEdgeWidth);
+//    }
+//    drawNodes();
+//    drawLabels();
+//}

@@ -2,6 +2,7 @@
 
 #include "GraphDrawer.h"
 #include "Legend.h"
+#include "Options.h"
 #include <cinder/Font.h>
 
 class GraphAnimationDrawer : public GraphDrawer
@@ -20,9 +21,9 @@ public:
     virtual ~GraphAnimationDrawer() = default;
 
     virtual void draw();
-    virtual void prepareAnimation();
-    virtual void pause() { paused = true; }
-    virtual void resume() { paused = false; }
+    virtual void prepareAnimation(int startNode);
+    virtual void pause() { playingState = AnimationPlayingState::pause; }
+    virtual void resume() { playingState = AnimationPlayingState::play; }
     virtual bool nextState(); // returns true if there are more states to play
     virtual void previousState();
     virtual void animationGoToFirst() { animationState = 0; }
@@ -46,7 +47,7 @@ public:
 	bool isAnimationFinished();
 protected:
     virtual void drawAlgorithmState() = 0;
-    virtual void drawAlgorithmResult() = 0;
+    //virtual void drawAlgorithmResult(int startNode) = 0;
     virtual void prepareNewState() {}
     virtual void createLegend() = 0;
     virtual void drawAnimationStateNumber();
@@ -59,8 +60,7 @@ protected:
     bool legendVisible = true;
     Legend legend;
 private:
-    bool animationMode = false;
-    bool paused = true;
+	AnimationPlayingState playingState = AnimationPlayingState::stop;
 	int framesSpentInState = 0;
 	int framesPerState = 60;
     ci::gl::TextureFontRef stepDescriptionTextureFont;

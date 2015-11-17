@@ -15,9 +15,9 @@ public:
     virtual ~DijkstraDrawer() = default;
 protected:
     virtual void drawAlgorithmState() override;
-    virtual void drawAlgorithmResult() override;
+    //virtual void drawAlgorithmResult(int startNode) override;
     virtual void prepareNewState() override;
-    virtual void prepareAnimation() override;
+    virtual void prepareAnimation(int startNode) override;
     virtual void createLegend() override;
     virtual void animationGoToLast() override { animationState = int(states.size()) - 1; }
 private:

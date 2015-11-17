@@ -3,10 +3,9 @@
 #include "Options.h"
 
 #include <string>
-void GraphAnimationDrawer::prepareAnimation()
+void GraphAnimationDrawer::prepareAnimation(int startNode)
 {
-    animationMode = true;
-    paused = true;
+	playingState = AnimationPlayingState::pause;
     animationGoToLast();
     framesSpentInState = 0;
     createLegend();
@@ -37,7 +36,7 @@ bool GraphAnimationDrawer::isAnimationFinished()
 
 void GraphAnimationDrawer::draw()
 {
-    if (animationState < animationLastState - 1 && !paused)
+    if (animationState < animationLastState - 1 && playingState != AnimationPlayingState::pause)
     {        
         framesSpentInState++;
         if (framesSpentInState % framesPerState == 0)
@@ -47,14 +46,7 @@ void GraphAnimationDrawer::draw()
         }
     }
 
-    if (animationMode)
-    {        
-        drawAlgorithmState();
-    }
-    else
-    {
-        drawAlgorithmResult();
-    }
+    drawAlgorithmState();
 
     ci::gl::color(ci::Color::white());
     if (legendVisible && (legendTexture = legend.getTexture()))
@@ -73,7 +65,7 @@ bool GraphAnimationDrawer::nextState()
     {
         animationState++;
         prepareNewState();
-        paused = true;
+		pause();
         return true;
     }
     return false;    
@@ -85,7 +77,7 @@ void GraphAnimationDrawer::previousState()
     {
         animationState--;
         prepareNewState();
-        paused = true;
+		pause();
     }
 }
 

@@ -65,17 +65,5 @@ struct GraphDrawingSettings
 	float highlightedEdgeWidth = 3.0f;
 };
 
-struct Options
-{
-    int startNode = 1;        
-
-    static Options &instance()
-    {
-        static Options instance;
-        return instance;
-    }
-};
-
-
 
 #endif // GRAPHSTUDIO_OPTIONS_H

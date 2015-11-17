@@ -78,9 +78,9 @@ void GraphHandler::draw()
 }
 
 
-void GraphHandler::animationPrepare()
+void GraphHandler::animationPrepare(int startNode)
 {
-	graphDrawer->prepareAnimation();
+	graphDrawer->prepareAnimation(startNode);
 }
 
 void GraphHandler::animationPause()
@@ -190,7 +190,7 @@ void GraphHandler::update()
 }
 
 
-void GraphHandler::algorithmChanged(Algorithm newAlgorithm)
+void GraphHandler::algorithmChanged(Algorithm newAlgorithm, int startNode)
 {
     switch (newAlgorithm)
     {
@@ -208,17 +208,14 @@ void GraphHandler::algorithmChanged(Algorithm newAlgorithm)
         graphDrawer = std::make_unique<DijkstraDrawer>(g, nodeHandlers, windowSize);
         break;
     }
-    if (Options::instance().startNode < 1)
-    {
-        Options::instance().startNode = 1;
-    }
-    graphDrawer->prepareAnimation();
+    
+	graphDrawer->prepareAnimation(startNode);
     graphDrawer->animationGoToLast();
 }
 
-void GraphHandler::algorithmStartNodeChanged()
+void GraphHandler::algorithmStartNodeChanged(int startNode)
 {
-    graphDrawer->prepareAnimation();
+    graphDrawer->prepareAnimation(startNode);
 }
 
 void GraphHandler::addNodeHandler(ci::vec2 pos)

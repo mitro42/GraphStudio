@@ -17,14 +17,8 @@ void PrimDrawer::drawAlgorithmState()
     if (animationState >= int(states.size()))
         return;
 
-    if (animationState == -1)
-    {
-        if (g->getNodeCount() == 0)
-            return;
-
-        prepareAnimation();
-    }
-
+	if (animationState == -1)
+		return;
 
     auto &state = states[animationState];
     const float highlightedWidth = getDrawingSettings().highlightedEdgeWidth;
@@ -121,22 +115,22 @@ void PrimDrawer::drawNextEdges()
     }
 }
 
-void PrimDrawer::prepareAnimation()
+void PrimDrawer::prepareAnimation(int startNode)
 {
-    GraphAnimationDrawer::prepareAnimation();
-    states = graph_algorithm_capture::mstPrimCaptureStates(*g, Options::instance().startNode - 1);
+    GraphAnimationDrawer::prepareAnimation(startNode);
+    states = graph_algorithm_capture::mstPrimCaptureStates(*g, startNode - 1);
     animationLastState = int(states.size());
 }
 
-void PrimDrawer::drawAlgorithmResult()
-{
-    startDrawing();
-    drawEdges();
-    auto edges = mstPrim(*g, Options::instance().startNode - 1);
-    for (const auto &e : edges)
-    {
-        drawEdge(e.from, e.to, getColorScheme().highlightedEdgeColor2, getDrawingSettings().highlightedEdgeWidth);
-    }
-    drawNodes();
-    drawLabels();
-}
+//void PrimDrawer::drawAlgorithmResult(int startNode)
+//{
+//    startDrawing();
+//    drawEdges();
+//    auto edges = mstPrim(*g, startNode - 1);
+//    for (const auto &e : edges)
+//    {
+//        drawEdge(e.from, e.to, getColorScheme().highlightedEdgeColor2, getDrawingSettings().highlightedEdgeWidth);
+//    }
+//    drawNodes();
+//    drawLabels();
+//}

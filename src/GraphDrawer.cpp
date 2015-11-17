@@ -154,14 +154,6 @@ void GraphDrawer::drawEdge(int from, int to, ci::Color color, float width)
 
 void GraphDrawer::drawHighlightEdges()
 {
-    if (Options::instance().startNode > g->getNodeCount())
-    {
-        Options::instance().startNode = g->getNodeCount() - 1;
-    }
-    if (Options::instance().startNode < 0 && g->getNodeCount() > 0)
-    {
-        Options::instance().startNode = 1;
-    }
 }
 
 

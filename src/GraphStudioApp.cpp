@@ -61,6 +61,7 @@ private:
 	int edgeWeightScale = 100;
 	bool autoEdgeWightUpdate = false;
 	int framesPerState = 60;
+	int startNode = 1;
 	ColorScheme editedColorScheme;
 	GraphDrawingSettings graphSettings;
 	GraphDrawingSettings legendSettings;
@@ -232,13 +233,18 @@ void GraphStudioApp::setGraphChanged()
 
 void GraphStudioApp::algorithmChanged()
 {
-    gh.algorithmChanged(Algorithm(algorithm));
+    gh.algorithmChanged(Algorithm(algorithm), startNode);
 	colorSchemeChanged();
 }
 
 void GraphStudioApp::algorithmStartNodeChanged()
 {
-    gh.algorithmStartNodeChanged();
+	if (startNode > gh.getNodeCount())
+	{
+		startNode = gh.getNodeCount();
+		return;
+	}
+    gh.algorithmStartNodeChanged(startNode);
 }
 
 void GraphStudioApp::colorSchemeChanged()
@@ -263,7 +269,7 @@ void GraphStudioApp::setup()
 
     params->addSeparator();
     params->addParam("Algorithm", AlgorithmNames, &algorithm).updateFn(std::bind(&GraphStudioApp::algorithmChanged, this));
-    params->addParam<int>("Starting Node", &Options::instance().startNode).min(1).step(1).updateFn(std::bind(&GraphStudioApp::algorithmStartNodeChanged, this));
+    params->addParam<int>("Starting Node", &startNode).min(1).step(1).updateFn(std::bind(&GraphStudioApp::algorithmStartNodeChanged, this));
     params->addSeparator();
 	params->addParam<int>("Frames Per State", &framesPerState).updateFn([&]() {gh.getAnimationDrawer().setFramesPerState(framesPerState); }).min(1).max(300).step(1);
     params->addParam<int>("Edge Weight Scale", &edgeWeightScale).updateFn(updaterFunction).min(1.0f).max(1000.0f).step(1.0f);
@@ -355,7 +361,7 @@ void GraphStudioApp::prepareRecording()
 
 	videoTempDir = createTempDir();
 	playingState = AnimationPlayingState::play;
-    gh.animationPrepare();
+    gh.animationPrepare(startNode);
     gh.animationGoToFirst();
     gh.animationPause();
 }
@@ -366,7 +372,7 @@ void GraphStudioApp::createThumbnail(const fs::path &folder)
     bool origParamsVisible = params->isVisible();
 
 	playingState = AnimationPlayingState::stop;
-    gh.animationPrepare();
+    gh.animationPrepare(startNode);
     gh.animationGoToLast();
     gh.animationPause();
 
@@ -449,7 +455,7 @@ void GraphStudioApp::loadGraph()
     gh.loadGraph(path.string());
     gh.loadGraphPositions(path.replace_extension("pos").string());
 
-    gh.algorithmChanged(Algorithm(algorithm));
+    gh.algorithmChanged(Algorithm(algorithm), startNode);
 	gh.getAnimationDrawer().setFramesPerState(framesPerState);
 	colorSchemeChanged();
     if (autoFitToScreen)

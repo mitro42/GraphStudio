@@ -18,8 +18,8 @@ public:
     void loadGraphPositions(const ci::fs::path& fileName);
     void saveGraphPositions(const ci::fs::path& fileName);
 
-    void algorithmChanged(Algorithm newAlgorithm);
-    void algorithmStartNodeChanged();
+    void algorithmChanged(Algorithm newAlgorithm, int startNode);
+    void algorithmStartNodeChanged(int startNode);
 
     void reorderNodesSquare();
     void reorderNodesGrid(int columns, int rows);
@@ -28,9 +28,9 @@ public:
     void update();
     void draw();
 
-    void setChanged() { changed = true; animationPrepare(); }
+    void setChanged() { changed = true; }
 
-    void animationPrepare();
+    void animationPrepare(int startNode);
     void animationPause();
     void animationResume();
     bool animationNext(); // returns true if there are more states to play
@@ -54,6 +54,7 @@ public:
 	void setEdgeWeightsFromLengths(double scale);
 	void connectMouseEvents();
 	void disconnectMouseEvents();
+	int getNodeCount() const { return g->getNodeCount(); }
 private:
 	void repositionNodes(const std::vector<ci::vec2>& newNodePositions);
 	void recreateNodeHandlers();
