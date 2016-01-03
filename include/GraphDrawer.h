@@ -71,6 +71,7 @@ protected:
     const std::shared_ptr<Graph> g;
     const std::vector<std::unique_ptr<GraphNodeHandler>> &nodeHandlers;
     std::vector<ci::Color> generateColors(int n);
+	std::vector<ci::Color> generateColors(int n, ci::Color baseColor);
 
     ci::gl::TextureFontRef edgeTextureFont;
     ci::gl::TextureFontRef nodeTextureFont;

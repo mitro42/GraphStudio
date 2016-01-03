@@ -279,3 +279,22 @@ std::vector<ci::Color> GraphDrawer::generateColors(int n)
     }
     return ret;
 }
+
+std::vector<ci::Color> GraphDrawer::generateColors(int n, ci::Color baseColor)
+{
+	std::vector<ci::Color> ret;
+	ret.reserve(n);
+	if (n == 1)
+	{
+		ret.push_back(baseColor);
+		return ret;
+	}
+
+	auto hsv = baseColor.get(ci::ColorModel::CM_HSV);
+	for (int i = 0; i < n; ++i)
+	{
+		ci::Color c(ci::ColorModel::CM_HSV, hsv[0], 1.0f, 0.2f + 0.8f * (n - 1 - float(i)) /(n-1));
+		ret.push_back(c);
+	}
+	return ret;
+}
