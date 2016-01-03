@@ -2,6 +2,7 @@
 #include "GraphHandler.h"
 
 #include "NoAlgorithmDrawer.h"
+#include "DfsDrawer.h"
 #include "DijkstraDrawer.h"
 #include "KruskalDrawer.h"
 #include "PrimDrawer.h"
@@ -198,6 +199,9 @@ void GraphHandler::algorithmChanged(Algorithm newAlgorithm, int startNode)
     case Algorithm::none:
         graphDrawer = std::make_unique<NoAlgorithmDrawer>(g, nodeHandlers, windowSize);
         break;
+	case Algorithm::dfs:
+		graphDrawer = std::make_unique<DfsDrawer>(g, nodeHandlers, windowSize);
+		break;
     case Algorithm::prim:
         graphDrawer = std::make_unique<PrimDrawer>(g, nodeHandlers, windowSize);
         break;
